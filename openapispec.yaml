@@ -1,0 +1,9 @@
+openapi: 3.0.3
+info:
+  title: Delivery
+  description: openapi specifications for delivery microservice
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+  
