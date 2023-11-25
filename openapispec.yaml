@@ -1,9 +1,215 @@
 openapi: 3.0.3
 info:
   title: Delivery
-  description: openapi specifications for delivery microservice
+  description: OpenAPI specifications for delivery microservice
   version: 1.0.0
 servers:
   - url: 'https'
 paths:
-  
+  /orders/vendor/time/setTime/{order_id}/{delivery_time}:
+    patch:
+      description: As a vendor, set the estimated delivery time for an order
+      parameters:
+        - in: path
+          name: order_id
+          schema:
+            type: double
+          required: true
+          description: The id of the order to which the delivery time will be assigned
+        - in: path
+          name: delivery_time
+          schema:
+            type: java.time.Instant
+          required: true
+          description: The estimated delivery time which will be set by the user to the order
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              properties:
+                id:
+                  type: double
+                name:
+                  type: string
+                description:
+                  type: string
+              example:
+                id: 123
+                name: Updated Order
+                description: The order has been updated successfully
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              properties:
+                error:
+                  type: string
+                message:
+                  type: string
+              example:
+                error: Invalid delivery time
+                message: The delivery time must be a valid entry
+
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
+
+        '404':
+          description: Not found
+          content:
+            application/json:
+              properties:
+                error:
+                  type: string
+                message:
+                  type: string
+              example:
+                error: Order not found
+                message: No order with this id has been found
+
+  /orders/vendor/assignOrder/{courier_id}/{order_id}:
+    patch:
+      description: As a vendor, assign a specific order to a courier
+      parameters:
+        - in: path
+          name: courier_id
+          schema:
+            type: double
+          required: true
+          description: The id of the courier to which the delivery will be assigned
+        - in: path
+          name: order_id
+          schema:
+            type: double
+          required: true
+          description: The order to be assigned to the courier
+
+      responses:
+            '200':
+              description: OK
+              content:
+                application/json:
+                  properties:
+                    courier_id:
+                      type: double
+                    order_id:
+                      type: double
+                    name:
+                      type: string
+                    description:
+                      type: string
+                  example:
+                    courier_id: 123
+                    order_id: 456
+                    name: Assigned Order
+                    description: The order has been assigned to the courier successfully
+
+            '403':
+              description: Forbidden
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      error:
+                        type: string
+                      message:
+                        type: string
+                  example:
+                    error: Permission not granted
+                    message: This function can only be accessed by a vendor
+
+            '404':
+              description: Not found
+              content:
+                application/json:
+                  properties:
+                    error:
+                      type: string
+                    message:
+                      type: string
+                  example:
+                    error: Order or courier not found
+                    message: No order or courier with the given ids have been found
+
+  /orders/vendor/setDeliveryZone/{range}:
+    patch:
+      description: As a vendor, set the maximum delivery range
+      parameters:
+        - in: path
+          name: range
+          schema:
+            type: float
+            minimum: 0
+          required: true
+          description: The new delivery zone range, to be set to the current vendor
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+              example:
+                name: Updated Delivery Zone
+                description: The delivery zone for the current vendor has successfully been updated
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              properties:
+                error:
+                  type: string
+                message:
+                  type: string
+              example:
+                error: Invalid delivery zone range
+                message: The delivery zone range must be a valid entry
+
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
+
+
+
+
+
+
+
+
+
+
+
+
+
+
