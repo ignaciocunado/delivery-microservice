@@ -1,10 +1,13 @@
 openapi: 3.0.3
 info:
-  title: Delivery
+  title: Delivery Microservice
   description: OpenAPI specifications for delivery microservice
   version: 1.0.0
 servers:
-  - url: 'https'
+  - url: 'https://localhost:8081'
+tags:
+  - name: Domain Courier
+    description: Operations of courier
 paths:
   /orders/vendor/time/setTime/{order_id}/{delivery_time}:
     patch:
@@ -199,6 +202,76 @@ paths:
               example:
                 error: Permission not granted
                 message: This function can only be accessed by a vendor
+
+  /orders/courier/choose/{order_id}/{user_id}:
+    patch:
+      tags:
+        - Domain Courier
+      summary: Assign an existing order to courier
+      description: Assign an existing order by order_id and user_id
+      parameters:
+        - name: order_id
+          in: path
+          description: ID of order to assign
+          required: true
+          schema:
+            type: integer
+        - name: user_id
+          in: path
+          description: ID of user to assign to
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order or courier not found
+
+  /orders/courier/delivered/{order_id}:
+    patch:
+      tags:
+        - Domain Courier
+      summary: Mark order as delivered
+      description: Mark the order with specific id as delivered
+      parameters:
+        - name: order_id
+          in: path
+          description: ID of order to complete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
+
+components:
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+
 
 
 
