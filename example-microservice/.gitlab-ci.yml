@@ -39,7 +39,7 @@ checkStyle-example-microservice:
   stage: staticAnalysis
   script:
     gradle example-microservice:checkstyleMain example-microservice:checkStyleTest
-  allow_failure: true
+  allow_failure: false
 
 
 PMD-example-microservice:
