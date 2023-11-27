@@ -283,6 +283,71 @@ paths:
           description: Forbidden
         '404':
           description: Order not found
+  /orders/getException/{order_id}:
+    get:
+      tags:
+        - Domain without user
+      summary: get order's exceptions
+      description: get any exceptions that have occurred for a specific order
+      parameters:
+        - name: order_id
+          in: path
+          description: ID of order to get exceptions for
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
+  /orders/setException/{order_id}:
+    patch:
+      tags:
+        - Domain without user
+      summary: set order's exceptions
+      description: Only accessible by Vendor and Courier. If some unexpected event occurred during an order, update its exception status.
+      parameters:
+        - name: order_id
+          in: path
+          description: ID of order to set exceptions for
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
+  /delivery/defaultDeliveryZone:
+    get:
+      tags:
+        - Domain without user
+      summary: Default delivery zone
+      description: Get the default delivery range for the hosting vendor.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
 components:
   schemas:
     ApiResponse:
@@ -295,18 +360,3 @@ components:
           type: string
         message:
           type: string
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
