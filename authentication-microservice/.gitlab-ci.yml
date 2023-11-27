@@ -66,9 +66,7 @@ test-authentication-microservice:
     MINIMUM_COVERAGE: 10 # Pass with warning
   script:
     - gradle authentication-microservice:test authentication-microservice:jacocoTestReport
-    - mv authentication-microservice/build/reports/jacoco/test/html/index.html ./coverage # Move files to folder
-    - ls coverage
-    - coverage=$(cat coverage/index.html | grep -Po "Total.*?([0-9]{1,3})%"| sed -E "s/<.*>//" | sed -E "s/Total//")
+    - coverage=$(cat authentication-microservice/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"| sed -E "s/<.*>//" | sed -E "s/Total//")
     - coverage=${coverage::-1}
     - echo "TestCoverage:$coverage%"
     - if [ $coverage -ge $GOOD_COVERAGE ]; then exit 0; fi
