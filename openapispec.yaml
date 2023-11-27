@@ -112,58 +112,58 @@ paths:
           description: The order to be assigned to the courier
 
       responses:
-            '200':
-              description: OK
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      courier_id:
-                        type: number
-                        format: long
-                      order_id:
-                        type: number
-                        format: long
-                      name:
-                        type: string
-                      description:
-                        type: string
-                  example:
-                    courier_id: 123
-                    order_id: 456
-                    name: Assigned Order
-                    description: The order has been assigned to the courier successfully
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  courier_id:
+                    type: number
+                    format: long
+                  order_id:
+                    type: number
+                    format: long
+                  name:
+                    type: string
+                  description:
+                    type: string
+              example:
+                courier_id: 123
+                order_id: 456
+                name: Assigned Order
+                description: The order has been assigned to the courier successfully
 
-            '403':
-              description: Forbidden
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      error:
-                        type: string
-                      message:
-                        type: string
-                  example:
-                    error: Permission not granted
-                    message: This function can only be accessed by a vendor
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
 
-            '404':
-              description: Not found
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      error:
-                        type: string
-                      message:
-                        type: string
-                  example:
-                    error: Order or courier not found
-                    message: No order or courier with the given ids have been found
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Order or courier not found
+                message: No order or courier with the given ids have been found
 
   /orders/vendor/setDeliveryZone/{range}:
     patch:
