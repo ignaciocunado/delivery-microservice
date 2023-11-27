@@ -16,13 +16,15 @@ paths:
         - in: path
           name: order_id
           schema:
-            type: double
+            type: number
+            format: long
           required: true
           description: The id of the order to which the delivery time will be assigned
         - in: path
           name: delivery_time
           schema:
-            type: java.time.Instant
+            type: string
+            format: date-time
           required: true
           description: The estimated delivery time which will be set by the user to the order
 
@@ -31,13 +33,15 @@ paths:
           description: OK
           content:
             application/json:
-              properties:
-                id:
-                  type: double
-                name:
-                  type: string
-                description:
-                  type: string
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
               example:
                 id: 123
                 name: Updated Order
@@ -47,11 +51,13 @@ paths:
           description: Bad Request
           content:
             application/json:
-              properties:
-                error:
-                  type: string
-                message:
-                  type: string
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
               example:
                 error: Invalid delivery time
                 message: The delivery time must be a valid entry
@@ -75,11 +81,13 @@ paths:
           description: Not found
           content:
             application/json:
-              properties:
-                error:
-                  type: string
-                message:
-                  type: string
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
               example:
                 error: Order not found
                 message: No order with this id has been found
@@ -91,13 +99,15 @@ paths:
         - in: path
           name: courier_id
           schema:
-            type: double
+            type: number
+            format: long
           required: true
           description: The id of the courier to which the delivery will be assigned
         - in: path
           name: order_id
           schema:
-            type: double
+            type: number
+            format: long
           required: true
           description: The order to be assigned to the courier
 
@@ -106,15 +116,19 @@ paths:
               description: OK
               content:
                 application/json:
-                  properties:
-                    courier_id:
-                      type: double
-                    order_id:
-                      type: double
-                    name:
-                      type: string
-                    description:
-                      type: string
+                  schema:
+                    type: object
+                    properties:
+                      courier_id:
+                        type: number
+                        format: long
+                      order_id:
+                        type: number
+                        format: long
+                      name:
+                        type: string
+                      description:
+                        type: string
                   example:
                     courier_id: 123
                     order_id: 456
@@ -140,11 +154,13 @@ paths:
               description: Not found
               content:
                 application/json:
-                  properties:
-                    error:
-                      type: string
-                    message:
-                      type: string
+                  schema:
+                    type: object
+                    properties:
+                      error:
+                        type: string
+                      message:
+                        type: string
                   example:
                     error: Order or courier not found
                     message: No order or courier with the given ids have been found
@@ -156,7 +172,8 @@ paths:
         - in: path
           name: range
           schema:
-            type: float
+            type: number
+            format: double
             minimum: 0
           required: true
           description: The new delivery zone range, to be set to the current vendor
@@ -166,11 +183,13 @@ paths:
           description: OK
           content:
             application/json:
-              properties:
-                name:
-                  type: string
-                description:
-                  type: string
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
               example:
                 name: Updated Delivery Zone
                 description: The delivery zone for the current vendor has successfully been updated
@@ -179,11 +198,13 @@ paths:
           description: Bad Request
           content:
             application/json:
-              properties:
-                error:
-                  type: string
-                message:
-                  type: string
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
               example:
                 error: Invalid delivery zone range
                 message: The delivery zone range must be a valid entry
