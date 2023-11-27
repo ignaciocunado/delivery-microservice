@@ -69,7 +69,7 @@ test-authentication-microservice:
     - mv authentication-microservice/build/reports/jacoco/test/html/index.html ./coverage # Move files to folder
     - coverage=$(cat coverage/index.html | grep -Po "Total.*?([0-9]{1,3})%"| sed -E "s/<.*>//" | sed -E "s/Total//")
     - coverage=${coverage::-1}
-    - echo TestCoverage:$coverage%
+    - echo "TestCoverage:$coverage%"
     - if [ $coverage -ge $GOOD_COVERAGE ]; then exit 0; fi
     - if [ $coverage -ge $MINIMUM_COVERAGE ]; then exit 1; fi
     - exit 2
