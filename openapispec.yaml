@@ -259,6 +259,30 @@ paths:
         '404':
           description: Order not found
 
+  /orders/courier/pickUp/{order_id}:
+    patch:
+      tags:
+        - Domain Courier
+      summary: Mark the order as picked up by the courier
+      description: Mark order with order_id as picked up by the courier
+      parameters:
+        - name: order_id
+          in: path
+          description: ID of order to mark as picked up
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
 components:
   schemas:
     ApiResponse:
