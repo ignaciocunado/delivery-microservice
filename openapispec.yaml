@@ -364,7 +364,52 @@ paths:
               example:
                 error: Order does not exist.
                 message: The given order ID should point to an existing order.
-      
+
+  /orders/vendor/reject/{order_id}:
+    patch:
+      tags:
+        - Domain Vendor
+      summary: Mark a pending order as rejected.
+      description: Changes the status of a pending order to rejected. Can only be called on pending orders, and only by a vendor that has authority over the order.
+      parameters:
+        - name: order_id
+          in: path
+          description: ID of the order to mark as rejected.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleError'
+              example:
+                error: Order cannot be rejected.
+                message: The given order should currently be marked pending.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleError'
+              example:
+                error: Invalid authorization to modify order.
+                message: The given order ID should point to an existing order.
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleError'
+              example:
+                error: Order does not exist.
+                message: The given order ID should point to an existing order.
+
 components:
   schemas:
     ApiResponse:
