@@ -442,6 +442,38 @@ paths:
 
 components:
   schemas:
+    Delivery:
+      type: object
+      properties:
+        deliveryID:
+          type: integer
+          format: int64
+        oderID:
+          type: integer
+          format: int64
+        customerID:
+          type: integer
+          format: int64
+        courierID:
+          type: integer
+          format: int64
+        timeEstimation:
+          type: integer
+          format: int32
+        vendorDelivered:
+          type: boolean
+        customerRating:
+          type: Optional<Integer>
+          format: int32
+        pickedTime:
+          type: java.time.instant
+        userException:
+          type: string
+        liveLocation:
+          type: string
+
+        message:
+          type: string
     ApiResponse:
       type: object
       properties:
