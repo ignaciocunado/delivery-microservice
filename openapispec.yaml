@@ -292,6 +292,32 @@ paths:
         '404':
           description: Order not found
 
+  /orders/getLocation/{order_id}:
+    get:
+      description: As a customer, get the current location of the order
+      parameters:
+        - name: order_id
+          in: path
+          description: ID of order to get the location of
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                minimum: 0
+                maximum: 100
+              example:
+                50
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
+
 components:
   schemas:
     ApiResponse:
