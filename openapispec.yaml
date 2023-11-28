@@ -13,18 +13,22 @@ tags:
 paths:
   /orders/vendor/time/setTime/{order_id}/{delivery_time}:
     patch:
+      tags:
+        - Domain Vendor
       description: As a vendor, set the estimated delivery time for an order
       parameters:
         - in: path
           name: order_id
           schema:
-            type: double
+            type: number
+            format: long
           required: true
           description: The id of the order to which the delivery time will be assigned
         - in: path
           name: delivery_time
           schema:
-            type: java.time.Instant
+            type: string
+            format: date-time
           required: true
           description: The estimated delivery time which will be set by the user to the order
 
@@ -33,13 +37,15 @@ paths:
           description: OK
           content:
             application/json:
-              properties:
-                id:
-                  type: double
-                name:
-                  type: string
-                description:
-                  type: string
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
               example:
                 id: 123
                 name: Updated Order
@@ -49,11 +55,13 @@ paths:
           description: Bad Request
           content:
             application/json:
-              properties:
-                error:
-                  type: string
-                message:
-                  type: string
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
               example:
                 error: Invalid delivery time
                 message: The delivery time must be a valid entry
@@ -77,123 +85,6 @@ paths:
           description: Not found
           content:
             application/json:
-              properties:
-                error:
-                  type: string
-                message:
-                  type: string
-              example:
-                error: Order not found
-                message: No order with this id has been found
-
-  /orders/vendor/assignOrder/{courier_id}/{order_id}:
-    patch:
-      description: As a vendor, assign a specific order to a courier
-      parameters:
-        - in: path
-          name: courier_id
-          schema:
-            type: double
-          required: true
-          description: The id of the courier to which the delivery will be assigned
-        - in: path
-          name: order_id
-          schema:
-            type: double
-          required: true
-          description: The order to be assigned to the courier
-
-      responses:
-            '200':
-              description: OK
-              content:
-                application/json:
-                  properties:
-                    courier_id:
-                      type: double
-                    order_id:
-                      type: double
-                    name:
-                      type: string
-                    description:
-                      type: string
-                  example:
-                    courier_id: 123
-                    order_id: 456
-                    name: Assigned Order
-                    description: The order has been assigned to the courier successfully
-
-            '403':
-              description: Forbidden
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      error:
-                        type: string
-                      message:
-                        type: string
-                  example:
-                    error: Permission not granted
-                    message: This function can only be accessed by a vendor
-
-            '404':
-              description: Not found
-              content:
-                application/json:
-                  properties:
-                    error:
-                      type: string
-                    message:
-                      type: string
-                  example:
-                    error: Order or courier not found
-                    message: No order or courier with the given ids have been found
-
-  /orders/vendor/setDeliveryZone/{range}:
-    patch:
-      description: As a vendor, set the maximum delivery range
-      parameters:
-        - in: path
-          name: range
-          schema:
-            type: float
-            minimum: 0
-          required: true
-          description: The new delivery zone range, to be set to the current vendor
-
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              properties:
-                name:
-                  type: string
-                description:
-                  type: string
-              example:
-                name: Updated Delivery Zone
-                description: The delivery zone for the current vendor has successfully been updated
-
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              properties:
-                error:
-                  type: string
-                message:
-                  type: string
-              example:
-                error: Invalid delivery zone range
-                message: The delivery zone range must be a valid entry
-
-        '403':
-          description: Forbidden
-          content:
-            application/json:
               schema:
                 type: object
                 properties:
@@ -202,8 +93,145 @@ paths:
                   message:
                     type: string
               example:
-                error: Permission not granted
-                message: This function can only be accessed by a vendor
+                error: Order not found
+                message: No order with this id has been found
+
+  /orders/vendor/assignOrder/{courier_id}/{order_id}:
+      patch:
+        tags:
+          - Domain Vendor
+        description: As a vendor, assign a specific order to a courier
+        parameters:
+          - in: path
+            name: courier_id
+            schema:
+              type: number
+              format: long
+            required: true
+            description: The id of the courier to which the delivery will be assigned
+          - in: path
+            name: order_id
+            schema:
+              type: number
+              format: long
+            required: true
+            description: The order to be assigned to the courier
+
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    courier_id:
+                      type: number
+                      format: long
+                    order_id:
+                      type: number
+                      format: long
+                    name:
+                      type: string
+                    description:
+                      type: string
+                example:
+                  courier_id: 123
+                  order_id: 456
+                  name: Assigned Order
+                  description: The order has been assigned to the courier successfully
+
+          '403':
+            description: Forbidden
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                    message:
+                      type: string
+                example:
+                  error: Permission not granted
+                  message: This function can only be accessed by a vendor
+
+          '404':
+            description: Not found
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                    message:
+                      type: string
+                example:
+                  error: Order or courier not found
+                  message: No order or courier with the given ids have been found
+
+  /orders/vendor/setDeliveryZone/{range}:
+      patch:
+        tags:
+          - Domain Vendor
+        description: As a vendor, set the maximum delivery range
+        parameters:
+          - in: path
+            name: range
+            schema:
+              type: number
+              format: double
+              minimum: 0
+            required: true
+            description: The new delivery zone range, to be set to the current vendor
+
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    description:
+                      type: string
+                example:
+                  name: Updated Delivery Zone
+                  description: The delivery zone for the current vendor has successfully been updated
+
+          '400':
+            description: Bad Request
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                    message:
+                      type: string
+                example:
+                  error: Invalid delivery zone range
+                  message: The delivery zone range must be a valid entry
+
+          '403':
+            description: Forbidden
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                    message:
+                      type: string
+                example:
+                  error: Permission not granted
+                  message: This function can only be accessed by a vendor
+
 
   /orders/courier/choose/{order_id}/{user_id}:
     patch:
@@ -296,6 +324,8 @@ paths:
 
   /orders/getLocation/{order_id}:
     get:
+      tags:
+        - Domain Customer
       description: As a customer, get the current location of the order
       parameters:
         - name: order_id
