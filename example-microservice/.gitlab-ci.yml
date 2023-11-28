@@ -39,7 +39,7 @@ checkStyle-example-microservice:
   stage: staticAnalysis
   script:
     gradle example-microservice:checkstyleMain example-microservice:checkStyleTest
-  allow_failure: true
+  allow_failure: false
 
 
 PMD-example-microservice:
@@ -62,8 +62,23 @@ test-example-microservice:
   dependencies:
     - gradle_build
   stage: test
+  variables:
+    GOOD_COVERAGE: 95 # Pass pipeline
+    MINIMUM_COVERAGE: 90 # Pass with warning
   script:
     - gradle example-microservice:test example-microservice:jacocoTestReport
-    - cat example-microservice/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
-  coverage: /([0-9]{1,3})%/
+    - coverage=$(cat example-microservice/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"| sed -E "s/<.*>//" | sed -E "s/Total//")
+    - coverage=${coverage::-1}
+    - echo "TestCoverage:$coverage%"
+    - if [ $coverage -ge $GOOD_COVERAGE ]; then exit 0; fi
+    - if [ $coverage -ge $MINIMUM_COVERAGE ]; then exit 1; fi
+    - exit 2
+  artifacts:
+    paths:
+      - ./coverage
+  allow_failure:
+    # Pass with warning else fail
+    exit_codes:
+      - 1
+  coverage: /TestCoverage:(\d+)%/
 
