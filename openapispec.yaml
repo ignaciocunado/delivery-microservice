@@ -294,7 +294,7 @@ paths:
 
   /orders/getLocation/{order_id}:
     get:
-      description: As a customer, get the current location of the courier assigned to the order
+      description: As a customer, get the current location of the order
       parameters:
         - name: order_id
           in: path
