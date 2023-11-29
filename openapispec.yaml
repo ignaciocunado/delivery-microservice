@@ -606,11 +606,11 @@ paths:
         '404':
           description: Order not found
 
-  /orders/getLocation/{order_id}:
+  /orders/liveLocation/{order_id}:
     get:
       tags:
         - Domain Customer
-      description: As a customer, get the current location of the order
+      description: Get the most recently updated location of the order
       parameters:
         - name: order_id
           in: path
@@ -618,21 +618,102 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: integer
-                minimum: 0
-                maximum: 100
+                type: string
               example:
-                50
+                liveLocation: "123.456,123.456"
         '403':
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: You cannot access modify this order's location as you are not the courier assigned to it
         '404':
-          description: Order not found
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Order not found
+                message: No order with this id has been found
+    patch:
+      tags:
+        - Domain Courier
+      description: Update the location of the order
+      parameters:
+        - name: order_id
+          in: path
+          description: ID of order to update the location of
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: liveLocation
+          in: query
+          description: The new location of the order
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: 200
+                type: success
+                message: Location updated
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: You cannot access modify this order's location as you are not the courier assigned to it
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Order not found
+                message: No order with this id has been found
+
 
   /orders/vendor/accept/{order_id}:
     patch:
