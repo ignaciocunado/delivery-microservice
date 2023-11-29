@@ -10,7 +10,110 @@ tags:
     description: Operations of courier
   - name: Domain Vendor
     description: Endpoints that should be used by vendors.
+  - name: Domain General
+    description: Endpoints that can be used by multiple users.
+
 paths:
+  /delivery:
+    post:
+      tags:
+        - Domain General
+      description: This endpoint is called automatically by the order microservice when an order instance is created.
+      requestBody:
+        description: Create a new instance of Delivery.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Delivery'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Delivery'
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Invalid properties
+                message: Delivery object properties must be valid.
+
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: Not allowed
+
+  /delivery/{delivery_id}:
+    get:
+      tags:
+        - Domain General
+      description: Get a delivery object by its id.
+      parameters:
+        - in: path
+          name: delivery_id
+          schema:
+            type: number
+            format: long
+          required: true
+          description: Id of the delivery to get
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Delivery'
+
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: Not allowed
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Not found
+                message: Delivery object with that id could not be found.
+
   /delivery/vendor/time/setTime/{order_id}/{delivery_time}:
     patch:
       tags:
@@ -627,34 +730,44 @@ components:
       type: object
       properties:
         deliveryID:
-          type: number
+          type: integer
           format: int64
+          example: 98
         oderID:
-          type: number
+          type: integer
           format: int64
+          example: 98
         customerID:
-          type: number
+          type: integer
           format: int64
+          example: 8942
         courierID:
-          type: number
+          type: integer
           format: int64
+          example: 798
         timeEstimation:
-          type: number
+          type: integer
           format: int32
+          example: 3600
         vendorDelivered:
           type: boolean
+          example: true
         customerRating:
-          type: Optional<Integer>
+          type: integer
           format: int32
+          example: 8
         pickedTime:
-          type: java.time.instant
+          type: object
+          example: 2022-01-10T15:23:44Z
         userException:
           type: string
+          example: Rider has fallen
         liveLocation:
           type: string
-
+          example: 52.00667,4.35556
         message:
           type: string
+          example: 10 minutes
     ApiResponse:
       type: object
       properties:
