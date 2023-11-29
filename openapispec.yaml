@@ -11,7 +11,7 @@ tags:
   - name: Domain Vendor
     description: Endpoints that should be used by vendors.
 paths:
-  /orders/vendor/time/setTime/{order_id}/{delivery_time}:
+  /delivery/vendor/time/setTime/{order_id}/{delivery_time}:
     patch:
       tags:
         - Domain Vendor
@@ -96,7 +96,63 @@ paths:
                 error: Order not found
                 message: No order with this id has been found
 
-  /orders/vendor/assignOrder/{courier_id}/{order_id}:
+  /delivery/vendor/time/getTime/{order_id}:
+    get:
+      tags:
+        - Domain Customer
+      description: As a vendor, set the estimated delivery time for an order
+      parameters:
+        - in: path
+          name: order_id
+          schema:
+            type: number
+            format: long
+          required: true
+          description: The id of the order for which the delivery time will be queried
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                format: date-time
+              example:
+                delivery time: 2023-11-29-11-30-26
+
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
+
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Order not found
+                message: No order with this id has been found
+
+
+  /delivery/vendor/assignOrder/{courier_id}/{order_id}:
       patch:
         tags:
           - Domain Vendor
@@ -171,7 +227,61 @@ paths:
                   error: Order or courier not found
                   message: No order or courier with the given ids have been found
 
-  /orders/vendor/setDeliveryZone/{range}:
+  /delivery/vendor/getCourier/{order_id}:
+    get:
+      tags:
+        - Domain Vendor
+      description: As a vendor, query an order's assigned courier
+      parameters:
+        - in: path
+          name: order_id
+          schema:
+            type: number
+            format: long
+          required: true
+          description: The order for which the courier should be queried
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: number
+                format: long
+              example:
+                Courier Id: 124
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Order not found
+                message: No order with this id has been found
+
+
+
+  /delivery/vendor/setDeliveryZone/{range}:
       patch:
         tags:
           - Domain Vendor
@@ -231,6 +341,77 @@ paths:
                 example:
                   error: Permission not granted
                   message: This function can only be accessed by a vendor
+
+  /delivery/courier/getOrders/{courier_id}:
+    get:
+      tags:
+        - Domain Vendor
+      description: As a vendor, return all order ids for a given courier
+      parameters:
+        - in: path
+          name: courier_id
+          schema:
+            type: number
+            format: long
+          required: true
+          description: The id of the courier to which the delivery will be assigned
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+              example:
+                orders: 124-126-228
+
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Order not found
+                message: No courier with this id has been found
+
+
+  /delivery/vendor/getDeliveryZone:
+    get:
+      tags:
+        - Domain Vendor
+      description: As a vendor, query your own delivery zone range, using your own id
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: number
+                format: double
+              example:
+                delivery zone: 12.5
+
 
 
   /orders/courier/choose/{order_id}/{user_id}:
@@ -446,19 +627,19 @@ components:
       type: object
       properties:
         deliveryID:
-          type: integer
+          type: number
           format: int64
         oderID:
-          type: integer
+          type: number
           format: int64
         customerID:
-          type: integer
+          type: number
           format: int64
         courierID:
-          type: integer
+          type: number
           format: int64
         timeEstimation:
-          type: integer
+          type: number
           format: int32
         vendorDelivered:
           type: boolean
