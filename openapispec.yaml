@@ -1583,7 +1583,57 @@ paths:
                 error: Courier or Restaurant not found
                 message: No courier or no restaurant with this id has been found
 
-# TODO Remove courier from restaurant
+  /restaurant/{restaurantID}/remove/courier/{courierID}:
+    patch:
+      tags:
+        - Vendor
+      description: A vendor can remove a courier from its restaurant
+      parameters:
+        - in: path
+          name: courierID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the courier to query
+        - in: path
+          name: restaurantID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the restaurant to query
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a courier or vendor
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Courier or Restaurant not found
+                message: No courier or no restaurant with this id has been found
 
 components:
   schemas:
