@@ -634,7 +634,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                type: string
+                format: date-time
               example:
                 timePickedUp: 2023-11-30-19-48
         '403':
@@ -1790,19 +1791,20 @@ components:
           format: int64
           example: 512
         pickupTimeEstimate:
-          type: integer
-          format: int32
-          example: 3600
+          type: string
+          format: date-time
+          example: 2022-01-10T15:23:44Z
         deliveryTimeEstimate:
-          type: integer
-          format: int32
-          example: 3600
+          type: string
+          format: date-time
+          example: 2022-01-10T15:23:44Z
         customerRating:
           type: integer
           format: int32
           example: 4
         pickedUpTime:
-          type: object
+          type: string
+          format: date-time
           example: 2022-01-10T15:23:44Z
         liveLocation:
           type: string
