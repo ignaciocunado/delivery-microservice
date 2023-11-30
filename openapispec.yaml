@@ -1049,12 +1049,58 @@ paths:
         '404':
           description: Vendor not found
 
-# TODO Get deliveries of vendor
+  /delivery/vendor/{vendorID}:
+    get:
+      tags:
+        - Vendor
+      description: As a vendor, return all delivery ids assigned to vendor
+      parameters:
+        - in: path
+          name: vendorID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the vendor to query
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDListResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Vendor not found
+                message: No vendor with this id has been found
 
   /delivery/courier/{courierID}:
     get:
       tags:
-        - Vendor
         - Courier
       description: As a vendor or courier, return all delivery ids for a given courier
       parameters:
@@ -1101,7 +1147,54 @@ paths:
                 error: Courier not found
                 message: No courier with this id has been found
 
-# TODO Get deliveries of customer
+  /delivery/customer/{customerID}:
+    get:
+      tags:
+        - Customer
+      description: As a customer, return all delivery ids for a given customer
+      parameters:
+        - in: path
+          name: customerID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the customer to query
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDListResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a customer
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Customer not found
+                message: No customer with this id has been found
 
   /delivery/courier/{courierID}/assign/{deliveryID}:
         patch:
@@ -1176,9 +1269,113 @@ paths:
                     error: Delivery or courier not found
                     message: No delivery or courier with the given ids have been found
 
-# TODO Fetch ratings of courier
+  /delivery/courier/{courierID}/avg_rating:
+    get:
+      tags:
+        - Courier
+      description: A courier can get its rating
+      parameters:
+        - in: path
+          name: courierID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the courier to query
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avg_rate:
+                    type: number
+                    format: double
+              example:
+                avg_rate: 2.5
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a courier
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Courier not found
+                message: No courier with this id has been found
 
-# TODO Add courier to restaurant
+  /restaurant/{restaurantID}/add/courier/{courierID}:
+    patch:
+      tags:
+        - Vendor
+      description: A vendor can add a courier to its restaurant
+      parameters:
+        - in: path
+          name: courierID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the courier to query
+        - in: path
+          name: restaurantID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the restaurant to query
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a courier
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Courier or Restaurant not found
+                message: No courier or no restaurant with this id has been found
+
 # TODO Remove courier from restaurant
 
 components:
