@@ -1029,7 +1029,7 @@ paths:
 
     patch:
       tags:
-        - Admin
+        - Admin Only
       description: Set the owning restaurant for a delivery.
       parameters:
         - name: deliveryID
