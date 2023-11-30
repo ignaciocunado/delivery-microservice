@@ -911,9 +911,57 @@ paths:
         '404':
           description: Order not found
 
+  /delivery/{deliveryID}/deliverToLocation/:
+    get:
+      tags:
+        - Courier
+      summary: Get the location to be delivered to
+      description: Get delivery's location
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to get end location of
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
 
-
-# TODO Get delivery's location (reroutes through 'orders' microservice)
+  /delivery/{deliveryID}/deliverFromLocation/:
+    get:
+      tags:
+        - Courier
+      summary: Get the location to be delivered from
+      description: Get delivery's location
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to get start location of
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
 
 
 
