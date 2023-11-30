@@ -613,7 +613,59 @@ paths:
                 error: Delivery not found
                 message: No delivery with this id has been found
 
-# TODO Get picked up timestamp? Can also just be fetched from delivery object
+  /delivery/{deliveryID}/pickedUpTime:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Get the time at which a delivery order has been picked up
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to get the picked up timestamp of
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                timePickedUp: 2023-11-30-19-48
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: You cannot get this delivery's pickedUpTime
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
+
 
   /delivery/{deliveryID}/liveLocation:
     get:
@@ -727,12 +779,167 @@ paths:
                 error: Delivery not found
                 message: No delivery with this id has been found
 
+  /delivery/{deliveryID}/userException:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Get the user exceptions for a delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+              example:
+                userException: Rider fell off
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
+    patch:
+      tags:
+        - Courier
+      description: As a courier, set a delivery's exception message.
+      parameters:
+        - in: path
+          name: deliveryID
+          description: ID of the delivery to query.
+          schema:
+            type: integer
+            format: int64
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+              example:
+                id: 123
+                name: Updated Delivery
+                description: The delivery has been updated successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Invalid exception message
+                message: The exception message must be a valid entry
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a courier
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
 
 
-# TODO Get delivery exception message
-# TODO Set delivery exception message
+
+
 
 # TODO Get delivery delay
+  /delivery/{deliveryID}/delay:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Get the delay for a delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+              example:
+                delay: 15
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
 # TODO Set delivery delay
 
 # TODO Get delivery owning restaurant
