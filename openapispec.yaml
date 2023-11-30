@@ -1908,8 +1908,13 @@ components:
           ID:
             type: integer
             format: int64
-  
-    
+  securitySchemes:
+    UserIDApiKey:
+      type: apiKey
+      in: header
+      name: userID
+security:
+  - UserIDApiKey: [ ]
     
     
     
