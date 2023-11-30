@@ -1,0 +1,1978 @@
+openapi: 3.0.3
+info:
+  title: Delivery Microservice
+  description: OpenAPI specifications for delivery microservice
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:8081'
+tags:
+  - name: Customer
+    description: Endpoints that can be used by Customers.
+  - name: Vendor
+    description: Endpoints that can be used by Vendors.
+  - name: Courier
+    description: Endpoints that can be used by Couriers.
+  - name: Admin Only
+    description: Endpoints that are only accessible by Admins. All other endpoints are also accessible by Admins.
+
+paths:
+
+# ============
+# Constructors
+# ============
+
+  /delivery:
+      post:
+        tags:
+          - Vendor
+        description: This endpoint is called automatically by the order microservice when an order instance is created. If no restaurant is associated with the given vendor, a new one will be created automatically.
+        requestBody:
+          description: Create a new instance of Delivery.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryConstructionParameters'
+              example:
+                orderID: 98
+                customerID: 8942
+                vendorID: 42
+          required: true
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Delivery'
+          '400':
+            description: Bad Request
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorMessageResponse'
+                example:
+                  error: Invalid properties
+                  message: Delivery object properties must be valid.
+          '403':
+            description: Forbidden
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorMessageResponse'
+                example:
+                  error: Permission not granted
+                  message: Not allowed
+
+  /restaurant:
+    post:
+      tags:
+        - Admin Only
+      description: Create a new Restaurant object with a Vendor as the owner, and Couriers that perform deliveries for it.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantConstructionParameters'
+        required: true
+      responses:
+        '200':
+          description: Returns the created Restaurant object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Invalid properties
+                message: Delivery object properties must be valid.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Permission not granted
+                message: Not allowed
+
+# ========
+# Delivery
+# ========
+
+  /delivery/{deliveryID}:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Get a delivery object by its id.
+      parameters:
+        - in: path
+          name: deliveryID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Id of the delivery to get
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Delivery'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Permission not granted
+                message: Not allowed
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Not found
+                message: Delivery object with that id could not be found.
+
+  /delivery/{deliveryID}/orderID:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Get the order ID that a delivery is associated with.
+      parameters:
+        - in: path
+          name: deliveryID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the delivery to get.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDResponse'
+              example:
+                ID: 14
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Permission not granted
+                message: Not allowed
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Not found
+                message: Delivery object with that id could not be found.
+
+  /delivery/{deliveryID}/courierID:
+    get:
+      tags:
+        - Vendor
+      description: As a vendor, query a delivery's assigned courier.
+      parameters:
+        - in: path
+          name: deliveryID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The delivery for which the courier should be queried.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+              example:
+                courierID: 124
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
+
+  /delivery/{deliveryID}/customerID:
+    get:
+      tags:
+        - Vendor
+      description: As a vendor, query a delivery's assigned customer.
+      parameters:
+        - in: path
+          name: deliveryID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The delivery for which the customer should be queried.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+              example:
+                customerID: 124
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
+
+  /delivery/{deliveryID}/time/pickupTimeEstimate:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Get the estimated pickup time for a delivery.
+      parameters:
+        - in: path
+          name: deliveryID
+          description: ID of the delivery to query.
+          schema:
+            type: integer
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                format: date-time
+              example:
+                pickupTimeEstimate: 2023-11-29-11-30-26
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
+    patch:
+      tags:
+        - Vendor
+      description: As a vendor, set a delivery's pickup time estimate.
+      parameters:
+        - in: path
+          name: deliveryID
+          description: ID of the delivery to query.
+          schema:
+            type: integer
+            format: int64
+          required: true
+      requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pickupTimeEstimate:
+                    type: string
+                    format: date-time
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+              example:
+                id: 123
+                name: Updated Delivery
+                description: The delivery has been updated successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Invalid delivery time
+                message: The delivery time must be a valid entry
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
+
+  /delivery/{deliveryID}/time/deliveryTimeEstimate:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Get the estimated delivery time for a delivery.
+      parameters:
+        - in: path
+          name: deliveryID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the delivery for which the delivery time estimate will be queried.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                format: date-time
+              example:
+                delivery time: 2023-11-29-11-30-26
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
+    patch:
+      tags:
+        - Vendor
+      description: As a vendor, set the estimated delivery time for a delivery.
+      parameters:
+        - in: path
+          name: deliveryID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The id of the delivery to which the delivery time will be assigned
+      requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deliveryTimeEstimate:
+                    type: string
+                    format: date-time
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+              example:
+                id: 123
+                name: Updated Delivery
+                description: The delivery has been updated successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Invalid delivery time
+                message: The delivery time must be a valid entry
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
+
+  /delivery/{deliveryID}/rating:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Get the rating for a delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rating:
+                    type: integer
+                    format: int32
+              example:
+                rating: 4
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
+    patch:
+      tags:
+        - Customer
+      summary: Rate a delivery
+      description: Rate an delivery with a rating from 1 to 5
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to rate
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  format: int64
+                  minimum: 1
+                  maximum: 5
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: You cannot access modify this delivery's rating as you are not the customer assigned to it
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
+
+  /delivery/{deliveryID}/pickedUpTime:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Get the time at which a delivery order has been picked up
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to get the picked up timestamp of
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                format: date-time
+              example:
+                timePickedUp: 2023-11-30-19-48
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: You cannot get this delivery's pickedUpTime
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
+
+
+  /delivery/{deliveryID}/liveLocation:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Get the most recently updated location of the delivery
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to get the location of
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+              example:
+                liveLocation: "123.456,123.456"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: You cannot get this delivery's location
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
+    patch:
+      tags:
+        - Courier
+      description: Update the location of the delivery
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to update the location of
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                liveLocation:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: 200
+                type: success
+                message: Location updated
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: You cannot access modify this delivery's location as you are not the courier assigned to it
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
+
+  /delivery/{deliveryID}/userException:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Get the user exceptions for a delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+              example:
+                userException: Rider fell off
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
+    patch:
+      tags:
+        - Courier
+      description: As a courier, set a delivery's exception message.
+      parameters:
+        - in: path
+          name: deliveryID
+          description: ID of the delivery to query.
+          schema:
+            type: integer
+            format: int64
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+              example:
+                id: 123
+                name: Updated Delivery
+                description: The delivery has been updated successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Invalid exception message
+                message: The exception message must be a valid entry
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a courier
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this id has been found
+
+
+
+
+
+  /delivery/{deliveryID}/delay:
+    get:
+      tags:
+        - Vendor
+        - Courier
+      description: Get the delay for a delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+              example:
+                delay: 15
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
+
+    patch:
+      tags:
+        - Vendor
+        - Courier
+      description: Set the delay for a delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to update.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              format: int32
+            example:
+              delay: 15
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+              example:
+                delay: 15
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
+
+
+  /delivery/{deliveryID}/restaurant:
+    get:
+      tags:
+        - Vendor
+        - Courier
+        - Customer
+      description: Get the owning restaurant for a delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+              example:
+                restaurant: 5826
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
+
+    patch:
+      tags:
+        - Admin Only
+      description: Set the owning restaurant for a delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to update.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              format: int64
+            example:
+              restaurant: 6651
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+              example:
+                restaurant: 6651
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
+
+
+
+
+  /delivery/{deliveryID}/status/accept:
+    patch:
+      tags:
+        - Vendor
+      summary: Mark a pending order as accepted.
+      description: Changes the status of a pending order to accepted. Can only be called on pending orders, and only by a vendor that has authority over the order.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of the delivery to mark as accepted.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Delivery cannot be accepted.
+                message: The given delivery should currently be marked pending.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Invalid authorization to modify delivery.
+                message: You must be a vendor or an admin to accept deliveries.
+        '404':
+          description: Delivery not found
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Delivery does not exist.
+                message: The given delivery ID should point to an existing delivery.
+
+  /delivery/{deliveryID}/status/reject:
+    patch:
+      tags:
+        - Vendor
+      summary: Mark a pending delivery as rejected.
+      description: Changes the status of a pending delivery to rejected. Can only be called on pending deliveries, and only by a vendor that has authority over the delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of the delivery to mark as rejected.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Delivery cannot be rejected.
+                message: The given delivery should currently be marked pending.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Invalid authorization to modify delivery.
+                message: You must be a vendor or an admin to reject deliveries.
+        '404':
+          description: Delivery not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Delivery does not exist.
+                message: The given delivery ID should point to an existing delivery.
+
+  /delivery/{deliveryID}/status/edit:
+    patch:
+      tags:
+        - Vendor
+      summary: Change a delivery's status as a vendor.
+      description: Change the status of a currently 'accepted' or 'preparing' order to 'preparing' or 'given to courier'.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of the delivery to edit the status of.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+          description: The new status must be 'preparing' or 'given to courier'.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Delivery status cannot be modified.
+                message: The given delivery should currently be 'accepted' or 'preparing'.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Invalid authorization to modify delivery.
+                message: You must be a vendor or an admin to modify delivery statuses.
+        '404':
+          description: Delivery not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Delivery does not exist.
+                message: The given delivery ID should point to an existing delivery.
+
+  /delivery/{deliveryID}/status/delivered:
+    patch:
+      tags:
+        - Courier
+      summary: Mark a delivery as delivered.
+      description: Mark the delivery with specific ID as delivered.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to complete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
+
+  /delivery/{deliveryID}/deliverToLocation/:
+    get:
+      tags:
+        - Courier
+      summary: Get the location to be delivered to
+      description: Get delivery's location
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to get end location of
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
+
+  /delivery/{deliveryID}/deliverFromLocation/:
+    get:
+      tags:
+        - Courier
+      summary: Get the location to be delivered from
+      description: Get delivery's location
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to get start location of
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
+
+
+
+  # Provides a single getter for all of Restaurant's fields, since it's a small object.
+  /restaurant/{restaurantID}:
+    get:
+      tags:
+        - Vendor
+      description: Fetch a restaurant object.
+      parameters:
+        - name: restaurantID
+          in: path
+          description: ID of the restaurant to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        '403':
+          description: Forbidden
+        '404':
+          description: Restaurant not found
+
+  /restaurant/{restaurantID}/deliveryZone:
+    get:
+      tags:
+        - Customer
+        - Vendor
+        - Courier
+      description: Query a restaurant's maximum delivery zone, using a restaurant ID.
+      parameters:
+        - name: restaurantID
+          in: path
+          description: ID of the restaurant to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: number
+                format: double
+              example:
+                delivery zone: 12.5d
+        '403':
+          description: Forbidden
+        '404':
+          description: Restaurant not found
+    patch:
+      tags:
+        - Vendor
+      description: As a vendor, update your own maximum delivery zone.
+      parameters:
+        - name: restaurantID
+          in: path
+          description: ID of the restaurant to modify.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Leave the delivery zone blank to reset to the default value instead.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                maxDeliveryZone:
+                  type: number
+                  format: double
+        required: false
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Invalid max delivery zone
+                message: The given delivery zone is not formatted as a double.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Invalid authorization
+                message: You must be a vendor or an admin to modify delivery zones.
+        '404':
+          description: Restaurant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Restaurant does not exist.
+                message: The given restaurant ID should point to an existing restaurant.
+
+  /restaurant/{vendorID}:
+    get:
+      tags:
+        - Vendor
+      description: As a vendor, query all the restaurants you own.
+      parameters:
+        - name: vendorID
+          in: path
+          description: ID of the vendor to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    restaurantID:
+                      type: integer
+                      format: int64
+        '403':
+          description: Forbidden
+        '404':
+          description: Vendor not found
+
+  /delivery/vendor/{vendorID}:
+    get:
+      tags:
+        - Vendor
+      description: As a vendor, return all delivery ids assigned to vendor
+      parameters:
+        - in: path
+          name: vendorID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the vendor to query
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDListResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Vendor not found
+                message: No vendor with this id has been found
+
+  /delivery/courier/{courierID}:
+    get:
+      tags:
+        - Courier
+      description: As a vendor or courier, return all delivery ids for a given courier
+      parameters:
+        - in: path
+          name: courierID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the courier to query
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDListResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor or courier
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Courier not found
+                message: No courier with this id has been found
+
+  /delivery/customer/{customerID}:
+    get:
+      tags:
+        - Customer
+      description: As a customer, return all delivery ids for a given customer
+      parameters:
+        - in: path
+          name: customerID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the customer to query
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDListResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a customer
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Customer not found
+                message: No customer with this id has been found
+
+  /delivery/courier/{courierID}/assign/{deliveryID}:
+        patch:
+          tags:
+            - Vendor
+            - Courier
+          description: As a vendor or the relevant courier, assign a specific order to a courier.
+          parameters:
+            - in: path
+              name: courierID
+              schema:
+                type: integer
+                format: int64
+              required: true
+              description: The id of the courier to which the delivery will be assigned
+            - in: path
+              name: deliveryID
+              schema:
+                type: integer
+                format: int64
+              required: true
+              description: The delivery to be assigned to the courier
+          responses:
+            '200':
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      courierID:
+                        type: integer
+                        format: int64
+                      deliveryID:
+                        type: integer
+                        format: int64
+                      name:
+                        type: string
+                      description:
+                        type: string
+                  example:
+                    courierID: 123
+                    deliveryID: 456
+                    name: Assigned Delivery
+                    description: The delivery has been assigned to the courier successfully
+            '403':
+              description: Forbidden
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      error:
+                        type: string
+                      message:
+                        type: string
+                  example:
+                    error: Permission not granted
+                    message: This function can only be accessed by a vendor or courier
+            '404':
+              description: Not found
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      error:
+                        type: string
+                      message:
+                        type: string
+                  example:
+                    error: Delivery or courier not found
+                    message: No delivery or courier with the given ids have been found
+
+  /delivery/courier/{courierID}/avg_rating:
+    get:
+      tags:
+        - Courier
+      description: A courier can get its rating
+      parameters:
+        - in: path
+          name: courierID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the courier to query
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avg_rate:
+                    type: number
+                    format: double
+              example:
+                avg_rate: 2.5
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a courier
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Courier not found
+                message: No courier with this id has been found
+
+  /restaurant/{restaurantID}/add/courier/{courierID}:
+    patch:
+      tags:
+        - Vendor
+      description: A vendor can add a courier to its restaurant
+      parameters:
+        - in: path
+          name: courierID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the courier to query
+        - in: path
+          name: restaurantID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the restaurant to query
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a courier
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Courier or Restaurant not found
+                message: No courier or no restaurant with this id has been found
+
+  /restaurant/{restaurantID}/remove/courier/{courierID}:
+    patch:
+      tags:
+        - Vendor
+      description: A vendor can remove a courier from its restaurant
+      parameters:
+        - in: path
+          name: courierID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the courier to query
+        - in: path
+          name: restaurantID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the restaurant to query
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a courier or vendor
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Courier or Restaurant not found
+                message: No courier or no restaurant with this id has been found
+
+components:
+  schemas:
+    Delivery:
+      type: object
+      properties:
+        deliveryID:
+          type: integer
+          format: int64
+          example: 98
+        orderID:
+          type: integer
+          format: int64
+          example: 98
+        customerID:
+          type: integer
+          format: int64
+          example: 8942
+        courierID:
+          type: integer
+          format: int64
+          example: 798
+        restaurantID:
+          type: integer
+          format: int64
+          example: 512
+        pickupTimeEstimate:
+          type: string
+          format: date-time
+          example: 2022-01-10T15:23:44Z
+        deliveryTimeEstimate:
+          type: string
+          format: date-time
+          example: 2022-01-10T15:23:44Z
+        customerRating:
+          type: integer
+          format: int32
+          example: 4
+        pickedUpTime:
+          type: string
+          format: date-time
+          example: 2022-01-10T15:23:44Z
+        liveLocation:
+          type: string
+          example: 52.00667,4.35556
+        userException:
+          type: string
+          example: Rider has fallen
+        delay:
+          type: integer
+          format: int32
+          example: 15
+   
+    DeliveryConstructionParameters:
+      type: object
+      properties:
+        orderID:
+          type: integer
+          format: int64
+        customerID:
+          type: integer
+          format: int64
+        vendorID:
+          type: integer
+          format: int64
+   
+    Restaurant:
+      type: object
+      properties:
+        restaurantID:
+          type: integer
+          format: int64
+          example: 42
+        vendorID:
+          type: integer
+          format: int64
+          example: 612
+        courierIDs:
+          type: array
+          items:
+            properties:
+              courierID:
+                type: integer
+                format: int64
+        maxDeliveryZone:
+          type: number
+          format: double
+          example: 500
+   
+   # While the data types are the same as for Restaurant,
+   # this is a separate Schema Object as the data's meanings
+   # are different.
+    RestaurantConstructionParameters:
+      type: object
+      properties:
+        ownerID:
+          type: integer
+          format: int64
+        courierIDs:
+          type: array
+          items:
+            properties:
+              courierID:
+                type: integer
+                format: int64
+        maxDeliveryZone:
+          type: number
+          format: double
+   
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+    
+    # A simple response with an error (that briefly describes what
+    # went wrong) and a message (that details the error).
+    ErrorMessageResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+    
+    # A response that holds an ID referencing a database object.      
+    IDResponse:
+      type: object
+      properties:
+        ID:
+          type: integer
+          format: int64
+    
+    # A response that holds a list of database object IDs.
+    IDListResponse:
+      type: array
+      items:
+        properties:
+          ID:
+            type: integer
+            format: int64
+  securitySchemes:
+    UserIDApiKey:
+      type: apiKey
+      in: header
+      name: userID
+security:
+  - UserIDApiKey: [ ]
+    
+    
+    
+    
