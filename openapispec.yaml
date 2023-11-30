@@ -1328,11 +1328,13 @@ paths:
         '404':
           description: Restaurant not found
 
-  /restaurant/{restaurantID}/getDeliveryZone:
+  /restaurant/{restaurantID}/deliveryZone:
     get:
       tags:
+        - Customer
         - Vendor
-      description: As a vendor, query your own delivery zone range, using your own restaurant's ID
+        - Courier
+      description: Query a restaurant's maximum delivery zone, using a restaurant ID.
       parameters:
         - name: restaurantID
           in: path
@@ -1347,14 +1349,67 @@ paths:
           content:
             application/json:
               schema:
-                type: integer
-                format: int64
+                type: number
+                format: double
               example:
                 delivery zone: 12.5d
         '403':
           description: Forbidden
         '404':
           description: Restaurant not found
+    patch:
+      tags:
+        - Vendor
+      description: As a vendor, update your own maximum delivery zone.
+      parameters:
+        - name: restaurantID
+          in: path
+          description: ID of the restaurant to modify.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Leave the delivery zone blank to reset to the default value instead.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                maxDeliveryZone:
+                  type: number
+                  format: double
+        required: false
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Invalid max delivery zone
+                message: The given delivery zone is not formatted as a double.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Invalid authorization
+                message: You must be a vendor or an admin to modify delivery zones.
+        '404':
+          description: Restaurant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessageResponse'
+              example:
+                error: Restaurant does not exist.
+                message: The given restaurant ID should point to an existing restaurant.
 
   /restaurant/{vendorID}:
     get:
@@ -1849,8 +1904,8 @@ components:
                 type: integer
                 format: int64
         maxDeliveryZone:
-          type: integer
-          format: int32
+          type: number
+          format: double
           example: 500
    
    # While the data types are the same as for Restaurant,
@@ -1870,8 +1925,8 @@ components:
                 type: integer
                 format: int64
         maxDeliveryZone:
-          type: integer
-          format: int32
+          type: number
+          format: double
    
     ApiResponse:
       type: object
