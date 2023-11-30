@@ -841,7 +841,7 @@ components:
           type: integer
           format: int64
           example: 98
-        oderID:
+        orderID:
           type: integer
           format: int64
           example: 98
