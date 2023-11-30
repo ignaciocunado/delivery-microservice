@@ -900,11 +900,9 @@ paths:
 
 
 
-# TODO Get delivery delay
   /delivery/{deliveryID}/delay:
     get:
       tags:
-        - Customer
         - Vendor
         - Courier
       description: Get the delay for a delivery.
@@ -940,10 +938,141 @@ paths:
               example:
                 error: Delivery not found
                 message: No delivery with this ID has been found.
-# TODO Set delivery delay
 
-# TODO Get delivery owning restaurant
-# TODO Set delivery owning restaurant
+    patch:
+      tags:
+        - Vendor
+        - Courier
+      description: Set the delay for a delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to update.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              format: int32
+            example:
+              delay: 15
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+              example:
+                delay: 15
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
+
+
+  /delivery/{deliveryID}/restaurant:
+    get:
+      tags:
+        - Vendor
+        - Courier
+        - Customer
+      description: Get the owning restaurant for a delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+              example:
+                restaurant: 5826
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
+
+    patch:
+      tags:
+        - Admin
+      description: Set the owning restaurant for a delivery.
+      parameters:
+        - name: deliveryID
+          in: path
+          description: ID of delivery to update.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              format: int64
+            example:
+              restaurant: 6651
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+              example:
+                restaurant: 6651
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Delivery not found
+                message: No delivery with this ID has been found.
+
 
 
 
