@@ -25,13 +25,17 @@ paths:
       post:
         tags:
           - Vendor
-        description: This endpoint is called automatically by the order microservice when an order instance is created.
+        description: This endpoint is called automatically by the order microservice when an order instance is created. If no restaurant is associated with the given vendor, a new one will be created automatically.
         requestBody:
           description: Create a new instance of Delivery.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeliveryConstructionParameters'
+              example:
+                orderID: 98
+                customerID: 8942
+                vendorID: 42
           required: true
         responses:
           '200':
@@ -163,7 +167,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IDResponse'
-              example: 0
+              example:
+                ID: 14
         '403':
           description: Forbidden
           content:
@@ -205,7 +210,7 @@ paths:
                 type: integer
                 format: int64
               example:
-                Courier Id: 124
+                courierID: 124
         '403':
           description: Forbidden
           content:
@@ -247,7 +252,7 @@ paths:
                 type: integer
                 format: int64
               example:
-                CustomerID: 124
+                customerID: 124
         '403':
           description: Forbidden
           content:
@@ -409,20 +414,6 @@ paths:
                 format: date-time
               example:
                 delivery time: 2023-11-29-11-30-26
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                  message:
-                    type: string
-              example:
-                error: Permission not granted
-                message: This function can only be accessed by a vendor
         '404':
           description: Not found
           content:
@@ -678,7 +669,7 @@ paths:
                 message: No delivery with this id has been found
     patch:
       tags:
-        - Domain Courier
+        - Courier
       description: Update the location of the delivery
       parameters:
         - name: deliveryID
@@ -736,6 +727,8 @@ paths:
                 error: Delivery not found
                 message: No delivery with this id has been found
 
+
+
 # TODO Get delivery exception message
 # TODO Set delivery exception message
 
@@ -744,6 +737,8 @@ paths:
 
 # TODO Get delivery owning restaurant
 # TODO Set delivery owning restaurant
+
+
 
   /delivery/{deliveryID}/status/accept:
     patch:
@@ -916,203 +911,222 @@ paths:
         '404':
           description: Order not found
 
-# TODO Get delivery location
 
-# TODO Get restaurant vendor ID
 
-# TODO Get restaurant couriers
-
-# TODO Get restaurant max delivery distance
-
-  # /delivery/vendor/getDeliveryZone:
-  #   get:
-  #     tags:
-  #       - Domain Vendor
-  #     description: As a vendor, query your own delivery zone range, using your own id
-
-  #     responses:
-  #       '200':
-  #         description: OK
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: number
-  #               format: double
-  #             example:
-  #               delivery zone: 12.5d
-
-# TODO Set restaurant max delivery distance
+# TODO Get delivery's location (reroutes through 'orders' microservice)
 
 
 
-# TODO Get restaurants owned by vendor
+  # Provides a single getter for all of Restaurant's fields, since it's a small object.
+  /restaurant/{restaurantID}:
+    get:
+      tags:
+        - Vendor
+      description: Fetch a restaurant object.
+      parameters:
+        - name: restaurantID
+          in: path
+          description: ID of the restaurant to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        '403':
+          description: Forbidden
+        '404':
+          description: Restaurant not found
+
+  /restaurant/{restaurantID}/getDeliveryZone:
+    get:
+      tags:
+        - Vendor
+      description: As a vendor, query your own delivery zone range, using your own restaurant's ID
+      parameters:
+        - name: restaurantID
+          in: path
+          description: ID of the restaurant to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+              example:
+                delivery zone: 12.5d
+        '403':
+          description: Forbidden
+        '404':
+          description: Restaurant not found
+
+  /restaurant/{vendorID}:
+    get:
+      tags:
+        - Vendor
+      description: As a vendor, query all the restaurants you own.
+      parameters:
+        - name: vendorID
+          in: path
+          description: ID of the vendor to query.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    restaurantID:
+                      type: integer
+                      format: int64
+        '403':
+          description: Forbidden
+        '404':
+          description: Vendor not found
 
 # TODO Get deliveries of vendor
 
-# TODO Get deliveries of courier
-
-  # /delivery/courier/getOrders/{courier_id}:
-  #   get:
-  #     tags:
-  #       - Domain Vendor
-  #     description: As a vendor, return all order ids for a given courier
-  #     parameters:
-  #       - in: path
-  #         name: courier_id
-  #         schema:
-  #           type: number
-  #           format: long
-  #         required: true
-  #         description: The id of the courier to which the delivery will be assigned
-  #     responses:
-  #       '200':
-  #         description: OK
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: string
-  #             example:
-  #               orders: 124-126-228
-
-  #       '403':
-  #         description: Forbidden
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 error:
-  #                   type: string
-  #                 message:
-  #                   type: string
-  #             example:
-  #               error: Permission not granted
-  #               message: This function can only be accessed by a vendor
-  #       '404':
-  #         description: Not found
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 error:
-  #                   type: string
-  #                 message:
-  #                   type: string
-  #             example:
-  #               error: Order not found
-  #               message: No courier with this id has been found
+  /delivery/courier/{courierID}:
+    get:
+      tags:
+        - Vendor
+        - Courier
+      description: As a vendor or courier, return all delivery ids for a given courier
+      parameters:
+        - in: path
+          name: courierID
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the courier to query
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDListResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Permission not granted
+                message: This function can only be accessed by a vendor or courier
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: Courier not found
+                message: No courier with this id has been found
 
 # TODO Get deliveries of customer
 
-# TODO Give delivery to courier
-
-  # /delivery/vendor/assignOrder/{courier_id}/{order_id}:
-  #       patch:
-  #         tags:
-  #           - Domain Vendor
-  #         description: As a vendor, assign a specific order to a courier
-  #         parameters:
-  #           - in: path
-  #             name: courier_id
-  #             schema:
-  #               type: number
-  #               format: long
-  #             required: true
-  #             description: The id of the courier to which the delivery will be assigned
-  #           - in: path
-  #             name: order_id
-  #             schema:
-  #               type: number
-  #               format: long
-  #             required: true
-  #             description: The order to be assigned to the courier
-  
-  #         responses:
-  #           '200':
-  #             description: OK
-  #             content:
-  #               application/json:
-  #                 schema:
-  #                   type: object
-  #                   properties:
-  #                     courier_id:
-  #                       type: number
-  #                       format: long
-  #                     order_id:
-  #                       type: number
-  #                       format: long
-  #                     name:
-  #                       type: string
-  #                     description:
-  #                       type: string
-  #                 example:
-  #                   courier_id: 123
-  #                   order_id: 456
-  #                   name: Assigned Order
-  #                   description: The order has been assigned to the courier successfully
-  
-  #           '403':
-  #             description: Forbidden
-  #             content:
-  #               application/json:
-  #                 schema:
-  #                   type: object
-  #                   properties:
-  #                     error:
-  #                       type: string
-  #                     message:
-  #                       type: string
-  #                 example:
-  #                   error: Permission not granted
-  #                   message: This function can only be accessed by a vendor
-  
-  #           '404':
-  #             description: Not found
-  #             content:
-  #               application/json:
-  #                 schema:
-  #                   type: object
-  #                   properties:
-  #                     error:
-  #                       type: string
-  #                     message:
-  #                       type: string
-  #                 example:
-  #                   error: Order or courier not found
-  #                   message: No order or courier with the given ids have been found
-
-  # /orders/courier/choose/{order_id}/{user_id}:
-  #   patch:
-  #     tags:
-  #       - Domain Courier
-  #     summary: Assign an existing order to courier
-  #     description: Assign an existing order by order_id and user_id
-  #     parameters:
-  #       - name: order_id
-  #         in: path
-  #         description: ID of order to assign
-  #         required: true
-  #         schema:
-  #           type: integer
-  #       - name: user_id
-  #         in: path
-  #         description: ID of user to assign to
-  #         required: true
-  #         schema:
-  #           type: integer
-  #     responses:
-  #       '200':
-  #         description: Successful operation
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: '#/components/schemas/ApiResponse'
-  #       '403':
-  #         description: Forbidden
-  #       '404':
-  #         description: Order or courier not found
-
+  /delivery/courier/{courierID}/assign/{deliveryID}:
+        patch:
+          tags:
+            - Vendor
+            - Courier
+          description: As a vendor or the relevant courier, assign a specific order to a courier.
+          parameters:
+            - in: path
+              name: courierID
+              schema:
+                type: integer
+                format: int64
+              required: true
+              description: The id of the courier to which the delivery will be assigned
+            - in: path
+              name: deliveryID
+              schema:
+                type: integer
+                format: int64
+              required: true
+              description: The delivery to be assigned to the courier
+          responses:
+            '200':
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      courierID:
+                        type: integer
+                        format: int64
+                      deliveryID:
+                        type: integer
+                        format: int64
+                      name:
+                        type: string
+                      description:
+                        type: string
+                  example:
+                    courierID: 123
+                    deliveryID: 456
+                    name: Assigned Delivery
+                    description: The delivery has been assigned to the courier successfully
+            '403':
+              description: Forbidden
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      error:
+                        type: string
+                      message:
+                        type: string
+                  example:
+                    error: Permission not granted
+                    message: This function can only be accessed by a vendor or courier
+            '404':
+              description: Not found
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      error:
+                        type: string
+                      message:
+                        type: string
+                  example:
+                    error: Delivery or courier not found
+                    message: No delivery or courier with the given ids have been found
 
 # TODO Fetch ratings of courier
 
@@ -1249,8 +1263,11 @@ components:
     
     # A response that holds an ID referencing a database object.      
     IDResponse:
-      type: integer
-      format: int64
+      type: object
+      properties:
+        ID:
+          type: integer
+          format: int64
     
     # A response that holds a list of database object IDs.
     IDListResponse:
