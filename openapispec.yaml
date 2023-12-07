@@ -1288,10 +1288,11 @@ paths:
           content:
             application/json:
               schema:
-                type: string
-                format: uuid
-              example:
-                101
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                example: [550e8400-e29b-41d4-a716-446655440000, 550e8400-439d-41d4-a716-446655440001]
         '403':
           description: Forbidden
           content:
@@ -1330,10 +1331,12 @@ paths:
           content:
             application/json:
               schema:
-                type: integer
-                format: int64
-              example:
-                101
+                type: array
+                items:
+                  type: string
+                  format: uuid
+              example: [ 550e8400-e29b-41d4-a716-446655440000, 550e8400-439d-41d4-a716-446655440001 ]
+
         '403':
           description: Forbidden
           content:
@@ -1371,10 +1374,12 @@ paths:
           content:
             application/json:
               schema:
-                type: string
-                format: uuid
-              example:
-                101
+                type: array
+                items:
+                  type: string
+                  format: uuid
+              example: [ 550e8400-e29b-41d4-a716-446655440000, 550e8400-439d-41d4-a716-446655440001 ]
+
         '403':
           description: Forbidden
           content:
