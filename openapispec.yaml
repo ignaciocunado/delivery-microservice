@@ -28,15 +28,10 @@ paths:
         summary: Create a delivery object
         description: This endpoint is called automatically by the order microservice when an order instance is created. If no restaurant is associated with the given vendor, a new one will be created automatically.
         requestBody:
-          description: Create a new instance of Delivery.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeliveryConstructionParameters'
-              example:
-                orderID: 98
-                customerID: 8942
-                vendorID: 42
+                $ref: '#/components/schemas/Delivery'
           required: true
         responses:
           '200':
@@ -72,7 +67,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RestaurantConstructionParameters'
+              $ref: '#/components/schemas/Restaurant'
         required: true
       responses:
         '200':
