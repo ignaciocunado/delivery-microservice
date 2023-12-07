@@ -25,6 +25,7 @@ paths:
       post:
         tags:
           - Vendor
+        summary: Create a delivery object
         description: This endpoint is called automatically by the order microservice when an order instance is created. If no restaurant is associated with the given vendor, a new one will be created automatically.
         requestBody:
           description: Create a new instance of Delivery.
@@ -65,6 +66,7 @@ paths:
     post:
       tags:
         - Admin Only
+      summary: Create a restaurant object
       description: Create a new Restaurant object with a Vendor as the owner, and Couriers that perform deliveries for it.
       requestBody:
         content:
@@ -106,6 +108,7 @@ paths:
         - Customer
         - Vendor
         - Courier
+      summary: Get a delivery object
       description: Get a delivery object by its id.
       parameters:
         - in: path
@@ -144,6 +147,7 @@ paths:
         - Customer
         - Vendor
         - Courier
+      summary: Get the orderID of a delivery
       description: Get the order ID that a delivery is associated with.
       parameters:
         - in: path
@@ -184,6 +188,7 @@ paths:
     get:
       tags:
         - Vendor
+      summary: Get the courierID of a delivery
       description: As a vendor, query a delivery's assigned courier.
       parameters:
         - in: path
@@ -223,6 +228,7 @@ paths:
     get:
       tags:
         - Vendor
+      summary: Get the customerId of a delivery
       description: As a vendor, query a delivery's assigned customer.
       parameters:
         - in: path
@@ -265,6 +271,7 @@ paths:
         - Customer
         - Vendor
         - Courier
+      summary: Get the pickup time for a delivery
       description: Get the estimated pickup time for a delivery.
       parameters:
         - in: path
@@ -295,6 +302,7 @@ paths:
     patch:
       tags:
         - Vendor
+      summary: Set the pickup time for a delivery
       description: As a vendor, set a delivery's pickup time estimate.
       parameters:
         - in: path
@@ -363,6 +371,7 @@ paths:
         - Customer
         - Vendor
         - Courier
+      summary: Get the delivery time for a delivery
       description: Get the estimated delivery time for a delivery.
       parameters:
         - in: path
@@ -393,6 +402,7 @@ paths:
     patch:
       tags:
         - Vendor
+      summary: Set the delivery time for a delivery
       description: As a vendor, set the estimated delivery time for a delivery.
       parameters:
         - in: path
@@ -449,6 +459,7 @@ paths:
         - Customer
         - Vendor
         - Courier
+      summary: Get the rating for a delivery.
       description: Get the rating for a delivery.
       parameters:
         - name: deliveryID
@@ -479,7 +490,7 @@ paths:
     patch:
       tags:
         - Customer
-      summary: Rate a delivery
+      summary: Set the rating for a delivery
       description: Rate a delivery with a rating from 1 to 5
       parameters:
         - name: deliveryID
@@ -529,6 +540,7 @@ paths:
         - Customer
         - Vendor
         - Courier
+      summary: Get the pickup time for a delivery
       description: Get the time at which a delivery order has been picked up
       parameters:
         - name: deliveryID
@@ -572,6 +584,7 @@ paths:
         - Customer
         - Vendor
         - Courier
+      summary: Get the location of a delivery
       description: Get the most recently updated location of the delivery
       parameters:
         - name: deliveryID
@@ -609,7 +622,8 @@ paths:
     patch:
       tags:
         - Courier
-      description: Update the location of the delivery
+      summary: Set the location of a delivery
+      description: Update the location of the delivery with its coordinates
       parameters:
         - name: deliveryID
           in: path
@@ -655,6 +669,7 @@ paths:
         - Customer
         - Vendor
         - Courier
+      summary: Get the exceptions for a delivery
       description: Get the user exceptions for a delivery.
       parameters:
         - name: deliveryID
@@ -684,6 +699,7 @@ paths:
     patch:
       tags:
         - Courier
+      summary: Set the exceptions for a delivery
       description: As a courier, set a delivery's exception message.
       parameters:
         - in: path
@@ -742,6 +758,7 @@ paths:
       tags:
         - Vendor
         - Courier
+      summary: Get the delay for a delivery
       description: Get the delay for a delivery.
       parameters:
         - name: deliveryID
@@ -774,6 +791,7 @@ paths:
       tags:
         - Vendor
         - Courier
+      summary: Set the delay for a delivery
       description: Set the delay for a delivery.
       parameters:
         - name: deliveryID
@@ -818,6 +836,7 @@ paths:
         - Vendor
         - Courier
         - Customer
+      summary: Get the restaurantID for a delivery
       description: Get the owning restaurant for a delivery.
       parameters:
         - name: deliveryID
@@ -849,6 +868,7 @@ paths:
     patch:
       tags:
         - Admin Only
+      summary: Set the restaurantID for a delivery
       description: Set the owning restaurant for a delivery.
       parameters:
         - name: deliveryID
@@ -893,7 +913,7 @@ paths:
     patch:
       tags:
         - Vendor
-      summary: Mark a pending order as accepted.
+      summary: Mark a pending delivery as accepted
       description: Changes the status of a pending order to accepted. Can only be called on pending orders, and only by a vendor that has authority over the order.
       parameters:
         - name: deliveryID
@@ -935,7 +955,7 @@ paths:
     patch:
       tags:
         - Vendor
-      summary: Mark a pending delivery as rejected.
+      summary: Mark a pending delivery as rejected
       description: Changes the status of a pending delivery to rejected. Can only be called on pending deliveries, and only by a vendor that has authority over the delivery.
       parameters:
         - name: deliveryID
@@ -977,7 +997,7 @@ paths:
     patch:
       tags:
         - Vendor
-      summary: Change a delivery's status as a vendor.
+      summary: Set the status for a delivery
       description: Change the status of a currently 'accepted' or 'preparing' order to 'preparing' or 'given to courier'.
       parameters:
         - name: deliveryID
@@ -1026,7 +1046,7 @@ paths:
     patch:
       tags:
         - Courier
-      summary: Mark a delivery as delivered.
+      summary: Mark a delivery as delivered
       description: Mark the delivery with specific ID as delivered.
       parameters:
         - name: deliveryID
@@ -1054,7 +1074,7 @@ paths:
     get:
       tags:
         - Courier
-      summary: Get the location to be delivered to
+      summary: Get the delivery location for a delivery
       description: Get delivery's location
       parameters:
         - name: deliveryID
@@ -1072,7 +1092,7 @@ paths:
               schema:
                 type: string
               example:
-                "200 OK"
+                liveLocation: "123.456,123.456"
         '403':
           description: Forbidden
         '404':
@@ -1082,8 +1102,8 @@ paths:
     get:
       tags:
         - Courier
-      summary: Get the location to be delivered from
-      description: Get delivery's location
+      summary: Get the pickup location for a delivery
+      description: Get the location of the restaurant from which to pick up the order.
       parameters:
         - name: deliveryID
           in: path
@@ -1100,7 +1120,7 @@ paths:
               schema:
                 type: string
               example:
-                "200 OK"
+                location: "123.456,123.456"
         '403':
           description: Forbidden
         '404':
@@ -1113,6 +1133,7 @@ paths:
     get:
       tags:
         - Vendor
+      summary: Get a restaurant object
       description: Fetch a restaurant object.
       parameters:
         - name: restaurantID
@@ -1142,6 +1163,7 @@ paths:
         - Customer
         - Vendor
         - Courier
+      summary: Set the maximum delivery zone for a restaurant
       description: Query a restaurant's maximum delivery zone, using a restaurant ID.
       parameters:
         - name: restaurantID
@@ -1165,9 +1187,11 @@ paths:
           description: Forbidden
         '404':
           description: Restaurant not found
+
     patch:
       tags:
         - Vendor
+      summary: Set the maximum delivery zone for a restaurant
       description: As a vendor, update your own maximum delivery zone.
       parameters:
         - name: restaurantID
@@ -1217,6 +1241,7 @@ paths:
     get:
       tags:
         - Vendor
+      summary: Get a vendor's restaurants
       description: As a vendor, query all the restaurants you own.
       parameters:
         - name: vendorID
@@ -1247,6 +1272,7 @@ paths:
     get:
       tags:
         - Vendor
+      summary: Get all deliveries for a vendor
       description: As a vendor, return all delivery ids assigned to vendor
       parameters:
         - in: path
@@ -1287,6 +1313,7 @@ paths:
     get:
       tags:
         - Courier
+      summary: Get all deliveries for a courier
       description: As a vendor or courier, return all delivery ids for a given courier
       parameters:
         - in: path
@@ -1327,6 +1354,7 @@ paths:
     get:
       tags:
         - Customer
+      summary: Get all deliveries for a customer
       description: As a customer, return all delivery ids for a given customer
       parameters:
         - in: path
@@ -1368,6 +1396,7 @@ paths:
           tags:
             - Vendor
             - Courier
+          summary: Assign an order to a courier
           description: As a vendor or the relevant courier, assign a specific order to a courier.
           parameters:
             - in: path
@@ -1416,7 +1445,8 @@ paths:
     get:
       tags:
         - Courier
-      description: A courier can get its rating
+      summary: Get the average rating for a courier
+      description: Query the average rating over all orders for a courier
       parameters:
         - in: path
           name: courierID
@@ -1456,6 +1486,7 @@ paths:
     patch:
       tags:
         - Vendor
+      summary: Add a courier to a restaurant
       description: A vendor can add a courier to its restaurant
       parameters:
         - in: path
@@ -1496,6 +1527,7 @@ paths:
     patch:
       tags:
         - Vendor
+      summary: Remove a courier from a restaurant
       description: A vendor can remove a courier from its restaurant
       parameters:
         - in: path
