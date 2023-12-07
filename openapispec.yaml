@@ -480,7 +480,7 @@ paths:
       tags:
         - Customer
       summary: Rate a delivery
-      description: Rate an delivery with a rating from 1 to 5
+      description: Rate a delivery with a rating from 1 to 5
       parameters:
         - name: deliveryID
           in: path
@@ -605,7 +605,7 @@ paths:
               schema:
                 type: string
               example:
-                "error 400"
+                "error 404"
     patch:
       tags:
         - Courier
