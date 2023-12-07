@@ -1262,7 +1262,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IDListResponse'
+                type: integer
+                format: int64
+              example:
+                101
         '403':
           description: Forbidden
           content:
@@ -1299,7 +1302,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IDListResponse'
+                type: integer
+                format: int64
+              example:
+                101
         '403':
           description: Forbidden
           content:
@@ -1336,7 +1342,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IDListResponse'
+                type: integer
+                format: int64
+              example:
+                101
         '403':
           description: Forbidden
           content:
