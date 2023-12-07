@@ -1310,7 +1310,6 @@ paths:
               example:
                 "error 404"
 
-#TODO: This returns an int, should return a list of delivery IDs
   /delivery/courier/{courierID}:
     get:
       tags:
