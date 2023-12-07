@@ -1570,25 +1570,25 @@ components:
       type: object
       properties:
         deliveryID:
-          type: integer
-          format: int64
-          example: 98
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
         orderID:
-          type: integer
-          format: int64
-          example: 98
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
         customerID:
-          type: integer
-          format: int64
-          example: 8942
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
         courierID:
-          type: integer
-          format: int64
-          example: 798
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
         restaurantID:
-          type: integer
-          format: int64
-          example: 512
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
         pickupTimeEstimate:
           type: string
           format: date-time
@@ -1620,20 +1620,20 @@ components:
       type: object
       properties:
         restaurantID:
-          type: integer
-          format: int64
-          example: 42
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
         vendorID:
-          type: integer
-          format: int64
-          example: 612
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
         courierIDs:
           type: array
           items:
             properties:
               courierID:
-                type: integer
-                format: int64
+                type: string
+                format: uuid
         maxDeliveryZone:
           type: number
           format: double
