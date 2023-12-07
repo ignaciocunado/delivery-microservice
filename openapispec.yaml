@@ -1584,19 +1584,6 @@ components:
           format: int32
           example: 15
    
-    DeliveryConstructionParameters:
-      type: object
-      properties:
-        orderID:
-          type: integer
-          format: int64
-        customerID:
-          type: integer
-          format: int64
-        vendorID:
-          type: integer
-          format: int64
-   
     Restaurant:
       type: object
       properties:
@@ -1619,64 +1606,7 @@ components:
           type: number
           format: double
           example: 500
-   
-   # While the data types are the same as for Restaurant,
-   # this is a separate Schema Object as the data's meanings
-   # are different.
-    RestaurantConstructionParameters:
-      type: object
-      properties:
-        ownerID:
-          type: integer
-          format: int64
-        courierIDs:
-          type: array
-          items:
-            properties:
-              courierID:
-                type: integer
-                format: int64
-        maxDeliveryZone:
-          type: number
-          format: double
-   
-    ApiResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        type:
-          type: string
-        message:
-          type: string
-    
-    # A simple response with an error (that briefly describes what
-    # went wrong) and a message (that details the error).
-    ErrorMessageResponse:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-    
-    # A response that holds an ID referencing a database object.      
-    IDResponse:
-      type: object
-      properties:
-        ID:
-          type: integer
-          format: int64
-    
-    # A response that holds a list of database object IDs.
-    IDListResponse:
-      type: array
-      items:
-        properties:
-          ID:
-            type: integer
-            format: int64
+
   securitySchemes:
     UserIDApiKey:
       type: apiKey
