@@ -6,12 +6,16 @@ info:
 servers:
   - url: 'https://localhost:8081'
 tags:
+  - name: Global
+    description: Endpoints that can be used by any role.
   - name: Customer
-    description: Endpoints that can be used by Customers.
+    description: Endpoints that can only be used by Customers.
   - name: Vendor
-    description: Endpoints that can be used by Vendors.
+    description: Endpoints that can only be used by Vendors.
   - name: Courier
-    description: Endpoints that can be used by Couriers.
+    description: Endpoints that can only be used by Couriers.
+  - name: VendorOrCourier
+    description: Endpoints that can only be used by either Vendors or Couriers.
   - name: Admin Only
     description: Endpoints that are only accessible by Admins. All other endpoints are also accessible by Admins.
 
@@ -107,9 +111,7 @@ paths:
   /delivery/{deliveryID}:
     get:
       tags:
-        - Customer
-        - Vendor
-        - Courier
+        - Global
       description: Get a delivery object by its id.
       parameters:
         - in: path
@@ -148,9 +150,7 @@ paths:
   /delivery/{deliveryID}/orderID:
     get:
       tags:
-        - Customer
-        - Vendor
-        - Courier
+        - Global
       description: Get the order ID that a delivery is associated with.
       parameters:
         - in: path
@@ -275,9 +275,7 @@ paths:
   /delivery/{deliveryID}/time/pickupTimeEstimate:
     get:
       tags:
-        - Customer
-        - Vendor
-        - Courier
+        - Global
       description: Get the estimated pickup time for a delivery.
       parameters:
         - in: path
@@ -392,9 +390,7 @@ paths:
   /delivery/{deliveryID}/time/deliveryTimeEstimate:
     get:
       tags:
-        - Customer
-        - Vendor
-        - Courier
+        - Global
       description: Get the estimated delivery time for a delivery.
       parameters:
         - in: path
@@ -514,9 +510,7 @@ paths:
   /delivery/{deliveryID}/rating:
     get:
       tags:
-        - Customer
-        - Vendor
-        - Courier
+        - Global
       description: Get the rating for a delivery.
       parameters:
         - name: deliveryID
@@ -616,9 +610,7 @@ paths:
   /delivery/{deliveryID}/pickedUpTime:
     get:
       tags:
-        - Customer
-        - Vendor
-        - Courier
+        - Global
       description: Get the time at which a delivery order has been picked up
       parameters:
         - name: deliveryID
@@ -671,9 +663,7 @@ paths:
   /delivery/{deliveryID}/liveLocation:
     get:
       tags:
-        - Customer
-        - Vendor
-        - Courier
+        - Global
       description: Get the most recently updated location of the delivery
       parameters:
         - name: deliveryID
@@ -783,9 +773,7 @@ paths:
   /delivery/{deliveryID}/userException:
     get:
       tags:
-        - Customer
-        - Vendor
-        - Courier
+        - Global
       description: Get the user exceptions for a delivery.
       parameters:
         - name: deliveryID
@@ -904,8 +892,7 @@ paths:
   /delivery/{deliveryID}/delay:
     get:
       tags:
-        - Vendor
-        - Courier
+        - VendorOrCourier
       description: Get the delay for a delivery.
       parameters:
         - name: deliveryID
@@ -942,8 +929,7 @@ paths:
 
     patch:
       tags:
-        - Vendor
-        - Courier
+        - VendorOrCourier
       description: Set the delay for a delivery.
       parameters:
         - name: deliveryID
@@ -991,9 +977,7 @@ paths:
   /delivery/{deliveryID}/restaurant:
     get:
       tags:
-        - Vendor
-        - Courier
-        - Customer
+        - Global
       description: Get the owning restaurant for a delivery.
       parameters:
         - name: deliveryID
@@ -1331,9 +1315,7 @@ paths:
   /restaurant/{restaurantID}/deliveryZone:
     get:
       tags:
-        - Customer
-        - Vendor
-        - Courier
+        - Global
       description: Query a restaurant's maximum delivery zone, using a restaurant ID.
       parameters:
         - name: restaurantID
@@ -1591,8 +1573,7 @@ paths:
   /delivery/courier/{courierID}/assign/{deliveryID}:
         patch:
           tags:
-            - Vendor
-            - Courier
+            - VendorOrCourier
           description: As a vendor or the relevant courier, assign a specific order to a courier.
           parameters:
             - in: path
