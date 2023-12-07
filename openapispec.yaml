@@ -460,7 +460,7 @@ paths:
         - Vendor
         - Courier
       summary: Get the rating for a delivery.
-      description: Get the rating for a delivery.
+      description: Get the rating for a delivery between 0-1.
       parameters:
         - name: deliveryID
           in: path
@@ -475,10 +475,10 @@ paths:
           content:
             application/json:
               schema:
-                type: integer
-                format: int32
+                type: number
+                format: double
               example:
-                rating: 4
+                rating: 0.5
         '404':
           description: Not found
           content:
@@ -491,7 +491,7 @@ paths:
       tags:
         - Customer
       summary: Set the rating for a delivery
-      description: Rate a delivery with a rating from 1 to 5
+      description: Rate a delivery with a rating as a double between 0 and 1
       parameters:
         - name: deliveryID
           in: path
@@ -504,10 +504,10 @@ paths:
         content:
           application/json:
             schema:
-              type: integer
-              format: int64
-              minimum: 1
-              maximum: 5
+              type: number
+              format: double
+              minimum: 0
+              maximum: 1
       responses:
         '200':
           description: Successful operation
@@ -1446,7 +1446,7 @@ paths:
     get:
       tags:
         - Courier
-      summary: Get the average rating for a courier
+      summary: Get the average rating (double 0-1) for a courier
       description: Query the average rating over all orders for a courier
       parameters:
         - in: path
@@ -1465,7 +1465,7 @@ paths:
                 type: number
                 format: double
               example:
-                avg_rate: 2.5
+                avg_rate: 0.5
         '403':
           description: Forbidden
           content:
@@ -1599,9 +1599,9 @@ components:
           format: date-time
           example: 2022-01-10T15:23:44Z
         customerRating:
-          type: integer
-          format: int32
-          example: 4
+          type: number
+          format: double
+          example: 0.5
         pickedUpTime:
           type: string
           format: date-time
