@@ -17,7 +17,6 @@ gradle-app.setting
 *.ctxt
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
