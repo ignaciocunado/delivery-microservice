@@ -16,55 +16,57 @@ tags:
     description: Endpoints that can only be used by Couriers.
   - name: VendorOrCourier
     description: Endpoints that can only be used by either Vendors or Couriers.
-  - name: Admin Only
+  - name: Admin
     description: Endpoints that are only accessible by Admins. All other endpoints are also accessible by Admins.
 
 paths:
 
-# ============
-# Constructors
-# ============
+  # ============
+  # Constructors
+  # ============
 
   /delivery:
-      post:
-        tags:
-          - Vendor
-        summary: Create a delivery object
-        description: This endpoint is called automatically by the order microservice when an order instance is created. If no restaurant is associated with the given vendor, a new one will be created automatically.
-        requestBody:
+    post:
+      tags:
+        - Vendor
+      operationId: createDelivery
+      summary: Create a delivery object
+      description: This endpoint is called automatically by the order microservice when an order instance is created. If no restaurant is associated with the given vendor, a new one will be created automatically.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Delivery'
+        required: true
+      responses:
+        '200':
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Delivery'
-          required: true
-        responses:
-          '200':
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Delivery'
-          '400':
-            description: Bad Request
-            content:
-              application/json:
-                schema:
-                  type: string
-                example:
-                  "error 400"
-          '403':
-            description: Forbidden
-            content:
-              application/json:
-                schema:
-                  type: string
-                example:
-                  "error 403"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+              example:
+                "error 400"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+              example:
+                "error 403"
 
   /restaurant:
     post:
+      operationId: createRestaurant
       tags:
-        - Admin Only
+        - Admin
       summary: Create a restaurant object
       description: Create a new Restaurant object with a Vendor as the owner, and Couriers that perform deliveries for it.
       requestBody:
@@ -97,12 +99,13 @@ paths:
               example:
                 "error 403"
 
-# ========
-# Delivery
-# ========
+  # ========
+  # Delivery
+  # ========
 
   /delivery/{deliveryID}:
     get:
+      operationId: getDeliveyById
       tags:
         - Global
       summary: Get a delivery object
@@ -140,6 +143,7 @@ paths:
                 "error 403"
   /delivery/{deliveryID}/orderID:
     get:
+      operationId: getOrderByDeliveryId
       tags:
         - Global
       summary: Get the orderID of a delivery
@@ -161,7 +165,7 @@ paths:
                 type: string
                 format: uuid
               example:
-                  14
+                14
         '403':
           description: Forbidden
           content:
@@ -181,6 +185,7 @@ paths:
 
   /delivery/{deliveryID}/courierID:
     get:
+      operationId: getCourierByDeliveryId
       tags:
         - Vendor
       summary: Get the courierID of a delivery
@@ -221,6 +226,7 @@ paths:
                 "error 404"
   /delivery/{deliveryID}/customerID:
     get:
+      operationId: getCustomerByDeliveryId
       tags:
         - Vendor
       summary: Get the customerId of a delivery
@@ -262,6 +268,7 @@ paths:
 
   /delivery/{deliveryID}/time/pickupTimeEstimate:
     get:
+      operationId: getPickUpTime
       tags:
         - Global
       summary: Get the pickup time for a delivery
@@ -293,6 +300,7 @@ paths:
               example:
                 "error 404"
     patch:
+      operationId: setPickUpTime
       tags:
         - Vendor
       summary: Set the pickup time for a delivery
@@ -306,15 +314,15 @@ paths:
             format: uuid
           required: true
       requestBody:
-          content:
-            application/json:
-              schema:
-                type: string
-                properties:
-                  pickupTimeEstimate:
-                    type: string
-                    format: date-time
-          required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              properties:
+                pickupTimeEstimate:
+                  type: string
+                  format: date-time
+        required: true
       responses:
         '200':
           description: OK
@@ -360,6 +368,7 @@ paths:
 
   /delivery/{deliveryID}/time/deliveryTimeEstimate:
     get:
+      operationId: getDeliveryEstimate
       tags:
         - Global
       summary: Get the delivery time for a delivery
@@ -391,6 +400,7 @@ paths:
               example:
                 "error 404"
     patch:
+      operationId: setDeliveryEstimate
       tags:
         - Vendor
       summary: Set the delivery time for a delivery
@@ -404,12 +414,12 @@ paths:
           required: true
           description: The id of the delivery to which the delivery time will be assigned
       requestBody:
-          content:
-            application/json:
-              schema:
-                type: string
-                format: date-time
-          required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              format: date-time
+        required: true
       responses:
         '200':
           description: OK
@@ -446,6 +456,7 @@ paths:
 
   /delivery/{deliveryID}/rating:
     get:
+      operationId: getRateByDeliveryId
       tags:
         - Global
       summary: Get the rating for a delivery.
@@ -477,6 +488,7 @@ paths:
               example:
                 "error 404"
     patch:
+      operationId: setRateOfDelivery
       tags:
         - Customer
       summary: Set the rating for a delivery
@@ -503,7 +515,7 @@ paths:
           content:
             application/json:
               schema:
-               type: string
+                type: string
               example:
                 "200 OK"
         '403':
@@ -525,9 +537,10 @@ paths:
 
   /delivery/{deliveryID}/pickedUpTime:
     get:
+      operationId: getPickUpEstimateDeliveryId
       tags:
         - Global
-      summary: Get the pickup time for a delivery        
+      summary: Get the pickup time for a delivery
       description: Get the time at which a delivery order has been picked up
       parameters:
         - name: deliveryID
@@ -567,6 +580,7 @@ paths:
 
   /delivery/{deliveryID}/liveLocation:
     get:
+      operationId: getLiveLocation
       tags:
         - Global
       summary: Get the location of a delivery
@@ -592,10 +606,10 @@ paths:
           description: Forbidden
           content:
             application/json:
-                schema:
-                  type: string
-                example:
-                  "error 403"
+              schema:
+                type: string
+              example:
+                "error 403"
         '404':
           description: Not found
           content:
@@ -605,6 +619,7 @@ paths:
               example:
                 "error 404"
     patch:
+      operationId: setLiveLocation
       tags:
         - Courier
       summary: Set the location of a delivery
@@ -650,6 +665,7 @@ paths:
 
   /delivery/{deliveryID}/userException:
     get:
+      operationId: getDeliveryException
       tags:
         - Global
       summary: Get the exceptions for a delivery
@@ -680,6 +696,7 @@ paths:
               example:
                 "error 404"
     patch:
+      operationId: setDeliveryException
       tags:
         - Courier
       summary: Set the exceptions for a delivery
@@ -734,6 +751,7 @@ paths:
 
   /delivery/{deliveryID}/delay:
     get:
+      operationId: getDeliveryDelay
       tags:
         - VendorOrCourier
       summary: Get the delay for a delivery
@@ -766,6 +784,7 @@ paths:
                 "error 404"
 
     patch:
+      operationId: setDeliveryDelay
       tags:
         - VendorOrCourier
       summary: Set the delay for a delivery
@@ -809,6 +828,7 @@ paths:
 
   /delivery/{deliveryID}/restaurant:
     get:
+      operationId: getRestIdOfDel
       tags:
         - Global
       summary: Get the restaurantID for a delivery
@@ -841,8 +861,9 @@ paths:
                 "error 404"
 
     patch:
+      operationId: setRestIdOfDelivery
       tags:
-        - Admin Only
+        - Admin
       summary: Set the restaurantID for a delivery
       description: Set the owning restaurant for a delivery.
       parameters:
@@ -883,6 +904,7 @@ paths:
 
   /delivery/{deliveryID}/status/accept:
     patch:
+      operationId: acceptDelivery
       tags:
         - Vendor
       summary: Mark a pending delivery as accepted
@@ -925,6 +947,7 @@ paths:
 
   /delivery/{deliveryID}/status/reject:
     patch:
+      operationId: rejectDelivery
       tags:
         - Vendor
       summary: Mark a pending delivery as rejected
@@ -967,6 +990,7 @@ paths:
 
   /delivery/{deliveryID}/status/edit:
     patch:
+      operationId: editStatusDelivery
       tags:
         - Vendor
       summary: Set the status for a delivery
@@ -980,12 +1004,12 @@ paths:
             type: string
             format: uuid
       requestBody:
-          description: The new status must be 'preparing' or 'given to courier'.
-          content:
-            application/json:
-              schema:
-                type: string
-          required: true
+        description: The new status must be 'preparing' or 'given to courier'.
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
       responses:
         '200':
           description: OK
@@ -1016,6 +1040,7 @@ paths:
 
   /delivery/{deliveryID}/status/delivered:
     patch:
+      operationId: deliveryIdDone
       tags:
         - Courier
       summary: Mark a delivery as delivered
@@ -1044,6 +1069,7 @@ paths:
 
   /delivery/{deliveryID}/deliverToLocation/:
     get:
+      operationId: getLocationOfDelivery
       tags:
         - Courier
       summary: Get the delivery location for a delivery
@@ -1072,6 +1098,7 @@ paths:
 
   /delivery/{deliveryID}/deliverFromLocation/:
     get:
+      operationId: getPickUpDelivery
       tags:
         - Courier
       summary: Get the pickup location for a delivery
@@ -1103,6 +1130,7 @@ paths:
   # Provides a single getter for all of Restaurant's fields, since it's a small object.
   /restaurant/{restaurantID}:
     get:
+      operationId: getRest
       tags:
         - Vendor
       summary: Get a restaurant object
@@ -1131,9 +1159,10 @@ paths:
 
   /restaurant/{restaurantID}/deliveryZone:
     get:
+      operationId: getMaxDeliveryZone
       tags:
         - Global
-      summary: Set the maximum delivery zone for a restaurant
+      summary: Get the maximum delivery zone for a restaurant
       description: Query a restaurant's maximum delivery zone, using a restaurant ID.
       parameters:
         - name: restaurantID
@@ -1159,6 +1188,7 @@ paths:
           description: Restaurant not found
 
     patch:
+      operationId: setMaxDeliveryZone
       tags:
         - Vendor
       summary: Set the maximum delivery zone for a restaurant
@@ -1209,6 +1239,7 @@ paths:
 
   /restaurant/{vendorID}:
     get:
+      operationId: getVendorRest
       tags:
         - Vendor
       summary: Get a vendor's restaurants
@@ -1240,6 +1271,7 @@ paths:
 
   /delivery/vendor/{vendorID}:
     get:
+      operationId: getAllDeliveriesVendor
       tags:
         - Vendor
       summary: Get all deliveries for a vendor
@@ -1282,6 +1314,7 @@ paths:
 
   /delivery/courier/{courierID}:
     get:
+      operationId: getAllDeliveriesCourier
       tags:
         - Courier
       summary: Get all deliveries for a courier
@@ -1325,6 +1358,7 @@ paths:
 
   /delivery/customer/{customerID}:
     get:
+      operationId: getAllDeliveriesCustomer
       tags:
         - Customer
       summary: Get all deliveries for a customer
@@ -1367,56 +1401,58 @@ paths:
                 "error 404"
 
   /delivery/courier/{courierID}/assign/{deliveryID}:
-        patch:
-          tags:
-            - VendorOrCourier
-          summary: Assign an order to a courier
-          description: As a vendor or the relevant courier, assign a specific order to a courier.
-          parameters:
-            - in: path
-              name: courierID
+    patch:
+      operationId: assignOrderToCourier
+      tags:
+        - VendorOrCourier
+      summary: Assign an order to a courier
+      description: As a vendor or the relevant courier, assign a specific order to a courier.
+      parameters:
+        - in: path
+          name: courierID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: The id of the courier to which the delivery will be assigned
+        - in: path
+          name: deliveryID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: The delivery to be assigned to the courier
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+              example:
+                [{ 101, 202} ]
+        '403':
+          description: Forbidden
+          content:
+            application/json:
               schema:
                 type: string
-                format: uuid
-              required: true
-              description: The id of the courier to which the delivery will be assigned
-            - in: path
-              name: deliveryID
+                example:
+                  "error 404"
+        '404':
+          description: Not found
+          content:
+            application/json:
               schema:
                 type: string
-                format: uuid
-              required: true
-              description: The delivery to be assigned to the courier
-          responses:
-            '200':
-              description: OK
-              content:
-                application/json:
-                  schema:
-                    type: array
-                    items:
-                      type: integer
-                  example:
-                    [{ 101, 202} ]
-            '403':
-              description: Forbidden
-              content:
-                application/json:
-                  schema:
-                    type: string
-                    example:
-                      "error 404"
-            '404':
-              description: Not found
-              content:
-                application/json:
-                  schema:
-                      type: string
-                  example:
-                      "error 404"
+              example:
+                "error 404"
 
   /delivery/courier/{courierID}/avg_rating:
     get:
+      operationId: getAvRateCourier
       tags:
         - Courier
       summary: Get the average rating (double 0-1) for a courier
@@ -1458,6 +1494,7 @@ paths:
 
   /restaurant/{restaurantID}/add/courier/{courierID}:
     patch:
+      operationId: addCourierToRest
       tags:
         - Vendor
       summary: Add a courier to a restaurant
@@ -1499,6 +1536,7 @@ paths:
 
   /restaurant/{restaurantID}/remove/courier/{courierID}:
     patch:
+      operationId: removeCourierRest
       tags:
         - Vendor
       summary: Remove a courier from a restaurant
@@ -1592,7 +1630,7 @@ components:
           type: integer
           format: int32
           example: 15
-   
+
     Restaurant:
       type: object
       properties:
@@ -1623,7 +1661,3 @@ components:
       name: userID
 security:
   - UserIDApiKey: [ ]
-    
-    
-    
-    
