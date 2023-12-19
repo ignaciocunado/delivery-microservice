@@ -8,6 +8,8 @@ import java.util.UUID;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.Valid;
 
@@ -21,6 +23,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class Delivery {
 
   @Id
+  @GeneratedValue(strategy= GenerationType.AUTO)
   private UUID deliveryID;
 
   private UUID orderID;
@@ -56,6 +59,44 @@ public class Delivery {
   public Delivery()
   {
 
+  }
+
+  /**
+   * Constructor that provides parameters relevant to initialization.
+   */
+  public Delivery(UUID orderID, UUID customerID, UUID courierID, UUID restaurantID, String status,
+                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime pickupTimeEstimate)
+  {
+    this.orderID = orderID;
+    this.customerID = customerID;
+    this.courierID = courierID;
+    this.restaurantID = restaurantID;
+    this.status = status;
+    this.pickupTimeEstimate = pickupTimeEstimate;
+  }
+
+  /**
+   * Constructor for all parameters, excluding delivery ID. Just in case it's useful.
+   */
+  public Delivery(UUID orderID, UUID customerID, UUID courierID, UUID restaurantID, String status,
+                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime pickupTimeEstimate,
+                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime deliveryTimeEstimate,
+                  Double customerRating,
+                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime pickedUpTime, String liveLocation,
+                  String userException, Integer delay)
+  {
+    this.orderID = orderID;
+    this.customerID = customerID;
+    this.courierID = courierID;
+    this.restaurantID = restaurantID;
+    this.status = status;
+    this.pickupTimeEstimate = pickupTimeEstimate;
+    this.deliveryTimeEstimate = deliveryTimeEstimate;
+    this.customerRating = customerRating;
+    this.pickedUpTime = pickedUpTime;
+    this.liveLocation = liveLocation;
+    this.userException = userException;
+    this.delay = delay;
   }
 
   /**

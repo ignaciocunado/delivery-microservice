@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,6 +21,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class Restaurant {
 
   @Id
+  @GeneratedValue(strategy= GenerationType.AUTO)
   private UUID restaurantID;
 
   private UUID vendorID;
@@ -39,6 +38,13 @@ public class Restaurant {
   public Restaurant()
   {
 
+  }
+
+  public Restaurant(UUID vendorID, List<@Valid UUID> courierIDs, Double maxDeliveryZone)
+  {
+    this.vendorID = vendorID;
+    this.courierIDs = courierIDs;
+    this.maxDeliveryZone = maxDeliveryZone;
   }
 
   /**
