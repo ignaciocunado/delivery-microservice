@@ -8,16 +8,24 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.tudelft.sem.template.example.service.AuthorizationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
-
+@Component
 public class AuthorizationFilter extends GenericFilterBean {
+
+    private AuthorizationService authorizationService;
+
+    public AuthorizationFilter(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
-        boolean authentication = AuthorizationService.authorize((HttpServletRequest) request);
+        boolean authentication = authorizationService.authorize((HttpServletRequest) request);
         if (!authentication) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
