@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private AuthorizationFilter authorizationFilter;
+    private transient AuthorizationFilter authorizationFilter;
 
     public SecurityConfig(AuthorizationFilter authorizationFilter) {
         this.authorizationFilter = authorizationFilter;

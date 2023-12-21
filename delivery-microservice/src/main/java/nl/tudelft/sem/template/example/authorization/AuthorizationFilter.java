@@ -15,7 +15,7 @@ import org.springframework.web.filter.GenericFilterBean;
 @Component
 public class AuthorizationFilter extends GenericFilterBean {
 
-    private AuthorizationService authorizationService;
+    private transient AuthorizationService authorizationService;
 
     public AuthorizationFilter(AuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
