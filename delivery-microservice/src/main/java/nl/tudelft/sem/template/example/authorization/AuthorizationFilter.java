@@ -1,9 +1,7 @@
 package nl.tudelft.sem.template.example.authentication;
 
-import nl.tudelft.sem.template.example.service.AuthenticationService;
+import nl.tudelft.sem.template.example.service.AuthorizationService;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -13,26 +11,23 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
-public class AuthenticationFilter extends GenericFilterBean {
+public class AuthorizationFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
-        try {
-            Authentication authentication = AuthenticationService.getAuthentication((HttpServletRequest) request);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (Exception exp) {
+        boolean authentication = AuthorizationService.authorize((HttpServletRequest) request);
+        if(!authentication){
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            PrintWriter writer = httpResponse.getWriter();
-            writer.print(exp.getMessage());
-            writer.flush();
-            writer.close();
+
+            String errorMessage = "Authorization failed";
+            httpResponse.getWriter().write(errorMessage);
+            return;
         }
-        System.out.println("I am here");
+
         filterChain.doFilter(request, response);
     }
 }

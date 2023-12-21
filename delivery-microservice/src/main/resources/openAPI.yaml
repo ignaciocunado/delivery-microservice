@@ -4,7 +4,7 @@ info:
   description: OpenAPI specifications for delivery microservice
   version: 1.0.0
 servers:
-  - url: 'https://localhost:8081'
+  - url: 'https://localhost:8082'
 tags:
   - name: Global
     description: Endpoints that can be used by any role.
@@ -1067,7 +1067,7 @@ paths:
         '404':
           description: Order not found
 
-  /delivery/{deliveryID}/deliverToLocation/:
+  /delivery/{deliveryID}/destination/:
     get:
       operationId: getLocationOfDelivery
       tags:
@@ -1096,9 +1096,9 @@ paths:
         '404':
           description: Order not found
 
-  /delivery/{deliveryID}/deliverFromLocation/:
+  /delivery/{deliveryID}/pickUpLocation/:
     get:
-      operationId: getPickUpDelivery
+      operationId: getPickUpLocation
       tags:
         - Courier
       summary: Get the pickup location for a delivery
@@ -1111,6 +1111,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: Successful operation
@@ -1432,7 +1443,7 @@ paths:
                 items:
                   type: integer
               example:
-                [{ 101, 202} ]
+                [{ 101, 202}]
         '403':
           description: Forbidden
           content:
@@ -1653,3 +1664,10 @@ components:
           type: number
           format: double
           example: 500
+  securitySchemes:
+    UserIDApiKey:
+      type: apiKey
+      in: header
+      name: X-User-Id
+security:
+  - UserIDApiKey: [ ]
