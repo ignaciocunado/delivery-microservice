@@ -1,18 +1,23 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import java.util.UUID;
 import nl.tudelft.sem.api.DeliveryApi;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 public class CourierController implements DeliveryApi {
-    @Override
-    public ResponseEntity<String> getPickUpDelivery(@PathVariable("deliveryID") UUID id) {
 
-        return new ResponseEntity<>("Hello", HttpStatus.OK);
+    private boolean checkCourier(String role) {
+        return role.equals("courier");
+    }
+
+    @Override
+    public ResponseEntity<String> getPickUpLocation(UUID deliveryId, String role) {
+        if (checkCourier(role)) {
+            return new ResponseEntity<>("PickUp location is 123.321.666", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Authorization failed!", HttpStatus.UNAUTHORIZED);
     }
 }
