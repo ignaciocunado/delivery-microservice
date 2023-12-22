@@ -4,7 +4,7 @@ info:
   description: OpenAPI specifications for delivery microservice
   version: 1.0.0
 servers:
-  - url: 'https://localhost:8081'
+  - url: 'https://localhost:8082'
 tags:
   - name: Global
     description: Endpoints that can be used by any role.
@@ -32,6 +32,18 @@ paths:
       operationId: createDelivery
       summary: Create a delivery object
       description: This endpoint is called automatically by the order microservice when an order instance is created. If no restaurant is associated with the given vendor, a new one will be created automatically.
+      parameters:
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       requestBody:
         content:
           application/json:
@@ -69,6 +81,18 @@ paths:
         - Admin
       summary: Create a restaurant object
       description: Create a new Restaurant object with a Vendor as the owner, and Couriers that perform deliveries for it.
+      parameters:
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       requestBody:
         content:
           application/json:
@@ -118,6 +142,17 @@ paths:
             format: uuid
           required: true
           description: Id of the delivery to get
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -156,6 +191,17 @@ paths:
             format: uuid
           required: true
           description: ID of the delivery to get.
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -198,6 +244,17 @@ paths:
             format: uuid
           required: true
           description: The delivery for which the courier should be queried.
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -239,6 +296,17 @@ paths:
             format: uuid
           required: true
           description: The delivery for which the customer should be queried.
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -281,6 +349,17 @@ paths:
             type: string
             format: uuid
           required: true
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -313,6 +392,17 @@ paths:
             type: string
             format: uuid
           required: true
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       requestBody:
         content:
           application/json:
@@ -381,6 +471,17 @@ paths:
             format: uuid
           required: true
           description: The ID of the delivery for which the delivery time estimate will be queried.
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -413,6 +514,17 @@ paths:
             format: uuid
           required: true
           description: The id of the delivery to which the delivery time will be assigned
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       requestBody:
         content:
           application/json:
@@ -469,6 +581,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -501,6 +624,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       requestBody:
         content:
           application/json:
@@ -550,6 +684,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -593,6 +738,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -632,6 +788,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       requestBody:
         content:
           application/json:
@@ -678,6 +845,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -698,7 +876,7 @@ paths:
     patch:
       operationId: setDeliveryException
       tags:
-        - Courier
+        - VendorOrCourier
       summary: Set the exceptions for a delivery
       description: As a courier, set a delivery's exception message.
       parameters:
@@ -709,6 +887,17 @@ paths:
             type: string
             format: uuid
           required: true
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       requestBody:
         content:
           application/json:
@@ -764,6 +953,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -797,6 +997,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       requestBody:
         content:
           application/json:
@@ -841,6 +1052,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -874,6 +1096,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       requestBody:
         content:
           application/json:
@@ -917,6 +1150,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -960,6 +1204,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -1003,6 +1258,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       requestBody:
         description: The new status must be 'preparing' or 'given to courier'.
         content:
@@ -1053,6 +1319,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: Successful operation
@@ -1067,7 +1344,7 @@ paths:
         '404':
           description: Order not found
 
-  /delivery/{deliveryID}/deliverToLocation/:
+  /delivery/{deliveryID}/destination/:
     get:
       operationId: getLocationOfDelivery
       tags:
@@ -1082,6 +1359,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: Successful operation
@@ -1096,9 +1384,9 @@ paths:
         '404':
           description: Order not found
 
-  /delivery/{deliveryID}/deliverFromLocation/:
+  /delivery/{deliveryID}/pickUpLocation/:
     get:
-      operationId: getPickUpDelivery
+      operationId: getPickUpLocation
       tags:
         - Courier
       summary: Get the pickup location for a delivery
@@ -1111,6 +1399,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: Successful operation
@@ -1143,6 +1442,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -1172,6 +1482,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -1201,6 +1522,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       requestBody:
         description: Leave the delivery zone blank to reset to the default value instead.
         content:
@@ -1252,6 +1584,17 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -1284,6 +1627,17 @@ paths:
             format: uuid
           required: true
           description: The ID of the vendor to query
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -1327,6 +1681,17 @@ paths:
             format: uuid
           required: true
           description: The ID of the courier to query
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -1371,6 +1736,17 @@ paths:
             format: uuid
           required: true
           description: The ID of the customer to query
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -1422,6 +1798,17 @@ paths:
             format: uuid
           required: true
           description: The delivery to be assigned to the courier
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -1432,7 +1819,7 @@ paths:
                 items:
                   type: integer
               example:
-                [{ 101, 202} ]
+                [{ 101, 202}]
         '403':
           description: Forbidden
           content:
@@ -1514,6 +1901,17 @@ paths:
             format: uuid
           required: true
           description: The ID of the restaurant to query
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -1556,6 +1954,17 @@ paths:
             format: uuid
           required: true
           description: The ID of the restaurant to query
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -1655,9 +2064,10 @@ components:
           example: 500
 
   securitySchemes:
-    UserIDApiKey:
+    UserIdAuth:
       type: apiKey
       in: header
-      name: userID
+      name: X-User-Id
+
 security:
-  - UserIDApiKey: [ ]
+  - UserIdAuth: [ ]
