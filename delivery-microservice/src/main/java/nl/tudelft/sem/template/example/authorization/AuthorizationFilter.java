@@ -8,11 +8,15 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nl.tudelft.sem.template.example.service.AuthorizationService;
+import org.hibernate.service.spi.InjectService;
+import org.mapstruct.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
-@Component
+
 public class AuthorizationFilter extends GenericFilterBean {
 
     private transient AuthorizationService authorizationService;
