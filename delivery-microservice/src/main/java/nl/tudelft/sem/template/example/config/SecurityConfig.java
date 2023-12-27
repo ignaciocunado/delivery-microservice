@@ -26,11 +26,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.regexMatcher("^(?!.*/h2-console/).*")
-            .authorizeRequests()
-            .anyRequest().authenticated()
-            .and()
-            .addFilterBefore(authorizationFilterConfiguration.authorizationFilter().getFilter(),
-                UsernamePasswordAuthenticationFilter.class);
+                .csrf()
+                .disable()
+                .authorizeRequests()
+                .antMatchers("**/**")
+                .authenticated()
+                .and()
+                .httpBasic()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(authorizationFilterConfiguration.authorizationFilter().getFilter(),
+                        UsernamePasswordAuthenticationFilter.class);
     }
-
 }
