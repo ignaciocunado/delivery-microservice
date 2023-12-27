@@ -3,7 +3,7 @@ package nl.tudelft.sem.template.example.controllers;
 import nl.tudelft.sem.api.RestaurantApi;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
-import nl.tudelft.sem.template.example.repositories.RestaurantRepository;
+import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,12 +16,15 @@ public class RestaurantController implements RestaurantApi {
     RestaurantRepository restaurantRepository;
 
     @Override
-    public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId) {
+    public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
 
         Restaurant r;
 
-        if(restaurantRepository.findById(restaurantId).isPresent()) {
-        r = restaurantRepository.findById(restaurantId).get();}
+        if(!role.equals("Vendor"))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        if(restaurantRepository.findById(restaurantId.toString()).isPresent()) {
+        r = restaurantRepository.findById(restaurantId.toString()).get();}
         else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
