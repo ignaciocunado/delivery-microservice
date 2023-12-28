@@ -14,30 +14,13 @@ import java.util.UUID;
 @RestController
 public class RestaurantController implements RestaurantApi {
     RestaurantRepository restaurantRepository;
+    private final transient VendorController vendorController = new VendorController(restaurantRepository);
+
 
     @Override
     public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
 
-        Restaurant r;
-
-        if(!role.equals("Vendor"))
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-
-        if(restaurantRepository.findById(restaurantId.toString()).isPresent()) {
-        r = restaurantRepository.findById(restaurantId.toString()).get();}
-        else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        List<RestaurantCourierIDsInner> courierList = r.getCourierIDs();
-        RestaurantCourierIDsInner curr = new RestaurantCourierIDsInner();
-        curr.setCourierID(courierId);
-
-        courierList.add(curr);
-        r.setCourierIDs(courierList);
-        restaurantRepository.save(r);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+       return vendorController.addCourierToRest(courierId, restaurantId, role);
 
     }
 }
