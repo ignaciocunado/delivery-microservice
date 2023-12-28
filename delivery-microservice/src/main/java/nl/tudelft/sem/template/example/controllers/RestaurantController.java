@@ -14,13 +14,16 @@ import java.util.UUID;
 @RestController
 public class RestaurantController implements RestaurantApi {
     RestaurantRepository restaurantRepository;
-    private final transient VendorController vendorController = new VendorController(restaurantRepository);
+    private VendorController vendorController = new VendorController(restaurantRepository);
 
 
     @Override
     public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
 
        return vendorController.addCourierToRest(courierId, restaurantId, role);
+    }
 
+    public void setVendorController(VendorController vendorController) {
+        this.vendorController = vendorController;
     }
 }

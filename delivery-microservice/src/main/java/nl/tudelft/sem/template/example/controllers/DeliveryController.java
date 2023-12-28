@@ -17,10 +17,14 @@ import java.util.UUID;
  */
 @RestController
 public class DeliveryController implements DeliveryApi {
-    private final transient CourierController courierController = new CourierController();
+    private CourierController courierController = new CourierController();
 
     @Override
     public ResponseEntity<String> getPickUpLocation(UUID deliveryId, String role) {
         return courierController.getPickUpLocation(deliveryId, role);
+    }
+
+    public void setCourierController(CourierController courierController) {
+        this.courierController = courierController;
     }
 }
