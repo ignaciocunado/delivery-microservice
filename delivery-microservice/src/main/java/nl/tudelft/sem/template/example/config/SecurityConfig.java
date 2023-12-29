@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.config;
 
 import nl.tudelft.sem.template.example.authorization.AuthorizationFilter;
+import nl.tudelft.sem.template.example.authorization.AuthorizationFilterConfiguration;
 import nl.tudelft.sem.template.example.service.AuthorizationService;
 import org.hibernate.Incubating;
 import org.hibernate.service.spi.InjectService;
@@ -16,15 +17,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private transient AuthorizationFilter authorizationFilter;
+    private transient AuthorizationFilterConfiguration authorizationFilterConfiguration;
 
-    public SecurityConfig(AuthorizationFilter authorizationFilter) {
-        this.authorizationFilter = authorizationFilter;
+    public SecurityConfig(AuthorizationFilterConfiguration authorizationFilterConfiguration) {
+        this.authorizationFilterConfiguration = authorizationFilterConfiguration;
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.csrf()
+        http.regexMatcher("^(?!.*/h2-console/).*")
+                .csrf()
                 .disable()
                 .authorizeRequests()
                 .antMatchers("**/**")
@@ -35,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(authorizationFilterConfiguration.authorizationFilter().getFilter(),
+                        UsernamePasswordAuthenticationFilter.class);
     }
-
 }

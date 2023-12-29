@@ -1989,10 +1989,12 @@ components:
   schemas:
     Delivery:
       type: object
+      x-class-extra-annotation: "@javax.persistence.Entity @lombok.AllArgsConstructor @lombok.NoArgsConstructor"
       properties:
         deliveryID:
           type: string
           format: uuid
+          x-field-extra-annotation: "@javax.persistence.Id @javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.AUTO)"
           example: 550e8400-e29b-41d4-a716-446655440000
         orderID:
           type: string
@@ -2042,10 +2044,12 @@ components:
 
     Restaurant:
       type: object
+      x-class-extra-annotation: "@javax.persistence.Entity @lombok.AllArgsConstructor @lombok.NoArgsConstructor"
       properties:
         restaurantID:
           type: string
           format: uuid
+          x-field-extra-annotation: "@javax.persistence.Id @javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.AUTO)"
           example: 550e8400-e29b-41d4-a716-446655440000
         vendorID:
           type: string
@@ -2053,6 +2057,7 @@ components:
           example: 550e8400-e29b-41d4-a716-446655440000
         courierIDs:
           type: array
+          x-field-extra-annotation: "@javax.persistence.ElementCollection(targetClass=String.class)"
           items:
             properties:
               courierID:
