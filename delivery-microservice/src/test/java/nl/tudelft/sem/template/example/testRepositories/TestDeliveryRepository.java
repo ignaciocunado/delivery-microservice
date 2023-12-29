@@ -7,10 +7,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class TestDeliveryRepository implements DeliveryRepository {
+    List<Delivery> list = new ArrayList<>();
     @Override
     public List<Delivery> findAll() {
         return null;
@@ -58,7 +60,8 @@ public class TestDeliveryRepository implements DeliveryRepository {
 
     @Override
     public <S extends Delivery> S save(S entity) {
-        return null;
+        list.add(entity);
+        return entity;
     }
 
     @Override
@@ -68,6 +71,12 @@ public class TestDeliveryRepository implements DeliveryRepository {
 
     @Override
     public Optional<Delivery> findById(String s) {
+        // find in list
+        for (Delivery d : list) {
+            if (d.getDeliveryID().toString().equals(s)) {
+                return Optional.of(d);
+            }
+        }
         return Optional.empty();
     }
 
