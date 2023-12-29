@@ -26,6 +26,7 @@ class VendorControllerTest {
     VendorController sut;
 
     UUID restaurantId;
+    UUID deliveryId;
     @BeforeEach
     public void setup() {
         // create test repositories
@@ -34,6 +35,7 @@ class VendorControllerTest {
 
         // generate random UUID
         restaurantId = UUID.randomUUID();
+        deliveryId = UUID.randomUUID();
 
         // setup test repository with some sample objects
         Restaurant r = new Restaurant(restaurantId, UUID.randomUUID(), new ArrayList<>(), 1.0d);
@@ -42,7 +44,8 @@ class VendorControllerTest {
                 2023, 12, 31, 10, 30, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
-        Delivery d = new  Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "", "", 1);
+        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "", "", 1);
+        deliveryRepo.save(d);
         sut = new VendorController(restaurantRepo, deliveryRepo);
     }
 
@@ -58,20 +61,40 @@ class VendorControllerTest {
 
     @Test
     public void testNotFound() {
-        ResponseEntity<Void> res = sut.addCourierToRest(UUID.randomUUID(), UUID.randomUUID(), "Vendor");
+        ResponseEntity<Void> res = sut.addCourierToRest(UUID.randomUUID(), UUID.randomUUID(), "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
     public void testOkNoDuplicate() {
         UUID courierId = UUID.randomUUID();
-        ResponseEntity<Void> res = sut.addCourierToRest(courierId, restaurantId, "Vendor");
+        ResponseEntity<Void> res = sut.addCourierToRest(courierId, restaurantId, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
         Restaurant newRes = sut.getRestaurantRepository().findById(restaurantId.toString()).get();
         assertFalse(newRes.getCourierIDs().stream().filter(x -> x.getCourierID().equals(courierId)).collect(Collectors.toList()).isEmpty());
 
     }
+
+    @Test
+    void testAcceptUnauthorized() {
+        ResponseEntity<Void> res = sut.acceptDelivery(deliveryId, "noVendor");
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testAcceptNotFound() {
+        ResponseEntity<Void> res = sut.acceptDelivery(UUID.randomUUID(), "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testAcceptOk() {
+        ResponseEntity<Void> res = sut.acceptDelivery(deliveryId, "vendor");
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId.toString()).get().getStatus(), "accepted");
+    }
+
 
 
 

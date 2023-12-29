@@ -2,15 +2,13 @@ package nl.tudelft.sem.template.example.controllers;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-
-// delivery api from generated yaml
 import nl.tudelft.sem.api.DeliveryApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Main Delivery Controller. Calls on other controllers to handle requests.
