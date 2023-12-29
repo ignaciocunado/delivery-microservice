@@ -16,11 +16,10 @@ public class CourierController  {
         return role.equals("courier");
     }
 
-    /**
-     * returns the pickup location
-     * @param deliveryId
-     * @param role
-     * @return
+    /** returns the pickup location
+     * @param deliveryId id of the delivery
+     * @param role role of the user
+     * @return the pickup location
      */
     public ResponseEntity<String> getPickUpLocation(UUID deliveryId, String role) {
         if (checkCourier(role)) {
