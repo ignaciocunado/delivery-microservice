@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class DeliveryControllerTest {
     private transient CourierController courierController;
+    private transient VendorController vendorController;
     private transient DeliveryController deliveryController;
 
     private UUID deliveryId;
@@ -32,7 +33,8 @@ class DeliveryControllerTest {
 
         // mock courier controller to verify its methods are called
         courierController = Mockito.mock(CourierController.class);
-        deliveryController = new DeliveryController(courierController);
+        vendorController = Mockito.mock(VendorController.class);
+        deliveryController = new DeliveryController(courierController, vendorController);
     }
 
     @Test

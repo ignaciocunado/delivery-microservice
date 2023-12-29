@@ -5,14 +5,11 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 
 // delivery api from generated yaml
 import nl.tudelft.sem.api.DeliveryApi;
-
-import org.hibernate.service.spi.InjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.UUID;
 
 /**
@@ -21,19 +18,20 @@ import java.util.UUID;
  */
 @RestController
 public class DeliveryController implements DeliveryApi {
-    private final transient CourierController courierController;
 
-    /**
-     * Constructor for DeliveryController.
-     * @param courierController CourierController to handle courier requests
-     */
-    // tag for dependency injection of courier controller
+    private final transient CourierController courierController;
+    private final transient VendorController vendorController;
+
     @Autowired
-    public DeliveryController(CourierController courierController) {
+    public DeliveryController(CourierController courierController, VendorController vendorController) {
         this.courierController = courierController;
+        this.vendorController = vendorController;
     }
+
     @Override
     public ResponseEntity<String> getPickUpLocation(UUID deliveryId, String role) {
         return courierController.getPickUpLocation(deliveryId, role);
     }
+
+
 }
