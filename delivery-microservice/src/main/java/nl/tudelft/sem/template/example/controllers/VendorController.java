@@ -2,7 +2,9 @@ package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
+import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -12,13 +14,15 @@ import java.util.UUID;
 public class VendorController {
 
     RestaurantRepository restaurantRepository;
+    DeliveryRepository deliveryRepository;
 
-    public VendorController(RestaurantRepository restaurantRepository) {
+    @Autowired
+    public VendorController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository) {
         this.restaurantRepository = restaurantRepository;
     }
 
     public boolean checkVendor(String role) {
-        return role.equals("Vendor");
+        return role.equals("vendor");
     }
 
     public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
@@ -48,4 +52,6 @@ public class VendorController {
     public RestaurantRepository getRestaurantRepository() {
         return restaurantRepository;
     }
+
+
 }
