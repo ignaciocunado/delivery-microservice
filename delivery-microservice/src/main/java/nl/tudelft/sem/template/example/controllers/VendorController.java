@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
@@ -21,6 +22,7 @@ public class VendorController {
     @Autowired
     public VendorController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository) {
         this.restaurantRepository = restaurantRepository;
+        this.deliveryRepository = deliveryRepository;
     }
 
     public boolean checkVendor(String role) {
@@ -56,6 +58,22 @@ public class VendorController {
     }
 
 
+    /** Sets the status to accepted for a delivery.
+     * @param deliveryId ID of the delivery to mark as accepted. (required)
+     * @param role      The role of the user (required)
+     * @return Whether the request was successful or not
+     */
+    public ResponseEntity<Void> acceptDelivery(UUID deliveryId, String role) {
+        if (checkVendor(role)) {
+            if (deliveryRepository.findById(deliveryId.toString()).isPresent()) {
+                Delivery delivery = deliveryRepository.findById(deliveryId.toString()).get();
+                delivery.setStatus("accepted");
+                deliveryRepository.save(delivery);
 
-
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
 }
