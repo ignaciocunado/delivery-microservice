@@ -17,7 +17,10 @@ class RestaurantControllerTest {
     @Mock
     VendorController vc = Mockito.mock(VendorController.class);
 
-    RestaurantController sut = new RestaurantController();
+    @Mock
+    CourierController cc = Mockito.mock(CourierController.class);
+
+    RestaurantController sut = new RestaurantController(cc, vc);
     @BeforeEach
     public void setup() {
         sut.setVendorController(vc);
