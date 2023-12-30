@@ -1817,9 +1817,9 @@ paths:
               schema:
                 type: array
                 items:
-                  type: integer
-              example:
-                [{ 101, 202}]
+                    type: string
+                    format: uuid
+                example: [ 550e8400-e29b-41d4-a716-446655440000, 550e8400-439d-41d4-a716-446655440001 ]
         '403':
           description: Forbidden
           content:
