@@ -95,6 +95,25 @@ class VendorControllerTest {
         assertEquals(deliveryRepo.findById(deliveryId.toString()).get().getStatus(), "accepted");
     }
 
+    @Test
+    void testRejectUnauthorized() {
+        ResponseEntity<Void> res = sut.rejectDelivery(deliveryId, "noVendor");
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testRejectNotFound() {
+        ResponseEntity<Void> res = sut.rejectDelivery(UUID.randomUUID(), "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testRejectOk() {
+        ResponseEntity<Void> res = sut.rejectDelivery(deliveryId, "vendor");
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId.toString()).get().getStatus(), "rejected");
+    }
+
 
 
 
