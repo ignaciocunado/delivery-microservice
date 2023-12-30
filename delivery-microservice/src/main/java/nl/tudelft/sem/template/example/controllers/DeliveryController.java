@@ -46,4 +46,14 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<Void> acceptDelivery(UUID deliveryId, String role) {
         return vendorController.acceptDelivery(deliveryId, role);
     }
+
+    /** Integrates controller with API for reject delivery endpoint
+     * @param deliveryId ID of the delivery to mark as rejected. (required)
+     * @param role       The role of the user (required)
+     * @return vendor controller's response entity
+     */
+    @Override
+    public ResponseEntity<Void> rejectDelivery(UUID deliveryId, String role) {
+        return vendorController.rejectDelivery(deliveryId, role);
+    }
 }
