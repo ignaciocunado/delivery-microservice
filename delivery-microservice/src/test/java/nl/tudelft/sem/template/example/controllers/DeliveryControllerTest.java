@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import java.util.UUID;
 
@@ -16,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class DeliveryControllerTest {
     private transient CourierController courierController;
+    private transient VendorController vendorController;
     private transient DeliveryController deliveryController;
 
     private UUID deliveryId;
@@ -32,7 +35,8 @@ class DeliveryControllerTest {
 
         // mock courier controller to verify its methods are called
         courierController = Mockito.mock(CourierController.class);
-        deliveryController = new DeliveryController(courierController);
+        vendorController = Mockito.mock(VendorController.class);
+        deliveryController = new DeliveryController(courierController, vendorController);
     }
 
     @Test
@@ -41,6 +45,13 @@ class DeliveryControllerTest {
         deliveryController.getPickUpLocation(deliveryId, role);
 
         Mockito.verify(courierController).getPickUpLocation(deliveryId, role);
+    }
+
+    @Test
+    void acceptDelivery() {
+        deliveryController.acceptDelivery(deliveryId, role);
+
+        Mockito.verify(vendorController).acceptDelivery(deliveryId, role);
     }
 
 }
