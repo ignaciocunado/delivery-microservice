@@ -44,8 +44,8 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        if (restaurantRepository.findById(restaurantId.toString()).isPresent()) {
-            r = restaurantRepository.findById(restaurantId.toString()).get();
+        if (restaurantRepository.findById(restaurantId).isPresent()) {
+            r = restaurantRepository.findById(restaurantId).get();
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -74,8 +74,8 @@ public class VendorController {
      */
     public ResponseEntity<Void> acceptDelivery(UUID deliveryId, String role) {
         if (checkVendor(role)) {
-            if (deliveryRepository.findById(deliveryId.toString()).isPresent()) {
-                Delivery delivery = deliveryRepository.findById(deliveryId.toString()).get();
+            if (deliveryRepository.findById(deliveryId).isPresent()) {
+                Delivery delivery = deliveryRepository.findById(deliveryId).get();
                 delivery.setStatus("accepted");
                 deliveryRepository.save(delivery);
 
@@ -94,8 +94,8 @@ public class VendorController {
      */
     public ResponseEntity<Void> rejectDelivery(UUID deliveryId, String role) {
         if (checkVendor(role)) {
-            if (deliveryRepository.findById(deliveryId.toString()).isPresent()) {
-                Delivery delivery = deliveryRepository.findById(deliveryId.toString()).get();
+            if (deliveryRepository.findById(deliveryId).isPresent()) {
+                Delivery delivery = deliveryRepository.findById(deliveryId).get();
                 delivery.setStatus("rejected");
                 deliveryRepository.save(delivery);
 
