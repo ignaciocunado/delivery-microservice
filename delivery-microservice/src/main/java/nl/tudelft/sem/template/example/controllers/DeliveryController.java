@@ -2,14 +2,12 @@ package nl.tudelft.sem.template.example.controllers;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-
-// delivery api from generated yaml
+import java.util.UUID;
 import nl.tudelft.sem.api.DeliveryApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import java.util.UUID;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -37,7 +35,8 @@ public class DeliveryController implements DeliveryApi {
         this.courierController = courierController;
     }
 
-    /** Integrates controller with API for accept delivery endpoint
+    /** Integrates controller with API for accept delivery endpoint.
+     *
      * @param deliveryId ID of the delivery to mark as accepted. (required)
      * @param role       The role of the user (required)
      * @return vendor controller's response entity
@@ -47,7 +46,8 @@ public class DeliveryController implements DeliveryApi {
         return vendorController.acceptDelivery(deliveryId, role);
     }
 
-    /** Integrates controller with API for reject delivery endpoint
+    /** Integrates controller with API for reject delivery endpoint.
+     *
      * @param deliveryId ID of the delivery to mark as rejected. (required)
      * @param role       The role of the user (required)
      * @return vendor controller's response entity
