@@ -28,4 +28,9 @@ public class RestaurantController implements RestaurantApi {
     public void setVendorController(VendorController vendorController) {
         this.vendorController = vendorController;
     }
+
+    @Override
+    public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
+        return vendorController.removeCourierRest(courierId, restaurantId, role);
+    }
 }
