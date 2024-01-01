@@ -56,12 +56,10 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<RestaurantCourierIDsInner> courierList = r.getCourierIDs();
         RestaurantCourierIDsInner curr = new RestaurantCourierIDsInner();
         curr.setCourierID(courierId);
 
-        courierList.add(curr);
-        r.setCourierIDs(courierList);
+        r.addCourierIDsItem(curr);
         restaurantRepository.save(r);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -114,7 +112,7 @@ public class VendorController {
 
     public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
         if(!checkVendor(role))
-            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+            return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
 
         Optional<Restaurant> rest = restaurantRepository.findById(restaurantId);
 

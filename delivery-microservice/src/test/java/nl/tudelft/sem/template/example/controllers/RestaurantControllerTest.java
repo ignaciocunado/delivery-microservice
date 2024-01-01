@@ -27,11 +27,19 @@ class RestaurantControllerTest {
     }
 
     @Test
-    public void testCall() {
+    public void testCallAdd() {
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         sut.addCourierToRest(id1, id2, "a");
         verify(vc).addCourierToRest(id1, id2, "a");
+    }
+
+    @Test
+    public void testCallRemove() {
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        sut.removeCourierRest(id1, id2, "a");
+        verify(vc).removeCourierRest(id1, id2, "a");
     }
 
 
