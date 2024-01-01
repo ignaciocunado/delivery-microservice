@@ -11,6 +11,7 @@ import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class TestRestaurantRepository implements RestaurantRepository {
@@ -31,7 +32,7 @@ public class TestRestaurantRepository implements RestaurantRepository {
     }
 
     @Override
-    public List<Restaurant> findAllById(Iterable<String> strings) {
+    public List<Restaurant> findAllById(Iterable<UUID> ids) {
         return null;
     }
 
@@ -41,7 +42,7 @@ public class TestRestaurantRepository implements RestaurantRepository {
     }
 
     @Override
-    public void deleteById(String s) {
+    public void deleteById(UUID s) {
 
     }
 
@@ -73,8 +74,8 @@ public class TestRestaurantRepository implements RestaurantRepository {
     }
 
     @Override
-    public Optional<Restaurant> findById(String s) {
-        List<Restaurant> matching = list.stream().filter( x -> x.getRestaurantID().toString().equals(s)).collect(Collectors.toList());
+    public Optional<Restaurant> findById(UUID s) {
+        List<Restaurant> matching = list.stream().filter( x -> x.getRestaurantID().equals(s)).collect(Collectors.toList());
         if(!matching.isEmpty())
             return Optional.of(matching.get(0));
         else
@@ -82,7 +83,7 @@ public class TestRestaurantRepository implements RestaurantRepository {
     }
 
     @Override
-    public boolean existsById(String s) {
+    public boolean existsById(UUID s) {
         return false;
     }
 
@@ -107,7 +108,7 @@ public class TestRestaurantRepository implements RestaurantRepository {
     }
 
     @Override
-    public Restaurant getOne(String s) {
+    public Restaurant getOne(UUID s) {
         return null;
     }
 
