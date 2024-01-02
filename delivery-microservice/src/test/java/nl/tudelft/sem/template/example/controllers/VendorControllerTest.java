@@ -71,7 +71,7 @@ class VendorControllerTest {
         ResponseEntity<Void> res = sut.addCourierToRest(courierId, restaurantId, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
-        Restaurant newRes = sut.getRestaurantRepository().findById(restaurantId.toString()).get();
+        Restaurant newRes = sut.getRestaurantRepository().findById(restaurantId).get();
         assertFalse(newRes.getCourierIDs().stream().filter(x -> x.getCourierID().equals(courierId)).collect(Collectors.toList()).isEmpty());
 
     }
@@ -92,7 +92,26 @@ class VendorControllerTest {
     void testAcceptOk() {
         ResponseEntity<Void> res = sut.acceptDelivery(deliveryId, "vendor");
         assertEquals(HttpStatus.OK, res.getStatusCode());
-        assertEquals(deliveryRepo.findById(deliveryId.toString()).get().getStatus(), "accepted");
+        assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "accepted");
+    }
+
+    @Test
+    void testRejectUnauthorized() {
+        ResponseEntity<Void> res = sut.rejectDelivery(deliveryId, "noVendor");
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testRejectNotFound() {
+        ResponseEntity<Void> res = sut.rejectDelivery(UUID.randomUUID(), "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testRejectOk() {
+        ResponseEntity<Void> res = sut.rejectDelivery(deliveryId, "vendor");
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "rejected");
     }
 
 

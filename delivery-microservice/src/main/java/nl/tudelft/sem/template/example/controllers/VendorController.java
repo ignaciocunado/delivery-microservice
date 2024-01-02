@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import java.util.List;
+import java.util.UUID;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
@@ -10,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.UUID;
 
 @Component
 public class VendorController {
@@ -29,16 +29,24 @@ public class VendorController {
         return role.equals("vendor");
     }
 
+    /** Adds a courier to a restaurant.
+     *
+     * @param courierId   ID of the courier to add to the restaurant. (required)
+     * @param restaurantId ID of the restaurant to add the courier to. (required)
+     * @param role       The role of the user (required)
+     * @return Whether the request was successful or not
+     */
     public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
 
         Restaurant r;
 
-        if(!checkVendor(role))
+        if (!checkVendor(role)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        if(restaurantRepository.findById(restaurantId.toString()).isPresent()) {
-            r = restaurantRepository.findById(restaurantId.toString()).get();}
-        else {
+        if (restaurantRepository.findById(restaurantId).isPresent()) {
+            r = restaurantRepository.findById(restaurantId).get();
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -59,15 +67,36 @@ public class VendorController {
 
 
     /** Sets the status to accepted for a delivery.
+     *
      * @param deliveryId ID of the delivery to mark as accepted. (required)
      * @param role      The role of the user (required)
      * @return Whether the request was successful or not
      */
     public ResponseEntity<Void> acceptDelivery(UUID deliveryId, String role) {
         if (checkVendor(role)) {
-            if (deliveryRepository.findById(deliveryId.toString()).isPresent()) {
-                Delivery delivery = deliveryRepository.findById(deliveryId.toString()).get();
+            if (deliveryRepository.findById(deliveryId).isPresent()) {
+                Delivery delivery = deliveryRepository.findById(deliveryId).get();
                 delivery.setStatus("accepted");
+                deliveryRepository.save(delivery);
+
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    /** Sets the status to rejected for a delivery.
+     *
+     * @param deliveryId ID of the delivery to mark as rejected. (required)
+     * @param role      The role of the user (required)
+     * @return Whether the request was successful or not
+     */
+    public ResponseEntity<Void> rejectDelivery(UUID deliveryId, String role) {
+        if (checkVendor(role)) {
+            if (deliveryRepository.findById(deliveryId).isPresent()) {
+                Delivery delivery = deliveryRepository.findById(deliveryId).get();
+                delivery.setStatus("rejected");
                 deliveryRepository.save(delivery);
 
                 return new ResponseEntity<>(HttpStatus.OK);
