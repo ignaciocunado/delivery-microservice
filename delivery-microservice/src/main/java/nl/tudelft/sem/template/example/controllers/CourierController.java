@@ -1,19 +1,26 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import java.util.UUID;
-import nl.tudelft.sem.api.DeliveryApi;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
-@RestController
-public class CourierController implements DeliveryApi {
+/**
+ * Sub controller of DeliveryController. Handles requests from couriers.
+ * Note: Remember to define methods here and add them in DeliveryController.
+ */
+@Component
+public class CourierController  {
 
     private boolean checkCourier(String role) {
         return role.equals("courier");
     }
 
-    @Override
+    /** returns the pickup location
+     * @param deliveryId id of the delivery
+     * @param role role of the user
+     * @return the pickup location
+     */
     public ResponseEntity<String> getPickUpLocation(UUID deliveryId, String role) {
         if (checkCourier(role)) {
             return new ResponseEntity<>("PickUp location is 123.321.666", HttpStatus.OK);

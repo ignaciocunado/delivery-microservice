@@ -26,11 +26,9 @@ public class AuthorizationService {
             System.out.println("\033[91;40m role was null \033[0m");
             return false;
         }
-        if (role.equals("courier")) {
+        if (role.equals("courier") || role.equals("vendor")) {
             // Here we should have a request to the other microservice
-            if (userId != null) {
-                return true;
-            }
+            return userId != null;
         }
 
         return false;

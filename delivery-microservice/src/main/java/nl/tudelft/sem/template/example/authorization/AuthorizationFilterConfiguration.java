@@ -18,9 +18,12 @@ public class AuthorizationFilterConfiguration {
         this.authorizationService = authorizationService;
     }
 
+    /**
+     * Enable registration
+     * @return
+     */
     @Bean
-    public FilterRegistrationBean<AuthorizationFilter> authorizationFilter()
-    {
+    public FilterRegistrationBean<AuthorizationFilter> authorizationFilter() {
         AuthorizationFilter authorizationFilter = new AuthorizationFilter(authorizationService);
 
         FilterRegistrationBean<AuthorizationFilter> registration = new FilterRegistrationBean<>(authorizationFilter);
