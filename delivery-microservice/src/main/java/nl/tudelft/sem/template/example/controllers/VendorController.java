@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -75,5 +77,15 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    public ResponseEntity<OffsetDateTime> getPickUpEstimate(UUID deliveryID , String role ) {
+        if (deliveryRepository.existsById(deliveryID.toString())) {
+            Optional<Delivery> estimate = deliveryRepository.findById(deliveryID.toString());
+            return estimate.map(delivery -> new ResponseEntity<>(delivery.getPickupTimeEstimate(), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        } else {
+            System.out.println("\033[31;40m getPickUpEstimate couldn't find UUID: \033[30;41m " + deliveryID + " \033[31;40m in database \033[0m");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

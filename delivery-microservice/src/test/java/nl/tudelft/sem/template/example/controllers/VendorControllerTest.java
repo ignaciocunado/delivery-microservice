@@ -27,6 +27,9 @@ class VendorControllerTest {
 
     UUID restaurantId;
     UUID deliveryId;
+
+    OffsetDateTime sampleOffsetDateTime;
+
     @BeforeEach
     public void setup() {
         // create test repositories
@@ -40,10 +43,12 @@ class VendorControllerTest {
         // setup test repository with some sample objects
         Restaurant r = new Restaurant(restaurantId, UUID.randomUUID(), new ArrayList<>(), 1.0d);
         restaurantRepo.save(r);
-        OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
+
+        sampleOffsetDateTime = OffsetDateTime.of(
                 2023, 12, 31, 10, 30, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
+
         Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "", "", 1);
         deliveryRepo.save(d);
         sut = new VendorController(restaurantRepo, deliveryRepo);
@@ -96,6 +101,12 @@ class VendorControllerTest {
     }
 
 
-
+    @Test
+    void testGetPickUpEstimate() {
+        ResponseEntity<OffsetDateTime> res = sut.getPickUpEstimate(deliveryId  , "idk" );
+        OffsetDateTime resBody = res.getBody();
+        System.out.println("\033[96;40m testGetPickUpEstimate requested for UUID \033[30;106m " + deliveryId + " \033[96;40m got response: \033[30;106m " + res + " \033[0m");
+        assertEquals(sampleOffsetDateTime, resBody);
+    }
 
 }
