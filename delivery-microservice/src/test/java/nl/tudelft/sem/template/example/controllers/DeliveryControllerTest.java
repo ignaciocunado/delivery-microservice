@@ -54,4 +54,10 @@ class DeliveryControllerTest {
         Mockito.verify(vendorController).acceptDelivery(deliveryId, role);
     }
 
+    @Test
+    void testGetPickUpEstimateDeliveryId() {
+        deliveryController.getPickUpEstimateDeliveryId(deliveryId, role);
+        Mockito.verify(vendorController).getPickUpEstimate(deliveryId, role);
+    }
+
 }

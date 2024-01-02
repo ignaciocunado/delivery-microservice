@@ -82,7 +82,15 @@ public class VendorController {
     public ResponseEntity<OffsetDateTime> getPickUpEstimate(UUID deliveryID , String role ) {
         if (deliveryRepository.existsById(deliveryID.toString())) {
             Optional<Delivery> estimate = deliveryRepository.findById(deliveryID.toString());
-            return estimate.map(delivery -> new ResponseEntity<>(delivery.getPickupTimeEstimate(), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            if (!estimate.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            OffsetDateTime r = estimate.get().getPickedUpTime();
+            if (r == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(r, HttpStatus.OK);
+//            return estimate.map(delivery -> new ResponseEntity<>(delivery.getPickupTimeEstimate(), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } else {
             System.out.println("\033[31;40m getPickUpEstimate couldn't find UUID: \033[30;41m " + deliveryID + " \033[31;40m in database \033[0m");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

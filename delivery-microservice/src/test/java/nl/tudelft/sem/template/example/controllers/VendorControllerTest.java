@@ -109,4 +109,24 @@ class VendorControllerTest {
         assertEquals(sampleOffsetDateTime, resBody);
     }
 
+    @Test
+    void pickUpEstimate404() {
+        ResponseEntity<OffsetDateTime> res = sut.getPickUpEstimate(UUID.randomUUID()  , "idk" );
+        assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
+    }
+
+    @Test
+    void pickUpEstimateDoesntExist() {
+        TestRestaurantRepository rp = new TestRestaurantRepository();
+        TestDeliveryRepository dp = new TestDeliveryRepository();
+        UUID rid = UUID.randomUUID();
+        UUID did = UUID.randomUUID();
+        restaurantRepo.save(new Restaurant(rid, UUID.randomUUID(), new ArrayList<>(), 1.0d));
+        dp.save(new Delivery(did, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", null, null, 1.d, null, "", "", 1));
+        VendorController vc = new VendorController(rp, dp);
+        ResponseEntity<OffsetDateTime> res = vc.getPickUpEstimate(did, "hi");
+        System.out.println("\033[96;40m pickUpEstimateDoesntExist requested for UUID \033[30;106m " + did + " \033[96;40m got response: \033[30;106m " + res.getBody() + " \033[0m");
+        assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
+    }
+
 }
