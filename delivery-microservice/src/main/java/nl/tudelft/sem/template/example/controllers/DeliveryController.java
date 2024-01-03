@@ -59,9 +59,14 @@ public class DeliveryController implements DeliveryApi {
         return vendorController.rejectDelivery(deliveryId, role);
     }
 
+
     @Override
     public ResponseEntity<String> getLiveLocation(UUID deliveryID, String role) {
         return generalController.getLiveLocation(deliveryID, role);
     }
 
+    @Override
+    public ResponseEntity<String> deliveryIdDone(UUID deliveryId, String role) {
+        return courierController.deliveredDelivery(deliveryId, role);
+    }
 }
