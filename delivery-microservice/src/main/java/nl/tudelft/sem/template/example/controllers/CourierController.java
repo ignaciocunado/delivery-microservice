@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 import java.util.UUID;
 
+import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,16 @@ public class CourierController  {
      * @return courier controller's response entity
      */
     public ResponseEntity<String> deliveredDelivery(UUID deliveryId, String role) {
-        return null;
+        if (checkCourier(role)) {
+            if (deliveryRepository.findById(deliveryId).isPresent()) {
+                Delivery d = deliveryRepository.findById(deliveryId).get();
+                d.setStatus("delivered");
+                deliveryRepository.save(d);
+
+                return new ResponseEntity<>("Delivery marked as delivered!", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("Delivery not found!", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Authorization failed!", HttpStatus.UNAUTHORIZED);
     }
 }
