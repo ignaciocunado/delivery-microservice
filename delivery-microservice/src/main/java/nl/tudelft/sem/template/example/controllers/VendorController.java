@@ -135,4 +135,15 @@ public class VendorController {
         return new ResponseEntity<Void>(HttpStatus.OK);
 
     }
+
+    public ResponseEntity<UUID> getCustomerByDeliveryId(UUID deliveryID, String role) {
+        if (!checkVendor(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        final Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
+        if (!fetched.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(fetched.get().getCustomerID(), HttpStatus.OK);
+    }
 }
