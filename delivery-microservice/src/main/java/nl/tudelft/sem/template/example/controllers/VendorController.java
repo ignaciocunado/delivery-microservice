@@ -144,11 +144,12 @@ public class VendorController {
      */
     public ResponseEntity<Void> editStatusDelivery(UUID deliveryId, String role, String status) {
         if (checkVendor(role)) {
-            if (deliveryRepository.findById(deliveryId).isPresent()) {
+            Optional<Delivery> d = deliveryRepository.findById(deliveryId);
+            if (d.isPresent()) {
                 if (!status.equals("preparing") && !status.equals("given to courier")) {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
-                Delivery delivery = deliveryRepository.findById(deliveryId).get();
+                Delivery delivery = d.get();
                 delivery.setStatus(status);
                 deliveryRepository.save(delivery);
 
