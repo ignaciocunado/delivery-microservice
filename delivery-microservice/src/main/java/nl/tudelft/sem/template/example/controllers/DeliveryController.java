@@ -59,7 +59,12 @@ public class DeliveryController implements DeliveryApi {
         return vendorController.rejectDelivery(deliveryId, role);
     }
 
-
+    /** Integrates controller with API for the get live location endpoint.
+     *
+     * @param deliveryID ID of the delivery to mark as rejected. (required)
+     * @param role       The role of the user (required)
+     * @return string representing the coordinates of the courier
+     */
     @Override
     public ResponseEntity<String> getLiveLocation(UUID deliveryID, String role) {
         return generalController.getLiveLocation(deliveryID, role);
