@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import java.util.UUID;
-
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
