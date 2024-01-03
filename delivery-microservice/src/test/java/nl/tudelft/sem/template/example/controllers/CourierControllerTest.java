@@ -3,6 +3,8 @@ package nl.tudelft.sem.template.example.controllers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.UUID;
+
+import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -11,10 +13,13 @@ import org.springframework.http.ResponseEntity;
 class CourierControllerTest {
 
     private transient CourierController courierController;
+    private transient TestDeliveryRepository deliveryRepository;
 
     @BeforeEach
     void setUp() {
-        courierController = new CourierController();
+        deliveryRepository = new TestDeliveryRepository();
+
+        courierController = new CourierController(deliveryRepository);
     }
 
     @Test

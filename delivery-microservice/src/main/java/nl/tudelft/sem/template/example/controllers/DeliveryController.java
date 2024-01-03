@@ -56,4 +56,9 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<Void> rejectDelivery(UUID deliveryId, String role) {
         return vendorController.rejectDelivery(deliveryId, role);
     }
+
+    @Override
+    public ResponseEntity<String> deliveryIdDone(UUID deliveryId, String role) {
+        return courierController.deliveredDelivery(deliveryId, role);
+    }
 }
