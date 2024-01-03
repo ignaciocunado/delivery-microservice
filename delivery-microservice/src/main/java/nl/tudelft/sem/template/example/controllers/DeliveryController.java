@@ -57,8 +57,26 @@ public class DeliveryController implements DeliveryApi {
         return vendorController.rejectDelivery(deliveryId, role);
     }
 
+    /** Integrates controller with API for get delivery endpoint.
+     *
+     * @param deliveryId ID of delivery to complete (required)
+     * @param role       The role of the user (required)
+     * @return courier controller's response entity
+     */
     @Override
     public ResponseEntity<String> deliveryIdDone(UUID deliveryId, String role) {
         return courierController.deliveredDelivery(deliveryId, role);
+    }
+
+    /** Integrates controller with API for edit status delivery endpoint.
+     *
+     * @param deliveryId ID of the delivery to edit the status of. (required)
+     * @param role       The role of the user (required)
+     * @param status     The new status must be &#39;preparing&#39; or &#39;given to courier&#39;. (required)
+     * @return vendor controller's response entity
+     */
+    @Override
+    public ResponseEntity<Void> editStatusDelivery(UUID deliveryId, String role, String status) {
+        return vendorController.editStatusDelivery(deliveryId, role, status);
     }
 }
