@@ -68,4 +68,11 @@ class DeliveryControllerTest {
         Mockito.verify(courierController).deliveredDelivery(deliveryId, role);
     }
 
+    @Test
+    void testEditStatusDelivery() {
+        deliveryController.editStatusDelivery(deliveryId, role, "preparing");
+
+        Mockito.verify(vendorController).editStatusDelivery(deliveryId, role, "preparing");
+    }
+
 }
