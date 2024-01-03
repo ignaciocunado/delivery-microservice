@@ -12,18 +12,18 @@ import java.util.UUID;
 @Component
 public class GeneralController {
 
-        RestaurantRepository restaurantRepository;
-        DeliveryRepository deliveryRepository;
+    RestaurantRepository restaurantRepository;
+    DeliveryRepository deliveryRepository;
 
-        @Autowired
-        public GeneralController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository) {
-            this.restaurantRepository = restaurantRepository;
-            this.deliveryRepository = deliveryRepository;
-        }
+    @Autowired
+    public GeneralController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository) {
+        this.restaurantRepository = restaurantRepository;
+        this.deliveryRepository = deliveryRepository;
+    }
 
-        public boolean checkGeneral(String role) {
-            return "vendorcouriercustomeradmin".contains(role);
-        }
+    public boolean checkGeneral(String role) {
+        return "vendorcouriercustomeradmin".contains(role);
+    }
 
 
     public ResponseEntity<String> getLiveLocation(UUID deliveryID, String role) {
