@@ -1,15 +1,21 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
+import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 
@@ -50,12 +56,10 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<RestaurantCourierIDsInner> courierList = r.getCourierIDs();
         RestaurantCourierIDsInner curr = new RestaurantCourierIDsInner();
         curr.setCourierID(courierId);
 
-        courierList.add(curr);
-        r.setCourierIDs(courierList);
+        r.addCourierIDsItem(curr);
         restaurantRepository.save(r);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -104,5 +108,31 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
+        if(!checkVendor(role))
+            return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+
+        Optional<Restaurant> rest = restaurantRepository.findById(restaurantId);
+
+        if(rest.isEmpty())
+            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+
+        List<RestaurantCourierIDsInner> couriers = rest.get().getCourierIDs();
+
+        if(couriers.stream().filter(x -> x.getCourierID().equals(courierId)).collect(Collectors.toList()).isEmpty())
+            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+
+        RestaurantCourierIDsInner toRemove = couriers.stream().filter(x -> x.getCourierID().equals(courierId)).collect(Collectors.toList()).get(0);
+
+        couriers.remove(toRemove);
+
+        rest.get().setCourierIDs(couriers);
+
+        restaurantRepository.save(rest.get());
+
+        return new ResponseEntity<Void>(HttpStatus.OK);
+
     }
 }

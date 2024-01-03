@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
+import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.hibernate.type.OffsetDateTimeType;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ class VendorControllerTest {
 
     UUID restaurantId;
     UUID deliveryId;
+    UUID courierId;
     @BeforeEach
     public void setup() {
         // create test repositories
@@ -36,9 +39,16 @@ class VendorControllerTest {
         // generate random UUID
         restaurantId = UUID.randomUUID();
         deliveryId = UUID.randomUUID();
+        courierId = UUID.randomUUID();
+
+        RestaurantCourierIDsInner elem1 = new RestaurantCourierIDsInner();
+        elem1.setCourierID(courierId);
+
+        List<RestaurantCourierIDsInner> param = new ArrayList<>();
+        param.add(elem1);
 
         // setup test repository with some sample objects
-        Restaurant r = new Restaurant(restaurantId, UUID.randomUUID(), new ArrayList<>(), 1.0d);
+        Restaurant r = new Restaurant(restaurantId, UUID.randomUUID(), param, 1.0d);
         restaurantRepo.save(r);
         OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
                 2023, 12, 31, 10, 30, 0, 0,
@@ -113,6 +123,39 @@ class VendorControllerTest {
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "rejected");
     }
+
+    @Test
+    void testRemoveUnauthorized() {
+        ResponseEntity<Void> res = sut.removeCourierRest(UUID.randomUUID(), UUID.randomUUID(), "courier");
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testRemoveRestaurantNotFound() {
+        ResponseEntity<Void> res = sut.removeCourierRest(UUID.randomUUID(), UUID.randomUUID(), "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testRemoveCourierNotFound() {
+        ResponseEntity<Void> res = sut.removeCourierRest(UUID.randomUUID(), restaurantId, "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testRemoveCourierOk() {
+
+        ResponseEntity<Void> res = sut.removeCourierRest(courierId, restaurantId, "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+
+        TestRestaurantRepository repo= (TestRestaurantRepository) sut.getRestaurantRepository();
+
+        assertTrue(repo.findById(restaurantId).get().getCourierIDs().isEmpty());
+
+
+    }
+
+
 
 
 
