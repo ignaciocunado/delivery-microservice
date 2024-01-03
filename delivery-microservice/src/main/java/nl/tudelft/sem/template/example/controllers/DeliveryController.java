@@ -19,11 +19,13 @@ public class DeliveryController implements DeliveryApi {
 
     private transient CourierController courierController;
     private transient VendorController vendorController;
+    private transient GeneralController generalController;
 
     @Autowired
-    public DeliveryController(CourierController courierController, VendorController vendorController) {
+    public DeliveryController(CourierController courierController, VendorController vendorController, GeneralController generalController) {
         this.courierController = courierController;
         this.vendorController = vendorController;
+        this.generalController = generalController;
     }
 
     @Override
@@ -56,4 +58,10 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<Void> rejectDelivery(UUID deliveryId, String role) {
         return vendorController.rejectDelivery(deliveryId, role);
     }
+
+    @Override
+    public ResponseEntity<String> getLiveLocation(UUID deliveryID, String role) {
+        return generalController.getLiveLocation(deliveryID, role);
+    }
+
 }
