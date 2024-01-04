@@ -24,11 +24,21 @@ public class GeneralController {
         this.deliveryRepository = deliveryRepository;
     }
 
+    /**
+     * Cgecks whether the role provided is valid
+     * @param role role
+     * @return true iff the role is valid
+     */
     public boolean checkGeneral(String role) {
         return "vendorcouriercustomeradmin".contains(role);
     }
 
-
+    /**
+     * Implementation for get live location endpoint
+     * @param deliveryID id of the delivery to query
+     * @param role role of the user
+     * @return string representing coordinates
+     */
     public ResponseEntity<String> getLiveLocation(UUID deliveryID, String role) {
         if(!checkGeneral(role)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
