@@ -70,4 +70,9 @@ class DeliveryControllerTest {
         Mockito.verify(courierController).deliveredDelivery(deliveryId, role);
     }
 
+    @Test
+    void getLiveLocation() {
+        generalController.getLiveLocation(deliveryId, role);
+        Mockito.verify(generalController).getLiveLocation(deliveryId, role);
+    }
 }
