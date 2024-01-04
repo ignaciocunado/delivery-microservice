@@ -136,6 +136,12 @@ public class VendorController {
 
     }
 
+    /**
+     * Implementation for the get customer ID endpoint
+     * @param deliveryID id of the delivery
+     * @param role role of the caller
+     * @return id of customer
+     */
     public ResponseEntity<UUID> getCustomerByDeliveryId(UUID deliveryID, String role) {
         if (!checkVendor(role)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
