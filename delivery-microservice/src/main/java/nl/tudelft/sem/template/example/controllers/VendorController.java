@@ -136,6 +136,23 @@ public class VendorController {
 
     }
 
+    /**
+     * Implementation for the get customer ID endpoint
+     * @param deliveryID id of the delivery
+     * @param role role of the caller
+     * @return id of customer
+     */
+    public ResponseEntity<UUID> getCustomerByDeliveryId(UUID deliveryID, String role) {
+        if (!checkVendor(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        final Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
+        if (!fetched.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(fetched.get().getCustomerID(), HttpStatus.OK);
+    }
+
     /** Gets the list of deliveries for a restaurant.
      * @param deliveryId ID of the delivery to mark as rejected. (required)
      * @param role     The role of the user (required)

@@ -156,6 +156,27 @@ class VendorControllerTest {
     }
 
     @Test
+    void testGetCustomerIDOk() {
+        ResponseEntity<UUID> response = sut.getCustomerByDeliveryId(deliveryId, "vendor");
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(response.getBody(), deliveryRepo.findById(deliveryId).get().getCustomerID());
+    }
+
+    @Test
+    void testGetCustomerIDUnauthored() {
+        ResponseEntity<UUID> response = sut.getCustomerByDeliveryId(deliveryId, "courier");
+        assertEquals(response.getStatusCode(), HttpStatus.UNAUTHORIZED);
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void testGetCustomerIDNotFound() {
+        ResponseEntity<UUID> response = sut.getCustomerByDeliveryId(UUID.randomUUID(), "vendor");
+        assertEquals(response.getStatusCode(), HttpStatus.NOT_FOUND);
+        assertNull(response.getBody());
+    }
+
+    @Test
     void testEditStatusDeliveryUnauthorized() {
         ResponseEntity<Void> res = sut.editStatusDelivery(deliveryId, "noVendor", "preparing");
         assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
@@ -186,11 +207,4 @@ class VendorControllerTest {
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "given to courier");
     }
-
-
-
-
-
-
-
 }

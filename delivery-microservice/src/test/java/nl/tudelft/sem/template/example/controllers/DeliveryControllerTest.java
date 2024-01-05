@@ -62,6 +62,13 @@ class DeliveryControllerTest {
     }
 
     @Test
+    void getCustomerID() {
+        deliveryController.getCustomerByDeliveryId(deliveryId, role);
+
+        Mockito.verify(vendorController).getCustomerByDeliveryId(deliveryId, role);
+    }
+
+    @Test
     void deliveryIdDone() {
         deliveryController.deliveryIdDone(deliveryId, role);
 
@@ -74,5 +81,4 @@ class DeliveryControllerTest {
 
         Mockito.verify(vendorController).editStatusDelivery(deliveryId, role, "preparing");
     }
-
 }
