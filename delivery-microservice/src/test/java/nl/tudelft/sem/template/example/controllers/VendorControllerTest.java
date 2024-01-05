@@ -155,9 +155,56 @@ class VendorControllerTest {
 
     }
 
+    @Test
+    void testGetCustomerIDOk() {
+        ResponseEntity<UUID> response = sut.getCustomerByDeliveryId(deliveryId, "vendor");
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(response.getBody(), deliveryRepo.findById(deliveryId).get().getCustomerID());
+    }
 
+    @Test
+    void testGetCustomerIDUnauthored() {
+        ResponseEntity<UUID> response = sut.getCustomerByDeliveryId(deliveryId, "courier");
+        assertEquals(response.getStatusCode(), HttpStatus.UNAUTHORIZED);
+        assertNull(response.getBody());
+    }
 
+    @Test
+    void testGetCustomerIDNotFound() {
+        ResponseEntity<UUID> response = sut.getCustomerByDeliveryId(UUID.randomUUID(), "vendor");
+        assertEquals(response.getStatusCode(), HttpStatus.NOT_FOUND);
+        assertNull(response.getBody());
+    }
 
+    @Test
+    void testEditStatusDeliveryUnauthorized() {
+        ResponseEntity<Void> res = sut.editStatusDelivery(deliveryId, "noVendor", "preparing");
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
 
+    @Test
+    void testEditStatusDeliveryNotFound() {
+        ResponseEntity<Void> res = sut.editStatusDelivery(UUID.randomUUID(), "vendor", "preparing");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
 
+    @Test
+    void testEditStatusDeliveryOk() {
+        ResponseEntity<Void> res = sut.editStatusDelivery(deliveryId, "vendor", "preparing");
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "preparing");
+    }
+
+    @Test
+    void testEditStatusDeliveryInvalidStatus() {
+        ResponseEntity<Void> res = sut.editStatusDelivery(deliveryId, "vendor", "invalid");
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+    }
+
+    @Test
+    void testEditStatusDeliveryValidStatus2() {
+        ResponseEntity<Void> res = sut.editStatusDelivery(deliveryId, "vendor", "given to courier");
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "given to courier");
+    }
 }

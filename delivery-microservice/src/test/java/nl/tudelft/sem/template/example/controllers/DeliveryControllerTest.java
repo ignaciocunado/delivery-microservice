@@ -64,6 +64,13 @@ class DeliveryControllerTest {
     }
 
     @Test
+    void getCustomerID() {
+        deliveryController.getCustomerByDeliveryId(deliveryId, role);
+
+        Mockito.verify(vendorController).getCustomerByDeliveryId(deliveryId, role);
+    }
+
+    @Test
     void deliveryIdDone() {
         deliveryController.deliveryIdDone(deliveryId, role);
 
@@ -75,5 +82,12 @@ class DeliveryControllerTest {
         deliveryController.getLiveLocation(deliveryId, role);
 
         Mockito.verify(generalController).getLiveLocation(deliveryId, role);
+    }
+
+    @Test
+    void testEditStatusDelivery() {
+        deliveryController.editStatusDelivery(deliveryId, role, "preparing");
+
+        Mockito.verify(vendorController).editStatusDelivery(deliveryId, role, "preparing");
     }
 }

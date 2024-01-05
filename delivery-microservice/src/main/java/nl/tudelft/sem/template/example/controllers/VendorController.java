@@ -135,4 +135,45 @@ public class VendorController {
         return new ResponseEntity<Void>(HttpStatus.OK);
 
     }
+
+    /**
+     * Implementation for the get customer ID endpoint
+     * @param deliveryID id of the delivery
+     * @param role role of the caller
+     * @return id of customer
+     */
+    public ResponseEntity<UUID> getCustomerByDeliveryId(UUID deliveryID, String role) {
+        if (!checkVendor(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        final Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
+        if (!fetched.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(fetched.get().getCustomerID(), HttpStatus.OK);
+    }
+
+    /** Gets the list of deliveries for a restaurant.
+     * @param deliveryId ID of the delivery to mark as rejected. (required)
+     * @param role     The role of the user (required)
+     * @param status  The status of the delivery (required) must be 'preparing' or 'given to courier'
+     * @return Whether the request was successful or not
+     */
+    public ResponseEntity<Void> editStatusDelivery(UUID deliveryId, String role, String status) {
+        if (checkVendor(role)) {
+            Optional<Delivery> d = deliveryRepository.findById(deliveryId);
+            if (d.isPresent()) {
+                if (!status.equals("preparing") && !status.equals("given to courier")) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                Delivery delivery = d.get();
+                delivery.setStatus(status);
+                deliveryRepository.save(delivery);
+
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
 }
