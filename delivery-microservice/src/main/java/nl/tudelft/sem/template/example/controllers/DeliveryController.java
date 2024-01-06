@@ -19,13 +19,13 @@ public class DeliveryController implements DeliveryApi {
 
     private transient CourierController courierController;
     private transient VendorController vendorController;
-    private transient GeneralController generalController;
+    private transient GlobalController globalController;
 
     @Autowired
-    public DeliveryController(CourierController courierController, VendorController vendorController, GeneralController generalController) {
+    public DeliveryController(CourierController courierController, VendorController vendorController, GlobalController globalController) {
         this.courierController = courierController;
         this.vendorController = vendorController;
-        this.generalController = generalController;
+        this.globalController = globalController;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> getLiveLocation(UUID deliveryID, String role) {
-        return generalController.getLiveLocation(deliveryID, role);
+        return globalController.getLiveLocation(deliveryID, role);
     }
 
     /** Integrates controller with API for get delivery endpoint.

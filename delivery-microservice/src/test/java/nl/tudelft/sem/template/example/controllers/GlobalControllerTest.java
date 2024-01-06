@@ -13,9 +13,9 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
-public class GeneralControllerTest {
+public class GlobalControllerTest {
 
-    private transient GeneralController generalController;
+    private transient GlobalController globalController;
     private transient TestDeliveryRepository deliveryRepository;
     private transient TestRestaurantRepository restaurantRepository;
 
@@ -33,26 +33,26 @@ public class GeneralControllerTest {
         Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "69.655,69.425", "", 1);
         deliveryRepository.save(d);
 
-        generalController = new GeneralController(restaurantRepository, deliveryRepository);
+        globalController = new GlobalController(restaurantRepository, deliveryRepository);
     }
 
     @Test
     void getLiveLocation() {
-        ResponseEntity<String> res = generalController.getLiveLocation(deliveryId, "vendor");
+        ResponseEntity<String> res = globalController.getLiveLocation(deliveryId, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "69.655,69.425");
     }
 
     @Test
     void getLiveLocationNotFound() {
-        ResponseEntity<String> res = generalController.getLiveLocation(UUID.randomUUID() , "vendor");
+        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID() , "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
 
     @Test
     void getLiveLocationUnauthorized() {
-        ResponseEntity<String> res = generalController.getLiveLocation(UUID.randomUUID() , "norole");
+        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID() , "norole");
         assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
         assertNull(res.getBody());
     }
