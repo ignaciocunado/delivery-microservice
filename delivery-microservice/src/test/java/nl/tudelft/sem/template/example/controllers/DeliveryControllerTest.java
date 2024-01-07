@@ -20,6 +20,7 @@ class DeliveryControllerTest {
     private transient CourierController courierController;
     private transient VendorController vendorController;
     private transient DeliveryController deliveryController;
+    private transient GlobalController globalController;
 
     private UUID deliveryId;
     private String role;
@@ -36,7 +37,8 @@ class DeliveryControllerTest {
         // mock courier controller to verify its methods are called
         courierController = Mockito.mock(CourierController.class);
         vendorController = Mockito.mock(VendorController.class);
-        deliveryController = new DeliveryController(courierController, vendorController);
+        globalController = Mockito.mock(GlobalController.class);
+        deliveryController = new DeliveryController(courierController, vendorController, globalController);
     }
 
     @Test
@@ -73,6 +75,13 @@ class DeliveryControllerTest {
         deliveryController.deliveryIdDone(deliveryId, role);
 
         Mockito.verify(courierController).deliveredDelivery(deliveryId, role);
+    }
+
+    @Test
+    void getLiveLocation() {
+        deliveryController.getLiveLocation(deliveryId, role);
+
+        Mockito.verify(globalController).getLiveLocation(deliveryId, role);
     }
 
     @Test
