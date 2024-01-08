@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.print.DocFlavor;
+
 /**
  * Main Delivery Controller. Calls on other controllers to handle requests.
  * Note: Add methods here to integrate them into the API from other subcontrollers.
@@ -103,4 +105,16 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<Void> editStatusDelivery(UUID deliveryId, String role, String status) {
         return vendorController.editStatusDelivery(deliveryId, role, status);
     }
+
+    /**
+     * Integrates controler with API for get delivery exception endpoint
+     * @param deliveryID ID of delivery to query. (required)
+     * @param role The role of the user (required)
+     * @return the exception iff there is one
+     */
+    @Override
+    public ResponseEntity<String> getDeliveryException(UUID deliveryID, String role) {
+        return globalController.getDeliveryException(deliveryID, role);
+    }
+
 }
