@@ -90,4 +90,11 @@ class DeliveryControllerTest {
 
         Mockito.verify(vendorController).editStatusDelivery(deliveryId, role, "preparing");
     }
+
+    @Test
+    void testGetDeliveryException() {
+        deliveryController.getDeliveryException(deliveryId, role);
+
+        Mockito.verify(globalController).getDeliveryException(deliveryId, role);
+    }
 }
