@@ -56,6 +56,11 @@ public class DeliveryController implements DeliveryApi {
         return courierController.getPickUpLocation(deliveryId, role);
     }
 
+    @Override
+    public ResponseEntity<String> getLocationOfDelivery(UUID deliveryId, String role) {
+        return courierController.getLocationOfDelivery(deliveryId, role);
+    }
+
     /** Integrates controller with API for the get customer ID endpoint.
      *
      * @param deliveryID ID of the delivery to mark as accepted. (required)
