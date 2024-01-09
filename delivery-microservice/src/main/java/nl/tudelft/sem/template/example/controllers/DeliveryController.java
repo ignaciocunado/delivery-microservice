@@ -88,6 +88,7 @@ public class DeliveryController implements DeliveryApi {
      * @param role The role of the user (required)
      * @return 200 + message, 400, 403, or 404
      */
+    @Override
     public ResponseEntity<String> setPickUpTime(
             @Parameter(name = "deliveryID", description = "ID of the delivery to query.", required = true, in = ParameterIn.PATH) @PathVariable("deliveryID") UUID deliveryID,
             @NotNull @Parameter(name = "role", description = "The role of the user", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "role", required = true) String role,
