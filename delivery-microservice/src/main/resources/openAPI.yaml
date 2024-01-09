@@ -1569,7 +1569,7 @@ paths:
               example:
                 "error 404"
 
-  /restaurant/{vendorID}:
+  /restaurant/vendor/{vendorID}:
     get:
       operationId: getVendorRest
       tags:
