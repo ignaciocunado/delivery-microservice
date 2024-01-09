@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,7 +39,10 @@ public class GlobalController {
      * @return true iff the role is valid
      */
     public boolean checkGeneral(String role) {
-        return "vendorcouriercustomeradmin".contains(role);
+        // While this does re-instantiate the list when called, I believe this is cleaner than
+        // introducing another member variable (and performance of code vs requests is negligible)
+        final List<String> allowedRoles = List.of("courier", "vendor", "admin", "customer");
+        return allowedRoles.contains(role);
     }
 
     /**
@@ -75,5 +79,28 @@ public class GlobalController {
         }
         return new ResponseEntity<>(fetched.get().getUserException() == null ? "" : fetched.get().getUserException(),
                 HttpStatus.OK);
+    }
+
+    /**
+     * Implementation for the get delivery by ID endpoint. This fetches the full Delivery object from the database,
+     * returning every piece of data relating to it.
+     * @param deliveryId ID of the delivery to get.
+     * @param role Role of the querying user.
+     * @return The delivery object, if found.
+     */
+    public ResponseEntity<Delivery> getDeliveryById(UUID deliveryId, String role) {
+        // Authorize the user
+        if (!checkGeneral(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Attempt to fetch the delivery from the DB
+        final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
+        if (deliveryFromDB.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        final Delivery delivery = deliveryFromDB.get();
+        return new ResponseEntity<>(delivery, HttpStatus.OK);
     }
 }

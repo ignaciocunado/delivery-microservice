@@ -134,4 +134,11 @@ class DeliveryControllerTest {
 
         Mockito.verify(vendorOrCourierController).assignOrderToCourier(courier, deliveryId, role);
     }
+
+    @Test
+    void testGetDeliveryById() {
+        deliveryController.getDeliveyById(deliveryId, role);
+
+        Mockito.verify(globalController).getDeliveryById(deliveryId, role);
+    }
 }

@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import lombok.Setter;
 import nl.tudelft.sem.api.DeliveryApi;
+import nl.tudelft.sem.model.Delivery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -200,4 +201,16 @@ public class DeliveryController implements DeliveryApi {
         return vendorOrCourierController.assignOrderToCourier(courierID, deliveryID, role);
     }
 
+
+    /**
+     * Integrates controller with API for get delivery by ID endpoint.
+     * Note that this method name is unfortunately misspelled - but the spec is locked in place.
+     * @param deliveryId ID of the delivery to get (required)
+     * @param role The role of the user (required)
+     * @return The delivery object, if it was found.
+     */
+    @Override
+    public ResponseEntity<Delivery> getDeliveyById(UUID deliveryId, String role) {
+        return globalController.getDeliveryById(deliveryId, role);
+    }
 }
