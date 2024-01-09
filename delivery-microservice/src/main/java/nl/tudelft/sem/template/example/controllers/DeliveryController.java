@@ -211,6 +211,7 @@ public class DeliveryController implements DeliveryApi {
     @Override
     public ResponseEntity<Delivery> getDeliveyById(UUID deliveryId, String role) {
         return globalController.getDeliveryById(deliveryId, role);
+    }
 
     /**
      * Integrates controller with API for get order by delivery ID endpoint.

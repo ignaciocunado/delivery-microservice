@@ -139,7 +139,7 @@ public class GlobalControllerTest {
      * The specified delivery does not exist!
      */
     @Test
-    void testGetOrderByDeliveryIdNotFound() {
+    void testGetDeliveryByIdNotFound() {
         UUID invalidDeliveryId = generateNewDeliveryId();
 
         ResponseEntity<Delivery> response = globalController.getDeliveryById(invalidDeliveryId, "courier");
@@ -153,7 +153,7 @@ public class GlobalControllerTest {
      * Ensures that every role can get a delivery.
      */
     @Test
-    void testGetOrderByDeliveryIdAllRoles() {
+    void testGetDeliveryByIdAllRoles() {
         List<String> rolesToTest = List.of("courier", "vendor", "admin", "customer");
 
         for (String roleToTest : rolesToTest) {
@@ -174,7 +174,7 @@ public class GlobalControllerTest {
      * Ensures that a valid role is required to get a delivery.
      */
     @Test
-    void testGetOrderByDeliveryIdUnauthorized() {
+    void testGetDeliveryByIdUnauthorized() {
         ResponseEntity<Delivery> response = globalController.getDeliveryById(deliveryId, "ve");
         assertEquals(
                 HttpStatus.UNAUTHORIZED,
@@ -192,7 +192,7 @@ public class GlobalControllerTest {
      * Ensures that a role is required at all to get a delivery.
      */
     @Test
-    void testGetOrderByDeliveryIdNoAuthorization() {
+    void testGetDeliveryByIdNoAuthorization() {
         ResponseEntity<Delivery> response = globalController.getDeliveryById(deliveryId, "");
         assertEquals(
                 HttpStatus.UNAUTHORIZED,
