@@ -149,7 +149,7 @@ public class GlobalController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        // Fetch & validate the order ID
+        // Fetch the rating
         final Delivery delivery = deliveryFromDB.get();
         final Double rating = delivery.getCustomerRating();
 
