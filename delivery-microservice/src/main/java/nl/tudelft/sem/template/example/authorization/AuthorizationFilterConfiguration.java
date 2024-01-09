@@ -19,8 +19,8 @@ public class AuthorizationFilterConfiguration {
     }
 
     /**
-     * Enable registration
-     * @return
+     * Enable registration.
+     * @return the authorization filter
      */
     @Bean
     public FilterRegistrationBean<AuthorizationFilter> authorizationFilter() {
