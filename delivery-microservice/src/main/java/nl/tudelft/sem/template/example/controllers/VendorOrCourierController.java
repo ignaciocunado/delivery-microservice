@@ -53,7 +53,7 @@ public class VendorOrCourierController {
         if(!checkVendorOrCourier(role)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        if(body < 0 || body == null) {
+        if(body == null || body < 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
