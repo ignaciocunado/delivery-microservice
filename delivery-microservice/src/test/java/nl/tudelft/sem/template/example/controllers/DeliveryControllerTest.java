@@ -57,13 +57,12 @@ class DeliveryControllerTest {
     }
 
     @Test
-<<<<<<< HEAD
     void testGetPickUpEstimateDeliveryId() {
         deliveryController.getPickUpEstimateDeliveryId(deliveryId, role);
         Mockito.verify(vendorController).getPickUpEstimate(deliveryId, role);
     }
 
-=======
+    @Test
     void rejectDelivery() {
         deliveryController.rejectDelivery(deliveryId, role);
 
@@ -97,5 +96,4 @@ class DeliveryControllerTest {
 
         Mockito.verify(vendorController).editStatusDelivery(deliveryId, role, "preparing");
     }
->>>>>>> 35d324b90da3df3f988f17ac3f39825a8443cf5e
 }

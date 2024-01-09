@@ -29,13 +29,10 @@ class VendorControllerTest {
 
     UUID restaurantId;
     UUID deliveryId;
-<<<<<<< HEAD
 
     OffsetDateTime sampleOffsetDateTime;
 
-=======
     UUID courierId;
->>>>>>> 35d324b90da3df3f988f17ac3f39825a8443cf5e
     @BeforeEach
     public void setup() {
         // create test repositories
@@ -156,9 +153,10 @@ class VendorControllerTest {
         ResponseEntity<Void> res = sut.removeCourierRest(courierId, restaurantId, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
-        TestRestaurantRepository repo= (TestRestaurantRepository) sut.getRestaurantRepository();
+        TestRestaurantRepository repo = (TestRestaurantRepository) sut.getRestaurantRepository();
 
         assertTrue(repo.findById(restaurantId).get().getCourierIDs().isEmpty());
+    }
 
     @Test
     void testGetPickUpEstimate() {
@@ -168,7 +166,6 @@ class VendorControllerTest {
         assertEquals(sampleOffsetDateTime, resBody);
     }
 
-<<<<<<< HEAD
     @Test
     void pickUpEstimate404() {
         ResponseEntity<OffsetDateTime> res = sut.getPickUpEstimate(UUID.randomUUID()  , "idk" );
@@ -187,8 +184,6 @@ class VendorControllerTest {
         ResponseEntity<OffsetDateTime> res = vc.getPickUpEstimate(did, "hi");
         System.out.println("\033[96;40m pickUpEstimateDoesntExist requested for UUID \033[30;106m " + did + " \033[96;40m got response: \033[30;106m " + res.getBody() + " \033[0m");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
-=======
->>>>>>> 35d324b90da3df3f988f17ac3f39825a8443cf5e
     }
 
     @Test
