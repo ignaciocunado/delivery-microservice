@@ -255,7 +255,7 @@ class VendorControllerTest {
     @Test
     void testSetPickUpUnauthorized() {
         ResponseEntity<String> res = sut.setPickUpEstimate(deliveryId, "noVendor", sampleOffsetDateTime.toString());
-        assertEquals(HttpStatus.UNAUTHORIZED, res.getStatusCode());
+        assertEquals(HttpStatus.FORBIDDEN, res.getStatusCode());
     }
 
     @Test
