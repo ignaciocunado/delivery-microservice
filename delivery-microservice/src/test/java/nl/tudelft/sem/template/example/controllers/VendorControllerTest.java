@@ -207,4 +207,28 @@ class VendorControllerTest {
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "given to courier");
     }
+
+    @Test
+    void testGetRestaurantUnauthorized() {
+        ResponseEntity<String> res = sut.getRest(UUID.randomUUID(), "noVendor");
+
+        assertEquals(res.getBody(),"NOT AUTHORIZED \n Requires vendor permissions!" );
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testGetRestaurantNotFound() {
+        ResponseEntity<String> res = sut.getRest(UUID.randomUUID(), "vendor");
+
+        assertEquals(res.getBody(), "NOT FOUND \n No restaurant with the given id has been found");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testGetRestaurantOk() {
+        ResponseEntity<String> res = sut.getRest(restaurantId, "vendor");
+
+        assertEquals(res.getBody(), restaurantRepo.findById(restaurantId).get().toString());
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+    }
 }

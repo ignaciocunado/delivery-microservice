@@ -176,4 +176,16 @@ public class VendorController {
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
+    public ResponseEntity<String> getRest(UUID restaurantId, String role) {
+        if(!checkVendor(role))
+            return new ResponseEntity<String>("NOT AUTHORIZED \n Requires vendor permissions!", HttpStatus.UNAUTHORIZED);
+
+        if(!restaurantRepository.existsById(restaurantId))
+            return new ResponseEntity<String>("NOT FOUND \n No restaurant with the given id has been found", HttpStatus.NOT_FOUND);
+
+        Restaurant r = restaurantRepository.findById(restaurantId).get();
+
+        return new ResponseEntity<String>(r.toString(), HttpStatus.OK);
+    }
 }
