@@ -96,4 +96,11 @@ class DeliveryControllerTest {
 
         Mockito.verify(vendorController).editStatusDelivery(deliveryId, role, "preparing");
     }
+
+    @Test
+    void testSetPickUpTime() {
+        deliveryController.setPickUpTime(deliveryId, role, "preparing");
+
+        Mockito.verify(vendorController).setPickUpEstimate(deliveryId, role, "preparing");
+    }
 }

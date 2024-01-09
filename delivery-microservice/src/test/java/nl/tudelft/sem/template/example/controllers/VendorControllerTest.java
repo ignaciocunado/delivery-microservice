@@ -238,4 +238,29 @@ class VendorControllerTest {
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "given to courier");
     }
+
+    @Test
+    void testSetPickUpEstimate() {
+        ResponseEntity<String> res = sut.setPickUpEstimate(deliveryId, "vendor", sampleOffsetDateTime.toString());
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId).get().getPickupTimeEstimate(), sampleOffsetDateTime);
+    }
+
+    @Test
+    void testSetInvalidPickUpEstimate() {
+        ResponseEntity<String> res = sut.setPickUpEstimate(deliveryId, "vendor", "hello");
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+    }
+
+    @Test
+    void testSetPickUpUnauthorized() {
+        ResponseEntity<String> res = sut.setPickUpEstimate(deliveryId, "noVendor", sampleOffsetDateTime.toString());
+        assertEquals(HttpStatus.UNAUTHORIZED, res.getStatusCode());
+    }
+
+    @Test
+    void testSetPickUpNotFound() {
+        ResponseEntity<String> res = sut.setPickUpEstimate(UUID.randomUUID(), "vendor", sampleOffsetDateTime.toString());
+        assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
+    }
 }
