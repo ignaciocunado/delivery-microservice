@@ -106,4 +106,11 @@ class DeliveryControllerTest {
 
         Mockito.verify(vendorOrCourierController).setDeliveryDelay(deliveryId, role, 4);
     }
+
+    @Test
+    void testGetDeliveryDelay() {
+        deliveryController.getDeliveryDelay(deliveryId, role);
+
+        Mockito.verify(vendorOrCourierController).getDeliveryDelay(deliveryId, role);
+    }
 }
