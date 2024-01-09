@@ -214,6 +214,18 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
+     * Integrates controller with API for get restaurant ID by delivery ID endpoint.
+     * @param deliveryId ID of delivery to query. (required)
+     * @param role The role of the user (required)
+     * @return The delivery's restaurant ID.
+     */
+    @Override
+    public ResponseEntity<UUID> getRestIdOfDel(UUID deliveryId, String role) {
+        // Note: the implementation method uses a non-abbreviated name to be more consistent with our data model.
+        return globalController.getRestaurantIdByDeliveryId(deliveryId, role);
+    }
+
+    /**
      * Integrates controller with API for get order by delivery ID endpoint.
      * @param deliveryId ID of the delivery to get. (required)
      * @param role The role of the user (required)
