@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,5 +76,25 @@ public class GlobalController {
         }
         return new ResponseEntity<>(fetched.get().getUserException() == null ? "" : fetched.get().getUserException(),
                 HttpStatus.OK);
+    }
+
+    /**
+     * Queries the Max Delivery Zone for a given restaurant and provides adequate error codes
+     * @param restaurantId id of the restaurant to be queried
+     * @param role the role of the user
+     * @return the delivery zone, should it exist
+     */
+    public ResponseEntity<Double> getMaxDeliveryZone(UUID restaurantId, String role) {
+        if(!checkGeneral(role)) {
+            return new ResponseEntity<Double>(HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<Restaurant> r = restaurantRepository.findById(restaurantId);
+
+        if(r.isEmpty()) {
+            return new ResponseEntity<Double>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<Double>(r.get().getMaxDeliveryZone(), HttpStatus.OK);
     }
 }

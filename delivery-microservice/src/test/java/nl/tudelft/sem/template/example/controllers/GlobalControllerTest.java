@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class GlobalControllerTest {
@@ -20,12 +22,15 @@ public class GlobalControllerTest {
     private transient TestRestaurantRepository restaurantRepository;
 
     UUID deliveryId;
+    UUID restaurantId;
 
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
         restaurantRepository = new TestRestaurantRepository();
         deliveryId = UUID.randomUUID();
+        restaurantId = UUID.randomUUID();
+
         OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
                 2024, 1, 4, 18, 23, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
@@ -33,7 +38,12 @@ public class GlobalControllerTest {
         Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
                 sampleOffsetDateTime, "69.655,69.425", "late", 1);
+
+        Restaurant r = new Restaurant(restaurantId, UUID.randomUUID(), new ArrayList<>(), 10.2d);
+
         deliveryRepository.save(d);
+
+        restaurantRepository.save(r);
 
         globalController = new GlobalController(restaurantRepository, deliveryRepository);
     }
@@ -92,5 +102,25 @@ public class GlobalControllerTest {
         ResponseEntity<String> res = globalController.getDeliveryException(id , "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "");
+    }
+
+    @Test
+    void testDeliveryZoneUnauthorized() {
+        ResponseEntity<Double> res = globalController.getMaxDeliveryZone(restaurantId, "nothing");
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testDeliveryZoneNotFound() {
+        ResponseEntity<Double> res = globalController.getMaxDeliveryZone(UUID.randomUUID(), "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testDeliveryZoneOk() {
+
+        ResponseEntity<Double> res = globalController.getMaxDeliveryZone(restaurantId, "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        assertEquals(res.getBody(), 10.2d);
     }
 }

@@ -13,11 +13,13 @@ public class RestaurantController implements RestaurantApi {
     private transient CourierController courierController;
     @Setter
     private transient VendorController vendorController;
+    private final transient GlobalController globalController;
 
     @Autowired
-    public RestaurantController(CourierController courierController, VendorController vendorController) {
+    public RestaurantController(CourierController courierController, VendorController vendorController, GlobalController globalController) {
         this.courierController = courierController;
         this.vendorController = vendorController;
+        this.globalController = globalController;
     }
 
 
@@ -29,5 +31,16 @@ public class RestaurantController implements RestaurantApi {
     @Override
     public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
         return vendorController.removeCourierRest(courierId, restaurantId, role);
+    }
+
+    /**
+     * Calls method in globalController for querying the maximum Delivery zone
+     * @param deliveryID ID of the restaurant to query. (required)
+     * @param role The role of the user (required)
+     * @return the ResponseEntity returned
+     */
+    @Override
+    public ResponseEntity<Double> getMaxDeliveryZone(UUID deliveryID, String role) {
+        return globalController.getMaxDeliveryZone(deliveryID, role);
     }
 }

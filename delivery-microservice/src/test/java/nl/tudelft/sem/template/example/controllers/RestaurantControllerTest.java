@@ -20,7 +20,10 @@ class RestaurantControllerTest {
     @Mock
     CourierController cc = Mockito.mock(CourierController.class);
 
-    RestaurantController sut = new RestaurantController(cc, vc);
+    @Mock
+    GlobalController gc = Mockito.mock(GlobalController.class);
+
+    RestaurantController sut = new RestaurantController(cc, vc, gc);
     @BeforeEach
     public void setup() {
         sut.setVendorController(vc);
@@ -40,6 +43,13 @@ class RestaurantControllerTest {
         UUID id2 = UUID.randomUUID();
         sut.removeCourierRest(id1, id2, "a");
         verify(vc).removeCourierRest(id1, id2, "a");
+    }
+
+    @Test
+    public void testCallMaxZone() {
+        UUID id = UUID.randomUUID();
+        sut.getMaxDeliveryZone(id, "a");
+        verify(gc).getMaxDeliveryZone(id, "a");
     }
 
 
