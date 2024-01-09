@@ -28,7 +28,9 @@ class CourierControllerTest {
                 2023, 12, 31, 10, 30, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
-        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "", "", 1);
+        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
+                sampleOffsetDateTime, "", "", 1);
         deliveryRepository.save(d);
 
         courierController = new CourierController(deliveryRepository);

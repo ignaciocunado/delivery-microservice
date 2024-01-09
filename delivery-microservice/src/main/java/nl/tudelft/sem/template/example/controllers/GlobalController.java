@@ -21,7 +21,7 @@ public class GlobalController {
     DeliveryRepository deliveryRepository;
 
     /**
-     * Constructor
+     * Constructor for the global controller.
      * @param restaurantRepository restaurant DB
      * @param deliveryRepository delivery DB
      */
@@ -32,7 +32,7 @@ public class GlobalController {
     }
 
     /**
-     * Checks whether the role provided is valid
+     * Checks whether the role provided is valid.
      *
      * @param role role
      * @return true iff the role is valid
@@ -42,7 +42,7 @@ public class GlobalController {
     }
 
     /**
-     * Implementation for get live location endpoint
+     * Implementation for get live location endpoint.
      *
      * @param deliveryID id of the delivery to query
      * @param role       role of the user
@@ -57,5 +57,22 @@ public class GlobalController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(fetched.get().getLiveLocation(), HttpStatus.OK);
+    }
+
+    /**
+     * Implementation for get delivery exception endpoint
+     * @param deliveryID id of the delivery to query
+     * @param role role of the user
+     * @return string representing the exception if there is one
+     */
+    public ResponseEntity<String> getDeliveryException(UUID deliveryID, String role) {
+        if (!checkGeneral(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        final Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
+        if (!fetched.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(fetched.get().getUserException() == null ? "" : fetched.get().getUserException(), HttpStatus.OK);
     }
 }
