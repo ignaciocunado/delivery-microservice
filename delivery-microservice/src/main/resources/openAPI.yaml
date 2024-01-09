@@ -1672,7 +1672,7 @@ paths:
       tags:
         - Courier
       summary: Get all deliveries for a courier
-      description: As a vendor or courier, return all delivery ids for a given courier
+      description: As a courier, return all delivery ids for a given courier
       parameters:
         - in: path
           name: courierID
