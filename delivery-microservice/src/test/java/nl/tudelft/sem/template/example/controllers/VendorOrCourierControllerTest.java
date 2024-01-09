@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import com.fasterxml.jackson.databind.deser.std.UUIDDeserializer;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
