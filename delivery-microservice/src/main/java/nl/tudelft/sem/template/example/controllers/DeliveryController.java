@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -54,11 +55,31 @@ public class DeliveryController implements DeliveryApi {
         return vendorController.acceptDelivery(deliveryId, role);
     }
 
+    /**
+     * Integrates controller with API for getPickUpEstimate endpoint
+     * @param deliveryID ID of delivery to get the picked up timestamp of (required)
+     * @param role The role of the user (required)
+     * @return
+     */
     @Override
     public ResponseEntity<OffsetDateTime> getPickUpEstimateDeliveryId(
             @Parameter(name = "deliveryID", description = "ID of delivery to get the picked up timestamp of", required = true, in = ParameterIn.PATH) @PathVariable("deliveryID") UUID deliveryID
             ,@NotNull @Parameter(name = "role", description = "The role of the user", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "role", required = true) String role
     ) {
         return vendorController.getPickUpEstimate(deliveryID , role );
+    }
+
+    /**
+     * Integrates controller with API for getDropOffEstimate endpoint
+     * @param deliveryID ID of delivery to get the dropped off timestamp of (required)
+     * @param role The role of the user (required)
+     * @return 200 + message, 400, 403, or 404
+     */
+    public ResponseEntity<String> setPickUpTime(
+            @Parameter(name = "deliveryID", description = "ID of the delivery to query.", required = true, in = ParameterIn.PATH) @PathVariable("deliveryID") UUID deliveryID,
+            @NotNull @Parameter(name = "role", description = "The role of the user", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "role", required = true) String role,
+            @Parameter(name = "body", description = "", required = true) @Valid @RequestBody String body
+    ) {
+        return vendorController.setPickUpEstimate(deliveryID, role, body);
     }
 }

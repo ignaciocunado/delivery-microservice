@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +30,9 @@ public class VendorController {
 
     public boolean checkVendor(String role) {
         return role.equals("vendor");
+    }
+    public boolean checkCourier(String role) {
+        return role.equals("courier");
     }
 
     public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
@@ -95,5 +99,32 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(r, HttpStatus.OK);
+    }
+
+    /**
+     * Sets the estimated time of pick-up for a delivery.
+     * @param deliveryID UUID of the delivery object
+     * @param role User role
+     * @param body String in OffsetDateTime format for the estimated time of pick-up
+     * @return the set datetime if successful, otherwise error
+     */
+    public ResponseEntity<String> setPickUpEstimate(UUID deliveryID, String role, String body) {
+        if (checkVendor(role) || checkCourier(role)) {
+            if (deliveryRepository.findById(deliveryID.toString()).isPresent()) {
+                Delivery delivery = deliveryRepository.findById(deliveryID.toString()).get();
+                OffsetDateTime time;
+                try {
+                    time = OffsetDateTime.parse(body);
+                } catch (DateTimeParseException e){
+                    return new ResponseEntity<>("Invalid body. "+e.getMessage(), HttpStatus.BAD_REQUEST);
+                }
+                delivery.setPickupTimeEstimate(time);
+                deliveryRepository.save(delivery);
+
+                return new ResponseEntity<>(time.toString(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 }
