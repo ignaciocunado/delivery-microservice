@@ -193,7 +193,7 @@ public class DeliveryController implements DeliveryApi {
      * @param courierID The id of the courier to which the delivery will be assigned (required)
      * @param deliveryID The delivery to be assigned to the courier (required)
      * @param role The role of the user (required)
-     * @return ID of the courier
+     * @return ID of the delivery
      */
     @Override
     public ResponseEntity<UUID> assignOrderToCourier(UUID courierID, UUID deliveryID, String role) {

@@ -93,21 +93,21 @@ public class VendorOrCourierController {
      * @param courierID ID of the courier
      * @param deliveryID ID of the delivery
      * @param role role of the user
-     * @return ID of the courier
+     * @return ID of the delivery
      */
     public ResponseEntity<UUID> assignOrderToCourier(UUID courierID, UUID deliveryID, String role) {
-        if(!checkVendorOrCourier(role)) {
+        if (!checkVendorOrCourier(role)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
-        if(fetched.isEmpty()) {
+        if (fetched.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Delivery del = fetched.get();
         del.setCourierID(courierID);
         deliveryRepository.save(del);
-        return new ResponseEntity<>(del.getCourierID(), HttpStatus.OK);
+        return new ResponseEntity<>(del.getDeliveryID(), HttpStatus.OK);
     }
 }
