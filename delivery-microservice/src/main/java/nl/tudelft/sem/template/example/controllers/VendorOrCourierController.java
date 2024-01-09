@@ -15,7 +15,7 @@ import java.util.UUID;
 import java.util.logging.Handler;
 
 /**
- * Sub-Controller of DeliveryController
+ * Sub-Controller of DeliveryController.
  */
 @Component
 public class VendorOrCourierController {
@@ -24,7 +24,7 @@ public class VendorOrCourierController {
     DeliveryRepository deliveryRepository;
 
     /**
-     * Constructor
+     * Constructor.
      * @param restaurantRepository restaurant DB
      * @param deliveryRepository delivery DB
      */
@@ -35,7 +35,7 @@ public class VendorOrCourierController {
     }
 
     /**
-     * Checks whether the role provided is valid
+     * Checks whether the role provided is valid.
      * @param role role
      * @return true iff the role is valid
      */
@@ -44,7 +44,7 @@ public class VendorOrCourierController {
     }
 
     /**
-     * Implementation of set delivery delay endpoint
+     * Implementation of set delivery delay endpoint.
      * @param deliveryID id of the delivery to query
      * @param role role of the user
      * @param body new delay to update
@@ -70,7 +70,7 @@ public class VendorOrCourierController {
     }
 
     /**
-     * Implementation of get delivery delay endpoint
+     * Implementation of get delivery delay endpoint.
      * @param deliveryID id of the delivery
      * @param role role of the user
      * @return delay of the delivery
@@ -89,7 +89,7 @@ public class VendorOrCourierController {
     }
 
     /**
-     * Implementation for assign order to courier.
+     * Implementation for assign order to courier, modifies delivery object's courier field in the database.
      * @param courierID ID of the courier
      * @param deliveryID ID of the delivery
      * @param role role of the user
@@ -100,14 +100,14 @@ public class VendorOrCourierController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
-        if (fetched.isEmpty()) {
+        Optional<Delivery> fetchedFromDB = deliveryRepository.findById(deliveryID);
+        if (fetchedFromDB.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Delivery del = fetched.get();
-        del.setCourierID(courierID);
-        deliveryRepository.save(del);
-        return new ResponseEntity<>(del.getDeliveryID(), HttpStatus.OK);
+        Delivery delivery = fetchedFromDB.get();
+        delivery.setCourierID(courierID);
+        deliveryRepository.save(delivery);
+        return new ResponseEntity<>(delivery.getDeliveryID(), HttpStatus.OK);
     }
 }
