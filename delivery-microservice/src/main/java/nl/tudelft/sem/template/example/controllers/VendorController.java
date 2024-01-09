@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
@@ -18,10 +19,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class VendorController {
 
+    @Getter
     RestaurantRepository restaurantRepository;
     DeliveryRepository deliveryRepository;
 
@@ -33,6 +40,9 @@ public class VendorController {
 
     public boolean checkVendor(String role) {
         return role.equals("vendor");
+    }
+    public boolean checkCourier(String role) {
+        return role.equals("courier");
     }
 
     /** Adds a courier to a restaurant.
@@ -65,10 +75,6 @@ public class VendorController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public RestaurantRepository getRestaurantRepository() {
-        return restaurantRepository;
-    }
-
 
     /** Sets the status to accepted for a delivery.
      *
@@ -88,6 +94,51 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * Gets the estimated time of pick-up for a delivery.
+     * @param deliveryID UUID of the delivery object
+     * @param role User role
+     * @return OffsetDateTime of the estimated time of pick-up
+     */
+    public ResponseEntity<OffsetDateTime> getPickUpEstimate(UUID deliveryID , String role ) {
+        Optional<Delivery> estimate = deliveryRepository.findById(deliveryID);
+        if (estimate.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        OffsetDateTime r = estimate.get().getPickedUpTime();
+        if (r == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(r, HttpStatus.OK);
+    }
+
+    /**
+     * Sets the estimated time of pick-up for a delivery.
+     * @param deliveryID UUID of the delivery object
+     * @param role User role
+     * @param body String in OffsetDateTime format for the estimated time of pick-up
+     * @return the set datetime if successful, otherwise error
+     */
+    public ResponseEntity<String> setPickUpEstimate(UUID deliveryID, String role, String body) {
+        if (checkVendor(role) || checkCourier(role)) {
+            if (deliveryRepository.findById(deliveryID).isPresent()) {
+                Delivery delivery = deliveryRepository.findById(deliveryID).get();
+                OffsetDateTime time;
+                try {
+                    time = OffsetDateTime.parse(body);
+                } catch (DateTimeParseException e) {
+                    return new ResponseEntity<>("Invalid body. " + e.getMessage(), HttpStatus.BAD_REQUEST);
+                }
+                delivery.setPickupTimeEstimate(time);
+                deliveryRepository.save(delivery);
+
+                return new ResponseEntity<>(time.toString(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     /** Sets the status to rejected for a delivery.

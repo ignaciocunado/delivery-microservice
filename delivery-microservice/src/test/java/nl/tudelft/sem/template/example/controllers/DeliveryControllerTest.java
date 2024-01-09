@@ -59,6 +59,12 @@ class DeliveryControllerTest {
     }
 
     @Test
+    void testGetPickUpEstimateDeliveryId() {
+        deliveryController.getPickUpEstimateDeliveryId(deliveryId, role);
+        Mockito.verify(vendorController).getPickUpEstimate(deliveryId, role);
+    }
+
+    @Test
     void rejectDelivery() {
         deliveryController.rejectDelivery(deliveryId, role);
 
@@ -91,6 +97,13 @@ class DeliveryControllerTest {
         deliveryController.editStatusDelivery(deliveryId, role, "preparing");
 
         Mockito.verify(vendorController).editStatusDelivery(deliveryId, role, "preparing");
+    }
+
+    @Test
+    void testSetPickUpTime() {
+        deliveryController.setPickUpTime(deliveryId, role, "preparing");
+
+        Mockito.verify(vendorController).setPickUpEstimate(deliveryId, role, "preparing");
     }
 
     @Test
