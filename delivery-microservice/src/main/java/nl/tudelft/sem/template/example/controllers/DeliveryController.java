@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.print.DocFlavor;
+import javax.print.attribute.IntegerSyntax;
 
 /**
  * Main Delivery Controller. Calls on other controllers to handle requests.
@@ -130,4 +131,16 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<Integer> setDeliveryDelay(UUID deliveryID, String role, Integer body) {
         return vendorOrCourierController.setDeliveryDelay(deliveryID, role, body);
     }
+
+    /**
+     * Inegrates controller with API for get delivery delay endpoint
+     * @param deliveryID ID of delivery to query. (required)
+     * @param role The role of the user (required)
+     * @return the delay of the delivery
+     */
+    @Override
+    public ResponseEntity<Integer> getDeliveryDelay(UUID deliveryID, String role) {
+        return vendorOrCourierController.getDeliveryDelay(deliveryID, role);
+    }
+
 }

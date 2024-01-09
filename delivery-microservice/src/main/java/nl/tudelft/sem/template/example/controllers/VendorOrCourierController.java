@@ -67,4 +67,23 @@ public class VendorOrCourierController {
         deliveryRepository.save(del);
         return new ResponseEntity<>(del.getDelay(), HttpStatus.OK);
     }
+
+    /**
+     * Implementation of get delivery delay endpoint
+     * @param deliveryID id of the delivery
+     * @param role role of the user
+     * @return delay of the delivery
+     */
+    public ResponseEntity<Integer> getDeliveryDelay(UUID deliveryID, String role) {
+        if(!checkVendorOrCourier(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
+        if(fetched.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(fetched.get().getDelay(), HttpStatus.OK);
+    }
 }
