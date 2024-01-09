@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class TestDeliveryRepository implements DeliveryRepository {
     List<Delivery> list = new ArrayList<>();
@@ -29,7 +30,7 @@ public class TestDeliveryRepository implements DeliveryRepository {
     }
 
     @Override
-    public List<Delivery> findAllById(Iterable<String> strings) {
+    public List<Delivery> findAllById(Iterable<UUID> ids) {
         return null;
     }
 
@@ -39,7 +40,7 @@ public class TestDeliveryRepository implements DeliveryRepository {
     }
 
     @Override
-    public void deleteById(String s) {
+    public void deleteById(UUID s) {
 
     }
 
@@ -70,10 +71,10 @@ public class TestDeliveryRepository implements DeliveryRepository {
     }
 
     @Override
-    public Optional<Delivery> findById(String s) {
+    public Optional<Delivery> findById(UUID s) {
         // find in list
         for (Delivery d : list) {
-            if (d.getDeliveryID().toString().equals(s)) {
+            if (d.getDeliveryID().equals(s)) {
                 return Optional.of(d);
             }
         }
@@ -81,12 +82,16 @@ public class TestDeliveryRepository implements DeliveryRepository {
     }
 
     @Override
+<<<<<<< HEAD
     public boolean existsById(String s) {
         for (Delivery d : list) {
             if (d.getDeliveryID().toString().equals(s)) {
                 return true;
             }
         }
+=======
+    public boolean existsById(UUID s) {
+>>>>>>> 35d324b90da3df3f988f17ac3f39825a8443cf5e
         return false;
     }
 
@@ -111,7 +116,7 @@ public class TestDeliveryRepository implements DeliveryRepository {
     }
 
     @Override
-    public Delivery getOne(String s) {
+    public Delivery getOne(UUID s) {
         return null;
     }
 

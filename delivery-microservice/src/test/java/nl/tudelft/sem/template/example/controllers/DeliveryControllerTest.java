@@ -20,6 +20,7 @@ class DeliveryControllerTest {
     private transient CourierController courierController;
     private transient VendorController vendorController;
     private transient DeliveryController deliveryController;
+    private transient GlobalController globalController;
 
     private UUID deliveryId;
     private String role;
@@ -36,7 +37,8 @@ class DeliveryControllerTest {
         // mock courier controller to verify its methods are called
         courierController = Mockito.mock(CourierController.class);
         vendorController = Mockito.mock(VendorController.class);
-        deliveryController = new DeliveryController(courierController, vendorController);
+        globalController = Mockito.mock(GlobalController.class);
+        deliveryController = new DeliveryController(courierController, vendorController, globalController);
     }
 
     @Test
@@ -55,9 +57,45 @@ class DeliveryControllerTest {
     }
 
     @Test
+<<<<<<< HEAD
     void testGetPickUpEstimateDeliveryId() {
         deliveryController.getPickUpEstimateDeliveryId(deliveryId, role);
         Mockito.verify(vendorController).getPickUpEstimate(deliveryId, role);
     }
 
+=======
+    void rejectDelivery() {
+        deliveryController.rejectDelivery(deliveryId, role);
+
+        Mockito.verify(vendorController).rejectDelivery(deliveryId, role);
+    }
+
+    @Test
+    void getCustomerID() {
+        deliveryController.getCustomerByDeliveryId(deliveryId, role);
+
+        Mockito.verify(vendorController).getCustomerByDeliveryId(deliveryId, role);
+    }
+
+    @Test
+    void deliveryIdDone() {
+        deliveryController.deliveryIdDone(deliveryId, role);
+
+        Mockito.verify(courierController).deliveredDelivery(deliveryId, role);
+    }
+
+    @Test
+    void getLiveLocation() {
+        deliveryController.getLiveLocation(deliveryId, role);
+
+        Mockito.verify(globalController).getLiveLocation(deliveryId, role);
+    }
+
+    @Test
+    void testEditStatusDelivery() {
+        deliveryController.editStatusDelivery(deliveryId, role, "preparing");
+
+        Mockito.verify(vendorController).editStatusDelivery(deliveryId, role, "preparing");
+    }
+>>>>>>> 35d324b90da3df3f988f17ac3f39825a8443cf5e
 }
