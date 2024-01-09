@@ -35,6 +35,12 @@ public class RestaurantController implements RestaurantApi {
         return vendorController.removeCourierRest(courierId, restaurantId, role);
     }
 
+    /**
+     * Calls the method implemented in the vendorController for retrieving a Restaurant
+     * @param restaurantId ID of the restaurant to query. (required)
+     * @param role The role of the user (required)
+     * @return
+     */
     @Override
     public ResponseEntity<String> getRest(UUID restaurantId, String role) {
         return vendorController.getRest(restaurantId, role);
