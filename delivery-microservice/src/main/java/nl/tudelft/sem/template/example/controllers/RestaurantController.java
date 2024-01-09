@@ -23,8 +23,7 @@ public class RestaurantController implements RestaurantApi {
 
     @Override
     public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
-
-       return vendorController.addCourierToRest(courierId, restaurantId, role);
+        return vendorController.addCourierToRest(courierId, restaurantId, role);
     }
 
     @Override

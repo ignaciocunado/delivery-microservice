@@ -36,8 +36,15 @@ public class DeliveryController implements DeliveryApi {
     private final transient GlobalController globalController;
     private final transient VendorOrCourierController vendorOrCourierController;
 
+    /**
+     * Autowired constructor for the controller.
+     * @param courierController subcontroller for couriers
+     * @param vendorController subcontroller for vendors
+     * @param globalController subcontroller for global endpoints
+     */
     @Autowired
-    public DeliveryController(CourierController courierController, VendorController vendorController, GlobalController globalController, VendorOrCourierController vendorOrCourierController) {
+    public DeliveryController(CourierController courierController, VendorController vendorController,
+                              GlobalController globalController, VendorOrCourierController vendorOrCourierController) {
         this.courierController = courierController;
         this.vendorController = vendorController;
         this.globalController = globalController;

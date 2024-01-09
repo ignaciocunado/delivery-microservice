@@ -65,7 +65,7 @@ class VendorControllerTest {
     }
 
     /**
-    Tests for the addCourierToRest endpoint
+    Tests for the addCourierToRest endpoint.
      **/
     @Test
     public void testUnauthorized() {
@@ -87,7 +87,11 @@ class VendorControllerTest {
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
         Restaurant newRes = sut.getRestaurantRepository().findById(restaurantId).get();
-        assertFalse(newRes.getCourierIDs().stream().filter(x -> x.getCourierID().equals(courierId)).collect(Collectors.toList()).isEmpty());
+        assertFalse(
+                newRes.getCourierIDs().stream()
+                        .filter(x -> x.getCourierID().equals(courierId))
+                        .collect(Collectors.toList()).isEmpty()
+        );
 
     }
 

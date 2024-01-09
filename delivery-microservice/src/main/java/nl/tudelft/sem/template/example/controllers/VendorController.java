@@ -161,21 +161,32 @@ public class VendorController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
+    /**
+     * Implementation for removing a courier from the database.
+     * @param courierId ID of the courier to remove
+     * @param restaurantId ID of the restaurant
+     * @param role role of the user
+     * @return void response entity with HTTP codes
+     */
     public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
-        if(!checkVendor(role))
+        if (!checkVendor(role)) {
             return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
-
+        }
         Optional<Restaurant> rest = restaurantRepository.findById(restaurantId);
 
-        if(rest.isEmpty())
+        if (rest.isEmpty()) {
             return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+        }
 
         List<RestaurantCourierIDsInner> couriers = rest.get().getCourierIDs();
 
-        if(couriers.stream().filter(x -> x.getCourierID().equals(courierId)).collect(Collectors.toList()).isEmpty())
+        if (couriers.stream().filter(x -> x.getCourierID().equals(courierId)).collect(Collectors.toList()).isEmpty()) {
             return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+        }
 
-        RestaurantCourierIDsInner toRemove = couriers.stream().filter(x -> x.getCourierID().equals(courierId)).collect(Collectors.toList()).get(0);
+        RestaurantCourierIDsInner toRemove = couriers.stream()
+                .filter(x -> x.getCourierID().equals(courierId))
+                .collect(Collectors.toList()).get(0);
 
         couriers.remove(toRemove);
 
@@ -188,7 +199,7 @@ public class VendorController {
     }
 
     /**
-     * Implementation for the get customer ID endpoint
+     * Implementation for the get customer ID endpoint.
      * @param deliveryID id of the delivery
      * @param role role of the caller
      * @return id of customer
