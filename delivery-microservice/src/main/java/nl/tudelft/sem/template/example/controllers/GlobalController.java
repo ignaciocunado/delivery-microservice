@@ -103,4 +103,31 @@ public class GlobalController {
         final Delivery delivery = deliveryFromDB.get();
         return new ResponseEntity<>(delivery, HttpStatus.OK);
     }
+
+    /**
+     * Implementation for the get order by delivery ID endpoint. This fetches the 'order' object's ID attribute from
+     * the database. Note that this order object DNE in this microservice - instead, the ID points to an object from
+     * a different database.
+     * @param deliveryId ID of the delivery to query.
+     * @param role Role of the querying user.
+     * @return The delivery's order ID.
+     */
+    public ResponseEntity<UUID> getOrderByDeliveryId(UUID deliveryId, String role) {
+        // Authorize the user
+        if (!checkGeneral(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Attempt to fetch the delivery from the DB
+        final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
+        if (deliveryFromDB.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Fetch & validate the order ID
+        final Delivery delivery = deliveryFromDB.get();
+        final UUID orderId = delivery.getOrderID();
+
+        return new ResponseEntity<>(orderId, HttpStatus.OK);
+    }
 }

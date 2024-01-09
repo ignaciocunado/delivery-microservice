@@ -141,4 +141,11 @@ class DeliveryControllerTest {
 
         Mockito.verify(globalController).getDeliveryById(deliveryId, role);
     }
+
+    @Test
+    void testGetOrderByDeliveryId() {
+        deliveryController.getOrderByDeliveryId(deliveryId, role);
+
+        Mockito.verify(globalController).getOrderByDeliveryId(deliveryId, role);
+    }
 }
