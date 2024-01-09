@@ -21,6 +21,7 @@ class DeliveryControllerTest {
     private transient VendorController vendorController;
     private transient DeliveryController deliveryController;
     private transient GlobalController globalController;
+    private transient VendorOrCourierController vendorOrCourierController;
 
     private UUID deliveryId;
     private String role;
@@ -38,7 +39,8 @@ class DeliveryControllerTest {
         courierController = Mockito.mock(CourierController.class);
         vendorController = Mockito.mock(VendorController.class);
         globalController = Mockito.mock(GlobalController.class);
-        deliveryController = new DeliveryController(courierController, vendorController, globalController);
+        vendorOrCourierController = Mockito.mock(VendorOrCourierController.class);
+        deliveryController = new DeliveryController(courierController, vendorController, globalController, vendorOrCourierController);
     }
 
     @Test
@@ -96,5 +98,19 @@ class DeliveryControllerTest {
         deliveryController.getDeliveryException(deliveryId, role);
 
         Mockito.verify(globalController).getDeliveryException(deliveryId, role);
+    }
+
+    @Test
+    void testSetDeliveryDelay() {
+        deliveryController.setDeliveryDelay(deliveryId, role, 4);
+
+        Mockito.verify(vendorOrCourierController).setDeliveryDelay(deliveryId, role, 4);
+    }
+
+    @Test
+    void testGetDeliveryDelay() {
+        deliveryController.getDeliveryDelay(deliveryId, role);
+
+        Mockito.verify(vendorOrCourierController).getDeliveryDelay(deliveryId, role);
     }
 }
