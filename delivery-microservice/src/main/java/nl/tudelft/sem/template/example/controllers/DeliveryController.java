@@ -178,7 +178,7 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
-     * Inegrates controller with API for get delivery delay endpoint
+     * Integrates controller with API for get delivery delay endpoint
      * @param deliveryID ID of delivery to query. (required)
      * @param role The role of the user (required)
      * @return the delay of the delivery
@@ -186,6 +186,18 @@ public class DeliveryController implements DeliveryApi {
     @Override
     public ResponseEntity<Integer> getDeliveryDelay(UUID deliveryID, String role) {
         return vendorOrCourierController.getDeliveryDelay(deliveryID, role);
+    }
+
+    /**
+     * Integrates controller with API for assign order to courier endpoint.
+     * @param courierID The id of the courier to which the delivery will be assigned (required)
+     * @param deliveryID The delivery to be assigned to the courier (required)
+     * @param role The role of the user (required)
+     * @return ID of the delivery
+     */
+    @Override
+    public ResponseEntity<UUID> assignOrderToCourier(UUID courierID, UUID deliveryID, String role) {
+        return vendorOrCourierController.assignOrderToCourier(courierID, deliveryID, role);
     }
 
 }
