@@ -58,4 +58,21 @@ public class GlobalController {
         }
         return new ResponseEntity<>(fetched.get().getLiveLocation(), HttpStatus.OK);
     }
+
+    /**
+     * Implementation for get delivery exception endpoint
+     * @param deliveryID id of the delivery to query
+     * @param role role of the user
+     * @return string representing the exception if there is one
+     */
+    public ResponseEntity<String> getDeliveryException(UUID deliveryID, String role) {
+        if (!checkGeneral(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        final Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
+        if (!fetched.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(fetched.get().getUserException() == null ? "" : fetched.get().getUserException(), HttpStatus.OK);
+    }
 }

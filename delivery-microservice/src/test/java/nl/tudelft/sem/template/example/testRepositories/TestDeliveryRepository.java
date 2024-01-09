@@ -84,6 +84,11 @@ public class TestDeliveryRepository implements DeliveryRepository {
 
     @Override
     public boolean existsById(UUID s) {
+        for (Delivery d : list) {
+            if (d.getDeliveryID().equals(s)) {
+                return true;
+            }
+        }
         return false;
     }
 
