@@ -81,4 +81,25 @@ class VendorOrCourierControllerTest {
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
+
+    @Test
+    void getDeliveryDelayOk() {
+        ResponseEntity<Integer> res = vendorOrCourierController.getDeliveryDelay(deliveryId, "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        assertEquals(res.getBody(), 1);
+    }
+
+    @Test
+    void getDeliveryDelayUnauthorised() {
+        ResponseEntity<Integer> res = vendorOrCourierController.getDeliveryDelay(deliveryId, "restaurant");
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+        assertNull(res.getBody());
+    }
+
+    @Test
+    void getDeliveryDelayNotFound() {
+        ResponseEntity<Integer> res = vendorOrCourierController.getDeliveryDelay(UUID.randomUUID(), "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+        assertNull(res.getBody());
+    }
 }
