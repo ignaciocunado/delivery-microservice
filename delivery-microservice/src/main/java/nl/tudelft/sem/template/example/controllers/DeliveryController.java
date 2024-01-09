@@ -22,12 +22,14 @@ public class DeliveryController implements DeliveryApi {
     private transient CourierController courierController;
     private transient VendorController vendorController;
     private transient GlobalController globalController;
+    private transient VendorOrCourierController vendorOrCourierController;
 
     @Autowired
-    public DeliveryController(CourierController courierController, VendorController vendorController, GlobalController globalController) {
+    public DeliveryController(CourierController courierController, VendorController vendorController, GlobalController globalController, VendorOrCourierController vendorOrCourierController) {
         this.courierController = courierController;
         this.vendorController = vendorController;
         this.globalController = globalController;
+        this.vendorOrCourierController = vendorOrCourierController;
     }
 
     @Override
@@ -117,4 +119,8 @@ public class DeliveryController implements DeliveryApi {
         return globalController.getDeliveryException(deliveryID, role);
     }
 
+    @Override
+    public ResponseEntity<Integer> setDeliveryDelay(UUID deliveryID, String role, Integer body) {
+        return vendorOrCourierController.setDeliveryDelay(deliveryID, role, body);
+    }
 }
