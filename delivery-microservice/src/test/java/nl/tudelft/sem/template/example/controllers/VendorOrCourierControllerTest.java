@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import com.fasterxml.jackson.databind.deser.std.UUIDDeserializer;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
@@ -100,6 +101,32 @@ class VendorOrCourierControllerTest {
     void getDeliveryDelayNotFound() {
         ResponseEntity<Integer> res = vendorOrCourierController.getDeliveryDelay(UUID.randomUUID(), "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+        assertNull(res.getBody());
+    }
+
+
+    @Test
+    void assignOrderToCourierOK() {
+        UUID courier = UUID.randomUUID();
+        ResponseEntity<UUID> res = vendorOrCourierController.assignOrderToCourier(courier, deliveryId, "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        assertEquals(res.getBody(), deliveryId);
+        assertEquals(deliveryRepository.findById(deliveryId).get().getCourierID(), courier);
+    }
+
+    @Test
+    void assignOrderToCourierNotFound() {
+        UUID courier = UUID.randomUUID();
+        ResponseEntity<UUID> res = vendorOrCourierController.assignOrderToCourier(courier, UUID.randomUUID(), "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+        assertNull(res.getBody());
+    }
+
+    @Test
+    void assignOrderToCourierUnauthorised() {
+        UUID courier = UUID.randomUUID();
+        ResponseEntity<UUID> res = vendorOrCourierController.assignOrderToCourier(courier, deliveryId, "restaurant");
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
         assertNull(res.getBody());
     }
 }

@@ -126,4 +126,12 @@ class DeliveryControllerTest {
 
         Mockito.verify(vendorOrCourierController).getDeliveryDelay(deliveryId, role);
     }
+
+    @Test
+    void assignOrderToCourierTest() {
+        UUID courier = UUID.randomUUID();
+        deliveryController.assignOrderToCourier(courier, deliveryId, role);
+
+        Mockito.verify(vendorOrCourierController).assignOrderToCourier(courier, deliveryId, role);
+    }
 }

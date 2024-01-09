@@ -41,6 +41,7 @@ public class VendorController {
     public boolean checkVendor(String role) {
         return role.equals("vendor");
     }
+
     public boolean checkCourier(String role) {
         return role.equals("courier");
     }
@@ -102,7 +103,7 @@ public class VendorController {
      * @param role User role
      * @return OffsetDateTime of the estimated time of pick-up
      */
-    public ResponseEntity<OffsetDateTime> getPickUpEstimate(UUID deliveryID , String role ) {
+    public ResponseEntity<OffsetDateTime> getPickUpEstimate(UUID deliveryID, String role) {
         Optional<Delivery> estimate = deliveryRepository.findById(deliveryID);
         if (estimate.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

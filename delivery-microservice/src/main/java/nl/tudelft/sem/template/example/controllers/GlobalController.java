@@ -60,7 +60,7 @@ public class GlobalController {
     }
 
     /**
-     * Implementation for get delivery exception endpoint
+     * Implementation for get delivery exception endpoint.
      * @param deliveryID id of the delivery to query
      * @param role role of the user
      * @return string representing the exception if there is one
@@ -73,6 +73,7 @@ public class GlobalController {
         if (!fetched.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(fetched.get().getUserException() == null ? "" : fetched.get().getUserException(), HttpStatus.OK);
+        return new ResponseEntity<>(fetched.get().getUserException() == null ? "" : fetched.get().getUserException(),
+                HttpStatus.OK);
     }
 }
