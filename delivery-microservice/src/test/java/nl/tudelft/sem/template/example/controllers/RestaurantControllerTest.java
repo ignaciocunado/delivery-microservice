@@ -43,7 +43,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    public void testCallgetRest() {
+    public void testCallGetRest() {
         UUID id = UUID.randomUUID();
         String s = "";
 
