@@ -119,6 +119,13 @@ public class DeliveryController implements DeliveryApi {
         return globalController.getDeliveryException(deliveryID, role);
     }
 
+    /**
+     * Integrates controller with API for set delivery delay endpoint
+     * @param deliveryID ID of delivery to update. (required)
+     * @param role The role of the user (required)
+     * @param body  (required)
+     * @return the new delay
+     */
     @Override
     public ResponseEntity<Integer> setDeliveryDelay(UUID deliveryID, String role, Integer body) {
         return vendorOrCourierController.setDeliveryDelay(deliveryID, role, body);

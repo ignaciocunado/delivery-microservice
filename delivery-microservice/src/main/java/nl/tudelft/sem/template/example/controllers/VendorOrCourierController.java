@@ -1,10 +1,17 @@
 package nl.tudelft.sem.template.example.controllers;
 
 
+import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+import java.util.UUID;
+import java.util.logging.Handler;
 
 /**
  * Sub-Controller of DeliveryController
@@ -35,5 +42,29 @@ public class VendorOrCourierController {
         return "vendorcourier".contains(role);
     }
 
+    /**
+     * Implementation of set delivery delay endpoint
+     * @param deliveryID id of the delivery to query
+     * @param role role of the user
+     * @param body new delay to update
+     * @return the new delay
+     */
+    public ResponseEntity<Integer> setDeliveryDelay(UUID deliveryID, String role, Integer body) {
+        if(!checkVendorOrCourier(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        if(body < 0 || body == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
+        Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
+        if(fetched.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Delivery del = fetched.get();
+        del.setDelay(body);
+        deliveryRepository.save(del);
+        return new ResponseEntity<>(del.getDelay(), HttpStatus.OK);
+    }
 }
