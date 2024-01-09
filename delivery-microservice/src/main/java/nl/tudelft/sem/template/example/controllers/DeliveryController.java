@@ -200,4 +200,14 @@ public class DeliveryController implements DeliveryApi {
         return vendorOrCourierController.assignOrderToCourier(courierID, deliveryID, role);
     }
 
+    /**
+     * Integrates controller with API for get order by delivery ID endpoint.
+     * @param deliveryId ID of the delivery to get. (required)
+     * @param role The role of the user (required)
+     * @return ID of the order.
+     */
+    @Override
+    public ResponseEntity<UUID> getOrderByDeliveryId(UUID deliveryId, String role) {
+        return globalController.getOrderByDeliveryId(deliveryId, role);
+    }
 }
