@@ -275,4 +275,87 @@ public class GlobalControllerTest {
                 response.getStatusCode()
         );
     }
+
+    /**
+     * The normal situation, in which a delivery and its rating both exist.
+     */
+    @Test
+    void testGetRatingByDeliveryIdGoodWeather() {
+        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(deliveryId, "courier");
+
+        assertEquals(
+                HttpStatus.OK,
+                response.getStatusCode()
+        );
+        assertEquals(
+                delivery.getCustomerRating(),
+                response.getBody()
+        );
+    }
+
+    /**
+     * The specified delivery does not exist!
+     */
+    @Test
+    void testGetRatingByDeliveryIdNotFound() {
+        UUID invalidDeliveryId = generateNewDeliveryId();
+
+        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(invalidDeliveryId, "courier");
+        assertEquals(
+                response.getStatusCode(),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    /**
+     * Ensures that every role can get a delivery's rating.
+     */
+    @Test
+    void testGetRatingByDeliveryIdAllRoles() {
+        List<String> rolesToTest = List.of("courier", "vendor", "admin", "customer");
+
+        for (String roleToTest : rolesToTest) {
+            ResponseEntity<Double> response = globalController.getRatingByDeliveryId(deliveryId, roleToTest);
+            assertEquals(
+                    HttpStatus.OK,
+                    response.getStatusCode()
+            );
+            assertEquals(
+                    delivery.getCustomerRating(),
+                    response.getBody()
+            );
+        }
+    }
+
+    /**
+     * Ensures that a valid role is required to access a delivery's rating.
+     */
+    @Test
+    void testGetRatingByDeliveryIdUnauthorized() {
+        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(deliveryId, "co");
+        assertEquals(
+                HttpStatus.UNAUTHORIZED,
+                response.getStatusCode()
+        );
+
+        response = globalController.getRatingByDeliveryId(deliveryId, "unauthorizedRole");
+        assertEquals(
+                HttpStatus.UNAUTHORIZED,
+                response.getStatusCode()
+        );
+    }
+
+    /**
+     * Ensures that a role is required at all to access a delivery's order.
+     */
+    @Test
+    void testGetRatingByDeliveryIdNoAuthorization() {
+        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(deliveryId, "");
+        assertEquals(
+                HttpStatus.UNAUTHORIZED,
+                response.getStatusCode()
+        );
+    }
 }
+
+

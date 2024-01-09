@@ -223,4 +223,17 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<UUID> getOrderByDeliveryId(UUID deliveryId, String role) {
         return globalController.getOrderByDeliveryId(deliveryId, role);
     }
+
+    /**
+     * Integrates controller with API for the get rating by delivery ID endpoint.
+     * @param deliveryId ID of delivery to query. (required)
+     * @param role The role of the user (required)
+     * @return The user's delivery rating.
+     */
+    @Override
+    public ResponseEntity<Double> getRateByDeliveryId(UUID deliveryId, String role) {
+        // Note: the implementation function is named "get rating", to be more in line
+        // with our model definitions. If necessary, this can be reverted to the original name.
+        return globalController.getRatingByDeliveryId(deliveryId, role);
+    }
 }

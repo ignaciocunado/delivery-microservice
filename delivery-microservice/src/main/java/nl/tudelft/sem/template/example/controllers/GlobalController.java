@@ -130,4 +130,29 @@ public class GlobalController {
 
         return new ResponseEntity<>(orderId, HttpStatus.OK);
     }
+
+    /**
+     * Fetches the 'rating' property of a delivery. This property reflects a customer-specified rating.
+     * @param deliveryId Delivery to query.
+     * @param role Role of the querying user.
+     * @return The delivery's customer rating.
+     */
+    public ResponseEntity<Double> getRatingByDeliveryId(UUID deliveryId, String role) {
+        // Authorize the user
+        if (!checkGeneral(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Attempt to fetch the delivery from the DB
+        final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
+        if (deliveryFromDB.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Fetch & validate the order ID
+        final Delivery delivery = deliveryFromDB.get();
+        final Double rating = delivery.getCustomerRating();
+
+        return new ResponseEntity<>(rating, HttpStatus.OK);
+    }
 }
