@@ -34,6 +34,8 @@ public class GlobalControllerTest {
      */
     Delivery delivery;
 
+    OffsetDateTime sampleOffsetDateTime;
+
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
@@ -43,7 +45,7 @@ public class GlobalControllerTest {
         restaurantId = UUID.randomUUID();
 
         orderId = UUID.randomUUID();
-        OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
+        sampleOffsetDateTime = OffsetDateTime.of(
                 2024, 1, 4, 18, 23, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
@@ -121,7 +123,7 @@ public class GlobalControllerTest {
     }
 
     @Test
-    void getUserExceptionNull() {
+    void getUserExceptionEmpty() {
         OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
                 2024, 1, 4, 18, 23, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
@@ -132,6 +134,21 @@ public class GlobalControllerTest {
                 sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
                 "69.655,69.425", "", 1);
 
+        deliveryRepository.save(save);
+        ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        assertEquals(res.getBody(), "");
+    }
+
+
+    @Test
+    void getUserExceptionNull() {
+        OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
+                2024, 1, 4, 18, 23, 0, 0,
+                ZoneOffset.ofHoursMinutes(5, 30)
+        );
+        UUID id = UUID.randomUUID();
+        Delivery save = new Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "69.655,69.425", null, 1);
         deliveryRepository.save(save);
         ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -157,6 +174,7 @@ public class GlobalControllerTest {
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), 10.2d);
     }
+
 
     /**
      * Normal situation, in which the queried delivery exists.
@@ -399,6 +417,7 @@ public class GlobalControllerTest {
         );
     }
 
+
     /**
      * The normal situation, in which a delivery and its rating both exist.
      */
@@ -478,7 +497,11 @@ public class GlobalControllerTest {
                 HttpStatus.UNAUTHORIZED,
                 response.getStatusCode()
         );
+        UUID id = UUID.randomUUID();
+        Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "69.655,69.425", null, 1);
+        deliveryRepository.save(save);
+        ResponseEntity<String> res = globalController.getDeliveryException(id , "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        assertEquals(res.getBody(), "");
     }
 }
-
-

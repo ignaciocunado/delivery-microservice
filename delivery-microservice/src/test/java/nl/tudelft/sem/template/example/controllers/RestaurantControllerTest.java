@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import nl.tudelft.sem.model.Restaurant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -21,9 +22,12 @@ class RestaurantControllerTest {
     CourierController cc = Mockito.mock(CourierController.class);
 
     @Mock
+    AdminController ac = Mockito.mock(AdminController.class);
+
+    @Mock
     GlobalController gc = Mockito.mock(GlobalController.class);
 
-    RestaurantController sut = new RestaurantController(cc, vc, gc);
+    RestaurantController sut = new RestaurantController(cc, vc, ac, gc);
 
     @BeforeEach
     public void setup() {
@@ -47,6 +51,13 @@ class RestaurantControllerTest {
     }
 
     @Test
+    public void testCreateRestaurant() {
+        Restaurant restaurant = new Restaurant();
+        sut.createRestaurant("admin", restaurant);
+
+        verify(ac).createRestaurant("admin", restaurant);
+    }
+
     public void testCallMaxZone() {
         UUID id = UUID.randomUUID();
         sut.getMaxDeliveryZone(id, "a");
@@ -61,5 +72,4 @@ class RestaurantControllerTest {
         sut.getRest(id, s);
         verify(vc).getRest(id, s);
     }
-
 }

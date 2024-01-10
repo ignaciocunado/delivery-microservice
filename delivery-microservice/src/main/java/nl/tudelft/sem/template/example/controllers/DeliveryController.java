@@ -215,6 +215,17 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
+     * Integrates controller with API for the create delivery endpoint.
+     * @param role The role of the user (required)
+     * @param delivery Delivery data to create. ID is ignored entirely. (required)
+     * @return The created Delivery object.
+     */
+    @Override
+    public ResponseEntity<Delivery> createDelivery(String role, Delivery delivery) {
+        return vendorController.createDelivery(role, delivery);
+    }
+
+    /**
      * Integrates controller with API for get delivery by ID endpoint.
      * Note that this method name is unfortunately misspelled - but the spec is locked in place.
      * @param deliveryId ID of the delivery to get (required)
@@ -249,6 +260,30 @@ public class DeliveryController implements DeliveryApi {
         return globalController.getOrderByDeliveryId(deliveryId, role);
     }
 
+
+    /**
+     * Integrates controller with API for get delivery time estimate endpoint.
+     * @param deliveryID The ID of the delivery for which the delivery time estimate will be queried. (required)
+     * @param role The role of the user (required)
+     * @return The delivery time estimate.
+     */
+    @Override
+    public ResponseEntity<OffsetDateTime> getDeliveryEstimate(UUID deliveryID, String role) {
+        return vendorController.getDeliveryEstimate(deliveryID, role);
+    }
+
+    /**
+     * Integrates controller with API for set delivery time endpoint.
+     * @param deliveryID The id of the delivery to which the delivery time will be assigned (required)
+     * @param role The role of the user (required)
+     * @param body  (required)
+     * @return ID of the delivery
+     */
+    @Override
+    public ResponseEntity<String> setDeliveryEstimate(UUID deliveryID, String role, OffsetDateTime body) {
+        return vendorController.setDeliveryEstimate(deliveryID, role, body);
+    }
+
     /**
      * Integrates controller with API for the get rating by delivery ID endpoint.
      * @param deliveryId ID of delivery to query. (required)
@@ -259,7 +294,11 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<Double> getRateByDeliveryId(UUID deliveryId, String role) {
         // Note: the implementation function is named "get rating", to be more in line
         // with our model definitions. If necessary, this can be reverted to the original name.
-        ResponseEntity<Double> r = globalController.getRatingByDeliveryId(deliveryId, role);
+        return sanityCheck(globalController.getRatingByDeliveryId(deliveryId, role), deliveryId);
+    }
+
+    @lombok.Generated
+    private static ResponseEntity<Double> sanityCheck(ResponseEntity<Double> r, UUID deliveryId) {
         if (r != null && r.getBody() != null) {
             if (r.getBody() < 0 || r.getBody() > 1)
                 System.out.println("\033[91;40m getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
