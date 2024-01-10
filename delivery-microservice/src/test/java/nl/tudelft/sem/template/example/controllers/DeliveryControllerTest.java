@@ -136,6 +136,20 @@ class DeliveryControllerTest {
     }
 
     @Test
+    void testGetDeliveryById() {
+        deliveryController.getDeliveyById(deliveryId, role);
+
+        Mockito.verify(globalController).getDeliveryById(deliveryId, role);
+    }
+
+    @Test
+    void testGetOrderByDeliveryId() {
+        deliveryController.getOrderByDeliveryId(deliveryId, role);
+
+        Mockito.verify(globalController).getOrderByDeliveryId(deliveryId, role);
+    }
+
+    @Test
     void testCallGetAllDeliveries() {
         UUID vendorId = UUID.randomUUID();
         deliveryController.getAllDeliveriesVendor(vendorId, "vendor");
