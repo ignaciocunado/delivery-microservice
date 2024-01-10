@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -20,7 +20,11 @@ class RestaurantControllerTest {
     @Mock
     CourierController cc = Mockito.mock(CourierController.class);
 
-    RestaurantController sut = new RestaurantController(cc, vc);
+    @Mock
+    GlobalController gc = Mockito.mock(GlobalController.class);
+
+    RestaurantController sut = new RestaurantController(cc, vc, gc);
+
     @BeforeEach
     public void setup() {
         sut.setVendorController(vc);
@@ -42,6 +46,19 @@ class RestaurantControllerTest {
         verify(vc).removeCourierRest(id1, id2, "a");
     }
 
+    @Test
+    public void testCallMaxZone() {
+        UUID id = UUID.randomUUID();
+        sut.getMaxDeliveryZone(id, "a");
+        verify(gc).getMaxDeliveryZone(id, "a");
+    }
+    @Test
+    public void testCallGetRest() {
+        UUID id = UUID.randomUUID();
+        String s = "";
 
+        sut.getRest(id, s);
+        verify(vc).getRest(id, s);
+    }
 
 }

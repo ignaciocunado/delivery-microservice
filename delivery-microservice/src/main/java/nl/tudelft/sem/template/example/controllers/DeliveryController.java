@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import lombok.Setter;
 import nl.tudelft.sem.api.DeliveryApi;
+import nl.tudelft.sem.model.Delivery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,21 +81,21 @@ public class DeliveryController implements DeliveryApi {
 
 
     /**
-     * Integrates controller with API for getPickUpEstimate endpoint
+     * Integrates controller with API for getPickUpEstimate endpoint.
      * @param deliveryID ID of delivery to get the picked up timestamp of (required)
      * @param role The role of the user (required)
-     * @return
+     * @return the estimated pickup time of the delivery object
      */
     @Override
     public ResponseEntity<OffsetDateTime> getPickUpEstimateDeliveryId(
-            @Parameter(name = "deliveryID", description = "ID of delivery to get the picked up timestamp of", required = true, in = ParameterIn.PATH) @PathVariable("deliveryID") UUID deliveryID
-            ,@NotNull @Parameter(name = "role", description = "The role of the user", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "role", required = true) String role
+            @Parameter(name = "deliveryID", description = "ID of delivery to get the picked up timestamp of", required = true, in = ParameterIn.PATH) @PathVariable("deliveryID") UUID deliveryID,
+            @NotNull @Parameter(name = "role", description = "The role of the user", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "role", required = true) String role
     ) {
-        return vendorController.getPickUpEstimate(deliveryID , role );
+        return vendorController.getPickUpEstimate(deliveryID, role);
     }
 
     /**
-     * Integrates controller with API for getDropOffEstimate endpoint
+     * Integrates controller with API for getDropOffEstimate endpoint.
      * @param deliveryID ID of delivery to get the dropped off timestamp of (required)
      * @param role The role of the user (required)
      * @return 200 + message, 400, 403, or 404
@@ -155,7 +156,7 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
-     * Integrates controler with API for get delivery exception endpoint
+     * Integrates controller with API for get delivery exception endpoint.
      * @param deliveryID ID of delivery to query. (required)
      * @param role The role of the user (required)
      * @return the exception iff there is one
@@ -166,7 +167,7 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
-     * Integrates controller with API for set delivery delay endpoint
+     * Integrates controller with API for set delivery delay endpoint.
      * @param deliveryID ID of delivery to update. (required)
      * @param role The role of the user (required)
      * @param body  (required)
@@ -178,7 +179,7 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
-     * Inegrates controller with API for get delivery delay endpoint
+     * Integrates controller with API for get delivery delay endpoint.
      * @param deliveryID ID of delivery to query. (required)
      * @param role The role of the user (required)
      * @return the delay of the delivery
@@ -188,4 +189,60 @@ public class DeliveryController implements DeliveryApi {
         return vendorOrCourierController.getDeliveryDelay(deliveryID, role);
     }
 
+    /**
+     * Integrates controller with API for assign order to courier endpoint.
+     * @param courierID The id of the courier to which the delivery will be assigned (required)
+     * @param deliveryID The delivery to be assigned to the courier (required)
+     * @param role The role of the user (required)
+     * @return ID of the delivery
+     */
+    @Override
+    public ResponseEntity<UUID> assignOrderToCourier(UUID courierID, UUID deliveryID, String role) {
+        return vendorOrCourierController.assignOrderToCourier(courierID, deliveryID, role);
+    }
+
+    /**
+     * Integrates controller with API for get delivery by ID endpoint.
+     * Note that this method name is unfortunately misspelled - but the spec is locked in place.
+     * @param deliveryId ID of the delivery to get (required)
+     * @param role The role of the user (required)
+     * @return The delivery object, if it was found.
+     */
+    @Override
+    public ResponseEntity<Delivery> getDeliveyById(UUID deliveryId, String role) {
+        return globalController.getDeliveryById(deliveryId, role);
+    }
+
+    /**
+     * Integrates controller with API for get order by delivery ID endpoint.
+     * @param deliveryId ID of the delivery to get. (required)
+     * @param role The role of the user (required)
+     * @return ID of the order.
+     */
+    @Override
+    public ResponseEntity<UUID> getOrderByDeliveryId(UUID deliveryId, String role) {
+        return globalController.getOrderByDeliveryId(deliveryId, role);
+    }
+
+    /**
+     * Integrates controller with API for the get rating by delivery ID endpoint.
+     * @param deliveryId ID of delivery to query. (required)
+     * @param role The role of the user (required)
+     * @return The user's delivery rating.
+     */
+    @Override
+    public ResponseEntity<Double> getRateByDeliveryId(UUID deliveryId, String role) {
+        // Note: the implementation function is named "get rating", to be more in line
+        // with our model definitions. If necessary, this can be reverted to the original name.
+        ResponseEntity<Double> r = globalController.getRatingByDeliveryId(deliveryId, role);
+        if (r != null && r.getBody() != null) {
+            if (r.getBody() < 0 || r.getBody() > 1)
+                System.out.println("\033[91;40m getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
+                        + " \033[91;40m got response: \033[30;101m " + r.getBody() + " \033[0m");
+        } else {
+            System.out.println("\033[91;40m ** getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
+                    + " \033[91;40m was NULL ** \033[0m");
+        }
+        return r;
+    }
 }

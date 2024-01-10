@@ -41,6 +41,7 @@ public class VendorController {
     public boolean checkVendor(String role) {
         return role.equals("vendor");
     }
+
     public boolean checkCourier(String role) {
         return role.equals("courier");
     }
@@ -102,7 +103,7 @@ public class VendorController {
      * @param role User role
      * @return OffsetDateTime of the estimated time of pick-up
      */
-    public ResponseEntity<OffsetDateTime> getPickUpEstimate(UUID deliveryID , String role ) {
+    public ResponseEntity<OffsetDateTime> getPickUpEstimate(UUID deliveryID, String role) {
         Optional<Delivery> estimate = deliveryRepository.findById(deliveryID);
         if (estimate.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -238,4 +239,19 @@ public class VendorController {
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
+    /**
+     * Queries the database for a specific restaurant and throws respective errors
+     * @param restaurantId id of the queried restaurant
+     * @param role the role of the user
+     * @return the ResponseEntity containing the status of the request
+     */
+    public ResponseEntity<String> getRest(UUID restaurantId, String role) {
+        if(!checkVendor(role)) {
+            return new ResponseEntity<String>("NOT AUTHORIZED \n Requires vendor permissions!", HttpStatus.UNAUTHORIZED);
+        }
+        Optional<Restaurant> r = restaurantRepository.findById(restaurantId);
+        return r.map(restaurant -> new ResponseEntity<>(restaurant.toString(), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>("NOT FOUND \n No restaurant with the given id has been found", HttpStatus.NOT_FOUND));
+    }
+
 }

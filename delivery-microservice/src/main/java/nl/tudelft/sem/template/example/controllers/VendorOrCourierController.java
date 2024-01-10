@@ -7,6 +7,7 @@ import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.web.servlet.oauth2.resourceserver.OpaqueTokenDsl;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -14,7 +15,7 @@ import java.util.UUID;
 import java.util.logging.Handler;
 
 /**
- * Sub-Controller of DeliveryController
+ * Sub-Controller of DeliveryController.
  */
 @Component
 public class VendorOrCourierController {
@@ -23,7 +24,7 @@ public class VendorOrCourierController {
     DeliveryRepository deliveryRepository;
 
     /**
-     * Constructor
+     * Constructor.
      * @param restaurantRepository restaurant DB
      * @param deliveryRepository delivery DB
      */
@@ -34,7 +35,7 @@ public class VendorOrCourierController {
     }
 
     /**
-     * Checks whether the role provided is valid
+     * Checks whether the role provided is valid.
      * @param role role
      * @return true iff the role is valid
      */
@@ -43,7 +44,7 @@ public class VendorOrCourierController {
     }
 
     /**
-     * Implementation of set delivery delay endpoint
+     * Implementation of set delivery delay endpoint.
      * @param deliveryID id of the delivery to query
      * @param role role of the user
      * @param body new delay to update
@@ -69,7 +70,7 @@ public class VendorOrCourierController {
     }
 
     /**
-     * Implementation of get delivery delay endpoint
+     * Implementation of get delivery delay endpoint.
      * @param deliveryID id of the delivery
      * @param role role of the user
      * @return delay of the delivery
@@ -85,5 +86,28 @@ public class VendorOrCourierController {
         }
 
         return new ResponseEntity<>(fetched.get().getDelay(), HttpStatus.OK);
+    }
+
+    /**
+     * Implementation for assign order to courier, modifies delivery object's courier field in the database.
+     * @param courierID ID of the courier
+     * @param deliveryID ID of the delivery
+     * @param role role of the user
+     * @return ID of the delivery
+     */
+    public ResponseEntity<UUID> assignOrderToCourier(UUID courierID, UUID deliveryID, String role) {
+        if (!checkVendorOrCourier(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<Delivery> fetchedFromDB = deliveryRepository.findById(deliveryID);
+        if (fetchedFromDB.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Delivery delivery = fetchedFromDB.get();
+        delivery.setCourierID(courierID);
+        deliveryRepository.save(delivery);
+        return new ResponseEntity<>(delivery.getDeliveryID(), HttpStatus.OK);
     }
 }
