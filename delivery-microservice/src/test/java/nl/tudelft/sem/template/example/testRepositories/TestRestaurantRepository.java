@@ -122,7 +122,7 @@ public class TestRestaurantRepository implements RestaurantRepository {
 
     @Override
     public <S extends Restaurant> List<S> findAll(Example<S> example) {
-        return null;
+        return (List<S>) list;
     }
 
     @Override

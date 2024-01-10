@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.example.controllers;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+
+import java.util.List;
 import java.util.UUID;
 
 import lombok.Setter;
@@ -198,6 +200,17 @@ public class DeliveryController implements DeliveryApi {
     @Override
     public ResponseEntity<UUID> assignOrderToCourier(UUID courierID, UUID deliveryID, String role) {
         return vendorOrCourierController.assignOrderToCourier(courierID, deliveryID, role);
+    }
+
+    /**
+     * calls the implementation of the method in the vendorController
+     * @param vendorId The ID of the vendor to query (required)
+     * @param role The role of the user (required)
+     * @return the corresponding ResponseEntity
+     */
+    @Override
+    public ResponseEntity<List<UUID>> getAllDeliveriesVendor(UUID vendorId, String role) {
+        return vendorController.getAllDeliveriesVendor(vendorId, role);
     }
 
 }
