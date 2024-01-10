@@ -235,13 +235,15 @@ public class VendorController {
     }
 
     /**
-<<<<<<< HEAD
      * Gets the estimated time of delivery for a delivery.
      * @param deliveryID UUID of the delivery object
      * @param role User role
      * @return OffsetDateTime of the estimated time of delivery
      */
     public ResponseEntity<OffsetDateTime> getDeliveryEstimate(UUID deliveryID, String role) {
+        if (!checkVendor(role) && !checkCourier(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         Optional<Delivery> estimate = deliveryRepository.findById(deliveryID);
         if (estimate.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
