@@ -66,8 +66,7 @@ public class AdminController
 
         do {
             newId = UUID.randomUUID(); newIdGenerationAttempts += 1;
-        }
-        while (restaurantRepository.findById(newId).isPresent() && newIdGenerationAttempts < 1000);
+        } while (restaurantRepository.findById(newId).isPresent() && newIdGenerationAttempts < 1000);
 
         // Ensure the new ID is unique. Otherwise, return that we got
         // stuck in the ID generation loop (and had to abort).

@@ -260,8 +260,7 @@ public class VendorController {
         do {
             newId = UUID.randomUUID();
             newIdGenerationAttempts += 1;
-        }
-        while (deliveryRepository.findById(newId).isPresent() && newIdGenerationAttempts < 500);
+        } while (deliveryRepository.findById(newId).isPresent() && newIdGenerationAttempts < 500);
 
         // Ensure the new ID is unique. Otherwise, return that we got
         // stuck in the ID generation loop (and had to abort).
