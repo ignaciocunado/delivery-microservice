@@ -251,6 +251,13 @@ class VendorControllerTest {
     }
 
     @Test
+    void testSetPickUpEstimate2() {
+        ResponseEntity<String> res = sut.setPickUpEstimate(deliveryId, "courier", sampleOffsetDateTime.toString());
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId).get().getPickupTimeEstimate(), sampleOffsetDateTime);
+    }
+
+    @Test
     void testSetInvalidPickUpEstimate() {
         ResponseEntity<String> res = sut.setPickUpEstimate(deliveryId, "vendor", "hello");
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());

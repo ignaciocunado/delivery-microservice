@@ -105,7 +105,7 @@ public class GlobalControllerTest {
     }
 
     @Test
-    void getUserExceptionNull() {
+    void getUserExceptionEmpty() {
         OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
                 2024, 1, 4, 18, 23, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
@@ -274,5 +274,19 @@ public class GlobalControllerTest {
                 HttpStatus.UNAUTHORIZED,
                 response.getStatusCode()
         );
+    }
+
+    @Test
+    void getUserExceptionNull() {
+        OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
+                2024, 1, 4, 18, 23, 0, 0,
+                ZoneOffset.ofHoursMinutes(5, 30)
+        );
+        UUID id = UUID.randomUUID();
+        Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "69.655,69.425", null, 1);
+        deliveryRepository.save(save);
+        ResponseEntity<String> res = globalController.getDeliveryException(id , "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        assertEquals(res.getBody(), "");
     }
 }
