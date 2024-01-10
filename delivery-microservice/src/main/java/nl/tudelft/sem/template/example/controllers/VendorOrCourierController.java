@@ -7,12 +7,9 @@ import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.web.servlet.oauth2.resourceserver.OpaqueTokenDsl;
 import org.springframework.stereotype.Component;
-
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Handler;
 
 /**
  * Sub-Controller of DeliveryController.
@@ -20,17 +17,14 @@ import java.util.logging.Handler;
 @Component
 public class VendorOrCourierController {
 
-    RestaurantRepository restaurantRepository;
     DeliveryRepository deliveryRepository;
 
     /**
      * Constructor.
-     * @param restaurantRepository restaurant DB
      * @param deliveryRepository delivery DB
      */
     @Autowired
-    public VendorOrCourierController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository) {
-        this.restaurantRepository = restaurantRepository;
+    public VendorOrCourierController(DeliveryRepository deliveryRepository) {
         this.deliveryRepository = deliveryRepository;
     }
 
@@ -41,6 +35,33 @@ public class VendorOrCourierController {
      */
     public boolean checkVendorOrCourier(String role) {
         return "vendorcourier".contains(role);
+    }
+
+    /**
+     * Sets the delivery exception.
+     * @param deliveryId ID of the delivery to query. (required)
+     * @param role The role of the user (required)
+     * @param body (required)
+     * @return 200 + message, 400, 403, or 404
+     */
+    public ResponseEntity<String> setDeliveryException(UUID deliveryId, String role, String body) {
+        if(!checkVendorOrCourier(role)) {
+            return new ResponseEntity<>("error 403: Authorization failed!", HttpStatus.UNAUTHORIZED);
+        }
+
+        if(body == null || body.isBlank() || body.isEmpty()) {
+            return new ResponseEntity<>("error 400", HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<Delivery> fetchedDelivery = deliveryRepository.findById(deliveryId);
+        if(fetchedDelivery.isEmpty()) {
+            return new ResponseEntity<>("error 404: Delivery not found!", HttpStatus.NOT_FOUND);
+        }
+
+        Delivery delivery = fetchedDelivery.get();
+        delivery.setUserException(body);
+        deliveryRepository.save(delivery);
+        return new ResponseEntity<>("200 OK", HttpStatus.OK);
     }
 
     /**
