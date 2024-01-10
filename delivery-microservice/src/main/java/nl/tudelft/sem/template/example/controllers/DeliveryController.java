@@ -234,6 +234,15 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<Double> getRateByDeliveryId(UUID deliveryId, String role) {
         // Note: the implementation function is named "get rating", to be more in line
         // with our model definitions. If necessary, this can be reverted to the original name.
-        return globalController.getRatingByDeliveryId(deliveryId, role);
+        ResponseEntity<Double> r = globalController.getRatingByDeliveryId(deliveryId, role);
+        if (r != null && r.getBody() != null) {
+            if (r.getBody() < 0 || r.getBody() > 1)
+                System.out.println("\033[91;40m getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
+                        + " \033[91;40m got response: \033[30;101m " + r.getBody() + " \033[0m");
+        } else {
+            System.out.println("\033[91;40m ** getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
+                    + " \033[91;40m was NULL ** \033[0m");
+        }
+        return r;
     }
 }
