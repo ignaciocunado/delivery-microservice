@@ -270,7 +270,11 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<Double> getRateByDeliveryId(UUID deliveryId, String role) {
         // Note: the implementation function is named "get rating", to be more in line
         // with our model definitions. If necessary, this can be reverted to the original name.
-        ResponseEntity<Double> r = globalController.getRatingByDeliveryId(deliveryId, role);
+        return sanityCheck(globalController.getRatingByDeliveryId(deliveryId, role), deliveryId);
+    }
+
+    @lombok.Generated
+    private static ResponseEntity<Double> sanityCheck(ResponseEntity<Double> r, UUID deliveryId) {
         if (r != null && r.getBody() != null) {
             if (r.getBody() < 0 || r.getBody() > 1)
                 System.out.println("\033[91;40m getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
