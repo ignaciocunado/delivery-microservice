@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,18 +11,13 @@ import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Component
 public class VendorController {
@@ -238,6 +232,58 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * Create a new Delivery object in the database. The Delivery is given a new, fully unique ID.
+     * @param role Requesting user's role.
+     * @param delivery Data of delivery to create. ID is ignored.
+     * @return The newly created Delivery object.
+     */
+    public ResponseEntity<Delivery> createDelivery(String role, Delivery delivery) {
+        // Authorize the user
+        if (!checkVendor(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Ensure delivery validity
+        if (delivery == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // Hacky fix: generated values do not seem to work with UUIDs, without OpenAPI YAML modifications.
+        // So, we generate new UUIDs until we find a unique one, because we don't want to overwrite or
+        // otherwise clash with existing database entities.
+        UUID newId;
+        int newIdGenerationAttempts = 0;
+
+        do {
+            newId = UUID.randomUUID();
+            newIdGenerationAttempts += 1;
+        } while (deliveryRepository.findById(newId).isPresent() && newIdGenerationAttempts < 500);
+
+        // Ensure the new ID is unique. Otherwise, return that we got
+        // stuck in the ID generation loop (and had to abort).
+        if (deliveryRepository.findById(newId).isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // Once we have the new ID - save delivery to the DB.
+        delivery.setDeliveryID(newId);
+        Delivery savedDelivery = deliveryRepository.save(delivery);
+
+        // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
+        // Failure is considered a server-side error, but this is unfortunately not permitted by the OpenAPI spec.
+        if (savedDelivery == null || savedDelivery.getDeliveryID() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDelivery.getDeliveryID());
+        if (databaseDelivery.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(databaseDelivery.get(), HttpStatus.OK);
     }
 
     /**
