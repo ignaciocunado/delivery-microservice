@@ -330,7 +330,13 @@ class VendorControllerTest {
 
     @Test
     void testGetAllDeliveriesNotFound() {
-        ResponseEntity<List<UUID>> res = sut.getAllDeliveriesVendor(UUID.randomUUID(), "vendor");
+        UUID id = UUID.randomUUID();
+
+        while(!id.equals(vendorId) && !id.equals(vendorId2)) {
+            id = UUID.randomUUID();
+        }
+
+        ResponseEntity<List<UUID>> res = sut.getAllDeliveriesVendor(id, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
 
     }
