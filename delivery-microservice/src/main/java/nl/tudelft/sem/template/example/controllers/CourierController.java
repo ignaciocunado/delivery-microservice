@@ -92,8 +92,8 @@ public class CourierController  {
     }
 
 
-    /** Integrates controller with API for delivered delivery endpoint.
-     *
+    /**
+     * Integrates controller with API for delivered delivery endpoint.
      * @param deliveryId ID of the delivery to mark as delivered. (required)
      * @param role      The role of the user (required)
      * @return courier controller's response entity
@@ -110,5 +110,32 @@ public class CourierController  {
             return new ResponseEntity<>("Delivery not found!", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>("Authorization failed!", HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * Sets the live location of the courier.
+     * @param deliveryId the id of the delivery
+     * @param role The role of the user (required)
+     * @param body  (optional)
+     * @return 200 + message, 403, or 404
+     */
+    public ResponseEntity<String> setLiveLocation(UUID deliveryId, String role, String body) {
+        if(!checkCourier(role)) {
+            return new ResponseEntity<>("error 403: Authorization failed!", HttpStatus.UNAUTHORIZED);
+        }
+
+        if(body == null || body.isBlank() || body.isEmpty()) {
+            return new ResponseEntity<>("error 400", HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<Delivery> fetchedDelivery = deliveryRepository.findById(deliveryId);
+        if(fetchedDelivery.isEmpty()) {
+            return new ResponseEntity<>("error 404: Delivery not found!", HttpStatus.NOT_FOUND);
+        }
+
+        Delivery delivery = fetchedDelivery.get();
+        delivery.setLiveLocation(body);
+        deliveryRepository.save(delivery);
+        return new ResponseEntity<>("200 OK", HttpStatus.OK);
     }
 }

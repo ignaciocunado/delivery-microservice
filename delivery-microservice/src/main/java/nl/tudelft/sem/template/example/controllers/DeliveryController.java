@@ -74,6 +74,30 @@ public class DeliveryController implements DeliveryApi {
         return courierController.getLocationOfDelivery(deliveryId, role);
     }
 
+    /**
+     * Integrates controller with API to set the exception of delivery.
+     * @param deliveryId ID of the delivery to query. (required)
+     * @param role The role of the user (required)
+     * @param body  (required)
+     * @return 200 + message, 400, 403, or 404
+     */
+    @Override
+    public ResponseEntity<String> setDeliveryException(UUID deliveryId, String role, String body) {
+        return vendorOrCourierController.setDeliveryException(deliveryId, role, body);
+    }
+
+    /**
+     * Integrates controller with API to set the exception of delivery.
+     * @param deliveryId the id of the delivery
+     * @param role The role of the user (required)
+     * @param body  (optional)
+     * @return 200 + message, 403, or 404
+     */
+    @Override
+    public ResponseEntity<String> setLiveLocation(UUID deliveryId, String role, String body) {
+        return courierController.setLiveLocation(deliveryId, role, body);
+    }
+
     /** Integrates controller with API for the get customer ID endpoint.
      *
      * @param deliveryID ID of the delivery to mark as accepted. (required)
