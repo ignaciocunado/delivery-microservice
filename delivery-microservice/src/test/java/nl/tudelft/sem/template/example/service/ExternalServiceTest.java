@@ -7,13 +7,13 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MicroserviceClientServiceTest {
+public class ExternalServiceTest {
 
-    private MicroserviceClientService microserviceClientService;
+    private ExternalService externalService;
 
     @BeforeEach
     void setUp() {
-        microserviceClientService = new MicroserviceClientService();
+        externalService = new ExternalService();
     }
 
     @Test
@@ -21,7 +21,7 @@ public class MicroserviceClientServiceTest {
         UUID vendorID = UUID.randomUUID();
         String expectedLocation = "PickUp in format xxx.xxx";
 
-        String location = microserviceClientService.getRestaurantLocation(vendorID);
+        String location = externalService.getRestaurantLocation(vendorID);
 
         assertEquals(expectedLocation, location);
     }
@@ -32,7 +32,7 @@ public class MicroserviceClientServiceTest {
         UUID orderId = UUID.randomUUID();
         String expectedDestination = "Destination in format xxx.xxx";
 
-        String destination = microserviceClientService.getOrderDestination(customerId, orderId);
+        String destination = externalService.getOrderDestination(customerId, orderId);
 
         assertEquals(expectedDestination, destination);
     }

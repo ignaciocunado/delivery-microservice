@@ -52,11 +52,23 @@ public class DeliveryController implements DeliveryApi {
         this.vendorOrCourierController = vendorOrCourierController;
     }
 
+    /**
+     * Integrates controller with API to get the PickUp location of delivery.
+     * @param deliveryId id of the delivery
+     * @param role The role of the user (required)
+     * @return ResponseEntity
+     */
     @Override
     public ResponseEntity<String> getPickUpLocation(UUID deliveryId, String role) {
         return courierController.getPickUpLocation(deliveryId, role);
     }
 
+    /**
+     * Integrates controller with API to get the destination of delivery.
+     * @param deliveryId id of the delivery
+     * @param role The role of the user (required)
+     * @return 200 + message, 403, or 404
+     */
     @Override
     public ResponseEntity<String> getLocationOfDelivery(UUID deliveryId, String role) {
         return courierController.getLocationOfDelivery(deliveryId, role);
@@ -84,7 +96,6 @@ public class DeliveryController implements DeliveryApi {
         return vendorController.acceptDelivery(deliveryId, role);
     }
 
-
     /**
      * Integrates controller with API for getPickUpEstimate endpoint.
      * @param deliveryID ID of delivery to get the picked up timestamp of (required)
@@ -92,10 +103,7 @@ public class DeliveryController implements DeliveryApi {
      * @return the estimated pickup time of the delivery object
      */
     @Override
-    public ResponseEntity<OffsetDateTime> getPickUpEstimateDeliveryId(
-            @Parameter(name = "deliveryID", description = "ID of delivery to get the picked up timestamp of", required = true, in = ParameterIn.PATH) @PathVariable("deliveryID") UUID deliveryID,
-            @NotNull @Parameter(name = "role", description = "The role of the user", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "role", required = true) String role
-    ) {
+    public ResponseEntity<OffsetDateTime> getPickUpEstimateDeliveryId(UUID deliveryID, String role) {
         return vendorController.getPickUpEstimate(deliveryID, role);
     }
 
@@ -106,11 +114,7 @@ public class DeliveryController implements DeliveryApi {
      * @return 200 + message, 400, 403, or 404
      */
     @Override
-    public ResponseEntity<String> setPickUpTime(
-            @Parameter(name = "deliveryID", description = "ID of the delivery to query.", required = true, in = ParameterIn.PATH) @PathVariable("deliveryID") UUID deliveryID,
-            @NotNull @Parameter(name = "role", description = "The role of the user", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "role", required = true) String role,
-            @Parameter(name = "body", description = "", required = true) @Valid @RequestBody String body
-    ) {
+    public ResponseEntity<String> setPickUpTime(UUID deliveryID, String role, String body) {
         return vendorController.setPickUpEstimate(deliveryID, role, body);
     }
 

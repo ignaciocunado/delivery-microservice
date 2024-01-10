@@ -59,7 +59,9 @@ class VendorControllerTest {
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
 
-        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "", "", 1);
+        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime,
+                1.d, sampleOffsetDateTime, "", "", 1);
         deliveryRepo.save(d);
         sut = new VendorController(restaurantRepo, deliveryRepo);
     }

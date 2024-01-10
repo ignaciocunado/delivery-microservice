@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class MicroserviceClientService {
-    public String getRestaurantLocation(UUID vendorID){
+public class ExternalService {
+    public String getRestaurantLocation(UUID vendorID) {
         return "PickUp in format xxx.xxx";
     }
 
-    public String getOrderDestination(UUID customerId, UUID orderID){
+    public String getOrderDestination(UUID customerId, UUID orderID) {
         return "Destination in format xxx.xxx";
     }
 }

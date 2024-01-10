@@ -6,13 +6,12 @@ import static org.mockito.Mockito.when;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Optional;
 import java.util.UUID;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.MicroserviceClientService;
+import nl.tudelft.sem.template.example.service.ExternalService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +25,7 @@ class CourierControllerTest {
     private transient CourierController courierController;
     private transient RestaurantRepository restaurantRepository;
     private transient TestDeliveryRepository deliveryRepository;
-    private transient MicroserviceClientService microserviceClientService;
+    private transient ExternalService externalService;
 
     UUID deliveryId;
     UUID restaurantId;
@@ -35,7 +34,7 @@ class CourierControllerTest {
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
         restaurantRepository = new TestRestaurantRepository();
-        microserviceClientService = Mockito.mock(MicroserviceClientService.class);
+        externalService = Mockito.mock(ExternalService.class);
 
         Restaurant restaurant = new Restaurant(
                 UUID.randomUUID(),          // restaurantID
@@ -57,7 +56,7 @@ class CourierControllerTest {
                 sampleOffsetDateTime, "", "", 1);
         deliveryRepository.save(d);
 
-        courierController = new CourierController(deliveryRepository, restaurantRepository, microserviceClientService);
+        courierController = new CourierController(deliveryRepository, restaurantRepository, externalService);
     }
 
     @Test
@@ -65,7 +64,7 @@ class CourierControllerTest {
         String role = "courier";
         String expectedLocation = "123.321.666";
 
-        when(microserviceClientService.getRestaurantLocation(any())).thenReturn(expectedLocation);
+        when(externalService.getRestaurantLocation(any())).thenReturn(expectedLocation);
 
         ResponseEntity<String> response = courierController.getPickUpLocation(deliveryId, role);
 
@@ -104,7 +103,7 @@ class CourierControllerTest {
         String role = "courier";
         String expectedLocation = "123.321.666";
 
-        when(microserviceClientService.getOrderDestination(any(), any())).thenReturn(expectedLocation);
+        when(externalService.getOrderDestination(any(), any())).thenReturn(expectedLocation);
 
         ResponseEntity<String> response = courierController.getLocationOfDelivery(deliveryId, role);
 
