@@ -1,7 +1,12 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
+
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
@@ -137,5 +142,33 @@ public class CourierController  {
         delivery.setLiveLocation(body);
         deliveryRepository.save(delivery);
         return new ResponseEntity<>("200 OK", HttpStatus.OK);
+    }
+
+    /**
+     * Get the average rating of courier deliveries.
+     * @param courierID The ID of the courier to query (required)
+     * @return the average rating
+     */
+    public ResponseEntity<Double> getAvrRating(UUID courierID) {
+        List<Delivery> deliveries = deliveryRepository.findAll();
+
+        if (deliveries.isEmpty()) {
+            return new ResponseEntity<>(0.0, HttpStatus.OK);
+        }
+
+        List<Double> ratingsList = deliveries
+                .stream()
+                .filter(d -> d.getCourierID().equals(courierID))
+                .map(Delivery::getCustomerRating)
+                .collect(Collectors.toList());
+
+        if (ratingsList.isEmpty()) {
+            return new ResponseEntity<>(0.0, HttpStatus.OK);
+        }
+
+        double sumOfRatings = ratingsList.stream().mapToDouble(Double::doubleValue).sum();
+        long cnt = ratingsList.size();
+
+        return new ResponseEntity<>(sumOfRatings/cnt, HttpStatus.OK);
     }
 }

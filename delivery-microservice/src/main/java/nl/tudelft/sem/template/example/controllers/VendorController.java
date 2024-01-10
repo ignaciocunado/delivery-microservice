@@ -12,18 +12,13 @@ import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Component
 public class VendorController {
@@ -238,5 +233,24 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * Get the courierId of the delivery.
+     * @param deliveryId the id of delivery
+     * @param role The role of the user (required)
+     * @return the UUID in the response entity
+     */
+    public ResponseEntity<UUID> getCourierIdByDelivery(UUID deliveryId, String role) {
+        if(!checkVendor(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<Delivery> fetchedDelivery = deliveryRepository.findById(deliveryId);
+        if(fetchedDelivery.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(fetchedDelivery.get().getCourierID(), HttpStatus.OK);
     }
 }
