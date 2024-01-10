@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ExternalServiceTest {
 
@@ -35,5 +36,25 @@ public class ExternalServiceTest {
         String destination = externalService.getOrderDestination(customerId, orderId);
 
         assertEquals(expectedDestination, destination);
+    }
+
+    @Test
+    public void isCustomerReturnsTrue() {
+        assertTrue(externalService.isCustomer("123"));
+    }
+
+    @Test
+    public void isAdminReturnsTrue() {
+        assertTrue(externalService.isAdmin("123"));
+    }
+
+    @Test
+    public void isCourierReturnsTrue() {
+        assertTrue(externalService.isCourier("123"));
+    }
+
+    @Test
+    public void isVendorReturnsTrue() {
+        assertTrue(externalService.isVendor("123"));
     }
 }

@@ -7,17 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class TestDeliveryRepository implements DeliveryRepository {
     List<Delivery> list = new ArrayList<>();
 
     @Override
     public List<Delivery> findAll() {
-        return null;
+        return list;
     }
 
     @Override
@@ -52,12 +49,11 @@ public class TestDeliveryRepository implements DeliveryRepository {
 
     @Override
     public void deleteAll(Iterable<? extends Delivery> entities) {
-
     }
 
     @Override
     public void deleteAll() {
-
+        list.clear();
     }
 
     @Override

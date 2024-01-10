@@ -5,14 +5,11 @@ import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
-import org.hibernate.type.OffsetDateTimeType;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -20,7 +17,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class VendorControllerTest {
     TestRestaurantRepository restaurantRepo;
@@ -33,6 +33,7 @@ class VendorControllerTest {
     OffsetDateTime sampleOffsetDateTime;
 
     UUID courierId;
+
     @BeforeEach
     public void setup() {
         // create test repositories
@@ -59,8 +60,8 @@ class VendorControllerTest {
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
 
-        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime,
+        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), courierId,
+                restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime,
                 1.d, sampleOffsetDateTime, "", "", 1);
         deliveryRepo.save(d);
         sut = new VendorController(restaurantRepo, deliveryRepo);
@@ -186,10 +187,13 @@ class VendorControllerTest {
         UUID rid = UUID.randomUUID();
         UUID did = UUID.randomUUID();
         restaurantRepo.save(new Restaurant(rid, UUID.randomUUID(), new ArrayList<>(), 1.0d));
-        dp.save(new Delivery(did, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", null, null, 1.d, null, "", "", 1));
+        dp.save(new Delivery(did, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "pending", null, null, 1.d, null,
+                "", "", 1));
         VendorController vc = new VendorController(rp, dp);
         ResponseEntity<OffsetDateTime> res = vc.getPickUpEstimate(did, "hi");
-        System.out.println("\033[96;40m pickUpEstimateDoesntExist requested for UUID \033[30;106m " + did + " \033[96;40m got response: \033[30;106m " + res.getBody() + " \033[0m");
+        //System.out.println("\033[96;40m pickUpEstimateDoesntExist requested for UUID \033[30;106m " +
+        // did + " \033[96;40m got response: \033[30;106m " + res.getBody() + " \033[0m");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
@@ -269,5 +273,30 @@ class VendorControllerTest {
     void testSetPickUpNotFound() {
         ResponseEntity<String> res = sut.setPickUpEstimate(UUID.randomUUID(), "vendor", sampleOffsetDateTime.toString());
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
+    }
+
+    @Test
+    public void getCourierIdByDeliveryReturnsCourierId() {
+        String role = "vendor";
+        ResponseEntity<UUID> response = sut.getCourierIdByDelivery(deliveryId, role);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(courierId, response.getBody());
+    }
+
+    @Test
+    public void getCourierIdByDeliveryReturnsNotFound() {
+        String role = "vendor";
+        ResponseEntity<UUID> response = sut.getCourierIdByDelivery(UUID.randomUUID(), role);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void getCourierIdByDeliveryReturnsUnauthorized() {
+        String role = "courier";
+        ResponseEntity<UUID> response = sut.getCourierIdByDelivery(deliveryId, role);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 }

@@ -144,4 +144,40 @@ class DeliveryControllerTest {
 
         Mockito.verify(globalController).getOrderByDeliveryId(deliveryId, role);
     }
+
+    @Test
+    void testSetLiveLocation() {
+        deliveryController.setLiveLocation(deliveryId, role, "Test");
+
+        Mockito.verify(courierController).setLiveLocation(deliveryId, role, "Test");
+    }
+
+    @Test
+    void testGetAvRateCourier() {
+        UUID courierId = UUID.randomUUID();
+        deliveryController.getAvRateCourier(courierId);
+
+        Mockito.verify(courierController).getAvrRating(courierId);
+    }
+
+    @Test
+    void testGetCourierByDeliveryId() {
+        deliveryController.getCourierByDeliveryId(deliveryId, role);
+
+        Mockito.verify(vendorController).getCourierIdByDelivery(deliveryId, role);
+    }
+
+    @Test
+    void testSetDeliveryException() {
+        deliveryController.setDeliveryException(deliveryId, role, "Fall");
+
+        Mockito.verify(vendorOrCourierController).setDeliveryException(deliveryId, role, "Fall");
+    }
+
+    @Test
+    void testGetLocationOfDelivery() {
+        deliveryController.getLocationOfDelivery(deliveryId, role);
+
+        Mockito.verify(courierController).getLocationOfDelivery(deliveryId, role);
+    }
 }

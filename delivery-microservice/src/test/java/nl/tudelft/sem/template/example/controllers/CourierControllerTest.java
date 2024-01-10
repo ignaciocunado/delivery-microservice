@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.UUID;
 
 import nl.tudelft.sem.model.Delivery;
@@ -29,6 +30,7 @@ class CourierControllerTest {
 
     UUID deliveryId;
     UUID restaurantId;
+    UUID courierId;
 
     @BeforeEach
     void setUp() {
@@ -46,11 +48,12 @@ class CourierControllerTest {
         restaurantId = restaurantRepository.findAll().get(0).getRestaurantID();
 
         deliveryId = UUID.randomUUID();
+        courierId = UUID.randomUUID();
         OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
                 2023, 12, 31, 10, 30, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
-        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), courierId,
                 restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
                 sampleOffsetDateTime, "", "", 1);
         deliveryRepository.save(d);
@@ -209,5 +212,32 @@ class CourierControllerTest {
         response = courierController.setLiveLocation(deliveryId, role, "    ");
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("error 400", response.getBody());
+    }
+
+    @Test
+    public void getAvrRatingReturnsAverageRating() {
+        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1.0, response.getBody());
+    }
+
+    @Test
+    public void getAvrRatingReturns0AverageRating() {
+        deliveryRepository.deleteAll();
+        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(0.0, response.getBody());
+    }
+
+    @Test
+    public void getAvrRatingReturnsZeroWhenNoRatings() {
+        UUID courierId = UUID.randomUUID();
+
+        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(0.0, response.getBody());
     }
 }
