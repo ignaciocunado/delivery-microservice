@@ -202,6 +202,17 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
+     * Integrates controller with API for the create delivery endpoint.
+     * @param role The role of the user (required)
+     * @param delivery Delivery data to create. ID is ignored entirely. (required)
+     * @return The created Delivery object.
+     */
+    @Override
+    public ResponseEntity<Delivery> createDelivery(String role, Delivery delivery) {
+        return vendorController.createDelivery(role, delivery);
+    }
+
+    /**
      * Integrates controller with API for get delivery by ID endpoint.
      * Note that this method name is unfortunately misspelled - but the spec is locked in place.
      * @param deliveryId ID of the delivery to get (required)

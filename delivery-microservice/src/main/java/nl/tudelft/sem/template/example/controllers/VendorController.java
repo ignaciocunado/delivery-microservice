@@ -239,4 +239,58 @@ public class VendorController {
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
+
+    /**
+     * Create a new Delivery object in the database. The Delivery is given a new, fully unique ID.
+     * @param role Requesting user's role.
+     * @param delivery Data of delivery to create. ID is ignored.
+     * @return The newly created Delivery object.
+     */
+    public ResponseEntity<Delivery> createDelivery(String role, Delivery delivery) {
+        // Authorize the user
+        if (!checkVendor(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Ensure delivery validity
+        if (delivery == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // Hacky fix: generated values do not seem to work with UUIDs, without OpenAPI YAML modifications.
+        // So, we generate new UUIDs until we find a unique one, because we don't want to overwrite or
+        // otherwise clash with existing database entities.
+        UUID newId;
+        int newIdGenerationAttempts = 0;
+
+        do {
+            newId = UUID.randomUUID(); newIdGenerationAttempts += 1;
+        }
+        while (deliveryRepository.findById(newId).isPresent() && newIdGenerationAttempts < 1000);
+
+        // Ensure the new ID is unique. Otherwise, return that we got
+        // stuck in the ID generation loop (and had to abort).
+        if (deliveryRepository.findById(newId).isPresent()) {
+            return new ResponseEntity<>(HttpStatus.LOOP_DETECTED);
+        }
+
+        // Once we have the new ID - save delivery to the DB.
+        delivery.setDeliveryID(newId);
+        Delivery savedDelivery = deliveryRepository.save(delivery);
+
+        // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
+        // Failure is considered a server-side error.
+        final UUID savedDeliveryId = savedDelivery.getDeliveryID();
+        if (savedDeliveryId == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDeliveryId);
+        if (databaseDelivery.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(databaseDelivery.get(), HttpStatus.OK);
+    }
 }

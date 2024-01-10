@@ -65,6 +65,24 @@ class VendorControllerTest {
     }
 
     /**
+     * Helper that generates a new UUID, that is NOT equal to the current deliveryId.
+     *
+     * NOTE: as this method is re-used in several tests, this code should be extracted
+     * to e.g. its own service, so it can be used in multiple places at once.
+     *
+     * @return A delivery ID not equal to the test's 'deliveryId'. This ID is invalid for testing purposes,
+     *         until used to save an object to the DB.
+     */
+    UUID generateNewDeliveryId() {
+        UUID newDeliveryId;
+
+        do { newDeliveryId = UUID.randomUUID(); }
+        while (newDeliveryId == deliveryId);
+
+        return newDeliveryId;
+    }
+
+    /**
     Tests for the addCourierToRest endpoint.
      **/
     @Test
@@ -266,5 +284,143 @@ class VendorControllerTest {
     void testSetPickUpNotFound() {
         ResponseEntity<String> res = sut.setPickUpEstimate(UUID.randomUUID(), "vendor", sampleOffsetDateTime.toString());
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
+    }
+
+    /**
+     * Good weather case: adding a new delivery, with a completely unique ID, to the database.
+     * Both admins and vendors should be able to do this.
+     */
+    @Test
+    void testCreateDeliveryGoodWeather() {
+        final List<String> rolesToTest = List.of("vendor", "admin");
+
+        for (final String roleToTest : rolesToTest) {
+            // Create a new uniquely IDd delivery
+            UUID newDeliveryId = generateNewDeliveryId();
+            Delivery newDelivery = new Delivery(
+                    newDeliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                    "status", OffsetDateTime.now(), OffsetDateTime.now(), 1.0, OffsetDateTime.now(),
+                    "liveLocation", "userException", 0
+            );
+
+            // Check response status
+            ResponseEntity<Delivery> response = sut.createDelivery("vendor", newDelivery);
+            assertEquals(
+                    HttpStatus.OK,
+                    response.getStatusCode()
+            );
+
+            // Check saved delivery content
+            newDelivery.setDeliveryID(response.getBody().getDeliveryID());
+            assertEquals(
+                    newDelivery,
+                    response.getBody()
+            );
+
+            // Ensure we can fetch the new delivery from the database
+            Delivery deliveryFromRepo = deliveryRepo.findById(response.getBody().getDeliveryID()).get();
+            assertEquals(
+                    newDelivery,
+                    deliveryFromRepo
+            );
+        }
+    }
+
+    /**
+     * Save two deliveries with the same ID to the database. This should still give them both unique IDs.
+     */
+    @Test
+    void testCreateDeliveryDoubleId() {
+        // Create a new uniquely IDd delivery
+        UUID newDeliveryId = generateNewDeliveryId();
+        Delivery firstNewDelivery = new Delivery(
+                newDeliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "status", OffsetDateTime.now(), OffsetDateTime.now(), 1.0, OffsetDateTime.now(),
+                "liveLocation", "userException", 0
+        );
+
+        // Create a different delivery, with that same ID
+        Delivery secondNewDelivery = new Delivery(
+                newDeliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "secondStatus", OffsetDateTime.now(), OffsetDateTime.now(), 0.5, OffsetDateTime.now(),
+                "secondLiveLocation", "secondUserException", 1
+        );
+
+        // Check both response statuses
+        ResponseEntity<Delivery> firstResponse = sut.createDelivery("vendor", firstNewDelivery);
+        ResponseEntity<Delivery> secondResponse = sut.createDelivery("vendor", secondNewDelivery);
+
+        assertEquals(
+                HttpStatus.OK,
+                firstResponse.getStatusCode()
+        );
+        assertEquals(
+                HttpStatus.OK,
+                secondResponse.getStatusCode()
+        );
+
+        // The new deliveries should not have the same ID!
+        assertNotEquals(
+                firstResponse.getBody().getDeliveryID(),
+                secondResponse.getBody().getDeliveryID()
+        );
+
+        // Check saved content of both deliveries
+        firstNewDelivery.setDeliveryID(firstResponse.getBody().getDeliveryID());
+        secondNewDelivery.setDeliveryID(secondResponse.getBody().getDeliveryID());
+
+        assertEquals(
+                firstNewDelivery,
+                firstResponse.getBody()
+        );
+        assertEquals(
+                secondNewDelivery,
+                secondResponse.getBody()
+        );
+    }
+
+    /**
+     * Passing a null delivery should result in a bad request.
+     */
+    @Test
+    void testCreateDeliveryNull() {
+        ResponseEntity<Delivery> response = sut.createDelivery("vendor", null);
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                response.getStatusCode()
+        );
+    }
+
+    /**
+     * Only vendors & admins should be able to create deliveries.
+     */
+    @Test
+    void testCreateDeliveryWrongRoles() {
+        final List<String> rolesToTest = List.of("v", "ve", "vendo", "courier", "customer", "sudo", "admi");
+
+        for (final String roleToTest : rolesToTest) {
+            Delivery delivery = new Delivery();
+            ResponseEntity<Delivery> response = sut.createDelivery(roleToTest, delivery);
+
+            assertEquals(
+                    HttpStatus.UNAUTHORIZED,
+                    response.getStatusCode()
+            );
+        }
+    }
+
+    /**
+     * An empty role should not allow for delivery creation.
+     */
+    @Test
+    void testCreateDeliveryNoRole() {
+        Delivery delivery = new Delivery();
+        ResponseEntity<Delivery> response = sut.createDelivery("", delivery);
+
+        assertEquals(
+                HttpStatus.UNAUTHORIZED,
+                response.getStatusCode()
+        );
     }
 }
