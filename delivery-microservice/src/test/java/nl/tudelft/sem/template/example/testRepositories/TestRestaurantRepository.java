@@ -76,18 +76,17 @@ public class TestRestaurantRepository implements RestaurantRepository {
 
     @Override
     public Optional<Restaurant> findById(UUID s) {
-        List<Restaurant> matching = list.stream().filter( x -> x.getRestaurantID().equals(s)).collect(Collectors.toList());
+        List<Restaurant> matching = list.stream().filter(x -> x.getRestaurantID().equals(s)).collect(Collectors.toList());
         if(!matching.isEmpty()) {
             return Optional.of(matching.get(0));
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }
 
     @Override
     public boolean existsById(UUID s) {
-        return false;
+        return list.stream().filter(x -> x.getRestaurantID().equals(s)).collect(Collectors.toList()).size() !=0;
     }
 
     @Override

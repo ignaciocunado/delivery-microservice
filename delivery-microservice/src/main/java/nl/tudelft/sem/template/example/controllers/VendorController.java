@@ -242,6 +242,20 @@ public class VendorController {
     }
 
     /**
+     * Queries the database for a specific restaurant and throws respective errors
+     * @param restaurantId id of the queried restaurant
+     * @param role the role of the user
+     * @return the ResponseEntity containing the status of the request
+     */
+    public ResponseEntity<String> getRest(UUID restaurantId, String role) {
+        if(!checkVendor(role))
+            return new ResponseEntity<String>("NOT AUTHORIZED \n Requires vendor permissions!", HttpStatus.UNAUTHORIZED);
+
+        Optional<Restaurant> r = restaurantRepository.findById(restaurantId);
+        return r.map(restaurant -> new ResponseEntity<>(restaurant.toString(), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>("NOT FOUND \n No restaurant with the given id has been found", HttpStatus.NOT_FOUND));
+    }
+
+    /**
      * Return all deliveries for a given vendor
      * @param vendorId the id of the vendor to be queried
      * @param role the role of the user calling the endpoint
