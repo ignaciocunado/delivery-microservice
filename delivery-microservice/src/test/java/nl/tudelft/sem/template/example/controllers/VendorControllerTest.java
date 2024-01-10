@@ -328,7 +328,7 @@ class VendorControllerTest {
 
     @Test
     void testGetDeliveryEstimate() {
-        ResponseEntity<OffsetDateTime> res = sut.getDeliveryEstimate(deliveryId  , "idk" );
+        ResponseEntity<OffsetDateTime> res = sut.getDeliveryEstimate(deliveryId  , "courier" );
         OffsetDateTime resBody = res.getBody();
         System.out.println("\033[96;40m testGetDeliveryEstimate requested for UUID \033[30;106m " + deliveryId + " \033[96;40m got response: \033[30;106m " + res + " \033[0m");
         assertEquals(sampleOffsetDateTime, resBody);
@@ -342,7 +342,7 @@ class VendorControllerTest {
 
     @Test
     void testGetDeliveryEstimateNotFound() {
-        ResponseEntity<OffsetDateTime> res = sut.getDeliveryEstimate(UUID.randomUUID()  , "idk" );
+        ResponseEntity<OffsetDateTime> res = sut.getDeliveryEstimate(UUID.randomUUID()  , "vendor" );
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
@@ -355,7 +355,7 @@ class VendorControllerTest {
         restaurantRepo.save(new Restaurant(newRestaurantID, UUID.randomUUID(), new ArrayList<>(), 1.0d));
         deliveryRepository.save(new Delivery(newRandomDeliveryID, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", null, null, 1.d, null, "", "", 1));
         VendorController vc = new VendorController(restaurantRepository, deliveryRepository);
-        ResponseEntity<OffsetDateTime> res = vc.getDeliveryEstimate(newRandomDeliveryID, "hi");
+        ResponseEntity<OffsetDateTime> res = vc.getDeliveryEstimate(newRandomDeliveryID, "vendor");
         System.out.println("\033[96;40m getDeliveryEstimateDoesntExist requested for UUID \033[30;106m " + newRandomDeliveryID + " \033[96;40m got response: \033[30;106m " + res.getBody() + " \033[0m");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
