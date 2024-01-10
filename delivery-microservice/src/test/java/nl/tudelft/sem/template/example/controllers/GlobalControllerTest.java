@@ -73,14 +73,14 @@ public class GlobalControllerTest {
 
     @Test
     void getLiveLocationNotFound() {
-        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID() , "vendor");
+        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID(), "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
 
     @Test
     void getLiveLocationUnauthorized() {
-        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID() , "norole");
+        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID(), "norole");
         assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
         assertNull(res.getBody());
     }
@@ -94,14 +94,14 @@ public class GlobalControllerTest {
 
     @Test
     void getUserExceptionNotFound() {
-        ResponseEntity<String> res = globalController.getDeliveryException(UUID.randomUUID() , "vendor");
+        ResponseEntity<String> res = globalController.getDeliveryException(UUID.randomUUID(), "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
 
     @Test
     void getUserExceptionUnauthorized() {
-        ResponseEntity<String> res = globalController.getDeliveryException(deliveryId , "norole");
+        ResponseEntity<String> res = globalController.getDeliveryException(deliveryId, "norole");
         assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
         assertNull(res.getBody());
     }
@@ -117,7 +117,7 @@ public class GlobalControllerTest {
                 "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
                 "69.655,69.425", "", 1);
         deliveryRepository.save(save);
-        ResponseEntity<String> res = globalController.getDeliveryException(id , "vendor");
+        ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "");
     }

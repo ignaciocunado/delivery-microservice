@@ -1,9 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import com.fasterxml.jackson.databind.deser.std.UUIDDeserializer;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
-import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -13,29 +11,32 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class VendorOrCourierControllerTest {
 
     private transient VendorOrCourierController vendorOrCourierController;
     private transient TestDeliveryRepository deliveryRepository;
-    private transient TestRestaurantRepository restaurantRepository;
 
     UUID deliveryId;
 
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
-        restaurantRepository = new TestRestaurantRepository();
         deliveryId = UUID.randomUUID();
         OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
                 2024, 1, 4, 18, 23, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
-        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "69.655,69.425", "late", 1);
+        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime,
+                1.d, sampleOffsetDateTime, "69.655,69.425", "late", 1);
         deliveryRepository.save(d);
 
-        vendorOrCourierController = new VendorOrCourierController(restaurantRepository, deliveryRepository);
+        vendorOrCourierController = new VendorOrCourierController(deliveryRepository);
     }
 
     @Test
@@ -128,5 +129,61 @@ class VendorOrCourierControllerTest {
         ResponseEntity<UUID> res = vendorOrCourierController.assignOrderToCourier(courier, deliveryId, "restaurant");
         assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
         assertNull(res.getBody());
+    }
+
+    @Test
+    public void setDeliveryExceptionReturnsOk() {
+        String exception = "Test";
+
+        ResponseEntity<String> response = vendorOrCourierController
+                .setDeliveryException(deliveryId, "courier", exception);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("200 OK", response.getBody());
+        assertEquals(exception, deliveryRepository.findById(deliveryId).get().getUserException());
+
+        response = vendorOrCourierController.setDeliveryException(deliveryId, "vendor", exception);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("200 OK", response.getBody());
+        assertEquals(exception, deliveryRepository.findById(deliveryId).get().getUserException());
+    }
+
+    @Test
+    public void setDeliveryExceptionReturnsNotFound() {
+        String role = "courier";
+        String exception = "123.321.666";
+        UUID randomId = UUID.randomUUID();
+
+        ResponseEntity<String> response = vendorOrCourierController.setDeliveryException(randomId, role, exception);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("error 404: Delivery not found!", response.getBody());
+    }
+
+    @Test
+    public void setDeliveryExceptionReturnsUnauthorized() {
+        String role = "admin";
+        String exception = "123.321.666";
+
+        ResponseEntity<String> response = vendorOrCourierController.setDeliveryException(deliveryId, role, exception);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals("error 403: Authorization failed!", response.getBody());
+    }
+
+    @Test
+    public void setDeliveryExceptionReturnsBadRequest() {
+        String role = "courier";
+
+        ResponseEntity<String> response = vendorOrCourierController.setDeliveryException(deliveryId, role, "");
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("error 400", response.getBody());
+
+        response = vendorOrCourierController.setDeliveryException(deliveryId, role, null);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("error 400", response.getBody());
+
+        response = vendorOrCourierController.setDeliveryException(deliveryId, role, "    ");
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("error 400", response.getBody());
     }
 }
