@@ -72,7 +72,7 @@ public class AdminController
         // Ensure the new ID is unique. Otherwise, return that we got
         // stuck in the ID generation loop (and had to abort).
         if (restaurantRepository.findById(newId).isPresent()) {
-            return new ResponseEntity<>(HttpStatus.LOOP_DETECTED);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // Once we have the new ID, save the restaurant to the DB.
@@ -80,16 +80,16 @@ public class AdminController
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
 
         // As an extra layer of internal validation, ensure the newly created restaurant can be fetched from the DB.
-        // Failure is considered a server-side error.
+        // Failure is considered a server-side error, but the specification does unfortunately not allow this.
         if (savedRestaurant == null || savedRestaurant.getRestaurantID() == null) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         final Optional<Restaurant> databaseRestaurant = restaurantRepository
                 .findById(savedRestaurant.getRestaurantID());
 
         if (databaseRestaurant.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(databaseRestaurant.get(), HttpStatus.OK);

@@ -183,7 +183,7 @@ public class AdminControllerTest
         ResponseEntity<Restaurant> response = localAdminController.createRestaurant("admin", restaurantToCreate);
 
         assertEquals(
-                HttpStatus.LOOP_DETECTED,
+                HttpStatus.BAD_REQUEST,
                 response.getStatusCode()
         );
     }
@@ -208,7 +208,7 @@ public class AdminControllerTest
         ResponseEntity<Restaurant> response = localAdminController.createRestaurant("admin", restaurantToCreate);
 
         assertEquals(
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.BAD_REQUEST,
                 response.getStatusCode()
         );
     }
@@ -236,7 +236,7 @@ public class AdminControllerTest
         ResponseEntity<Restaurant> response = localAdminController.createRestaurant("admin", restaurantToCreate);
 
         assertEquals(
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.BAD_REQUEST,
                 response.getStatusCode()
         );
     }

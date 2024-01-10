@@ -479,7 +479,7 @@ class VendorControllerTest {
         ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
 
         assertEquals(
-                HttpStatus.LOOP_DETECTED,
+                HttpStatus.BAD_REQUEST,
                 response.getStatusCode()
         );
     }
@@ -506,7 +506,7 @@ class VendorControllerTest {
         ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
 
         assertEquals(
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.BAD_REQUEST,
                 response.getStatusCode()
         );
     }
@@ -536,7 +536,7 @@ class VendorControllerTest {
         ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
 
         assertEquals(
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.BAD_REQUEST,
                 response.getStatusCode()
         );
     }

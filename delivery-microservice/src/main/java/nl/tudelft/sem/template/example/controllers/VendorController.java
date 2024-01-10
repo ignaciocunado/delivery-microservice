@@ -272,7 +272,7 @@ public class VendorController {
         // Ensure the new ID is unique. Otherwise, return that we got
         // stuck in the ID generation loop (and had to abort).
         if (deliveryRepository.findById(newId).isPresent()) {
-            return new ResponseEntity<>(HttpStatus.LOOP_DETECTED);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // Once we have the new ID - save delivery to the DB.
@@ -280,14 +280,14 @@ public class VendorController {
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
         // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
-        // Failure is considered a server-side error.
+        // Failure is considered a server-side error, but this is unfortunately not permitted by the OpenAPI spec.
         if (savedDelivery == null || savedDelivery.getDeliveryID() == null) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDelivery.getDeliveryID());
         if (databaseDelivery.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(databaseDelivery.get(), HttpStatus.OK);
