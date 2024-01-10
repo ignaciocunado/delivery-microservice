@@ -274,4 +274,64 @@ class VendorControllerTest {
         ResponseEntity<String> res = sut.setPickUpEstimate(UUID.randomUUID(), "vendor", sampleOffsetDateTime.toString());
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
+
+    @Test
+    void testGetDeliveryEstimate() {
+        ResponseEntity<OffsetDateTime> res = sut.getDeliveryEstimate(deliveryId  , "idk" );
+        OffsetDateTime resBody = res.getBody();
+        System.out.println("\033[96;40m testGetDeliveryEstimate requested for UUID \033[30;106m " + deliveryId + " \033[96;40m got response: \033[30;106m " + res + " \033[0m");
+        assertEquals(sampleOffsetDateTime, resBody);
+    }
+
+    @Test
+    void testGetDeliveryEstimateNotFound() {
+        ResponseEntity<OffsetDateTime> res = sut.getDeliveryEstimate(UUID.randomUUID()  , "idk" );
+        assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
+    }
+
+    @Test
+    void testGetDeliveryEstimateDoesntExist() {
+        TestRestaurantRepository rp = new TestRestaurantRepository();
+        TestDeliveryRepository dp = new TestDeliveryRepository();
+        UUID rid = UUID.randomUUID();
+        UUID did = UUID.randomUUID();
+        restaurantRepo.save(new Restaurant(rid, UUID.randomUUID(), new ArrayList<>(), 1.0d));
+        dp.save(new Delivery(did, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", null, null, 1.d, null, "", "", 1));
+        VendorController vc = new VendorController(rp, dp);
+        ResponseEntity<OffsetDateTime> res = vc.getDeliveryEstimate(did, "hi");
+        System.out.println("\033[96;40m getDeliveryEstimateDoesntExist requested for UUID \033[30;106m " + did + " \033[96;40m got response: \033[30;106m " + res.getBody() + " \033[0m");
+        assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
+    }
+
+    @Test
+    void testSetDeliveryEstimate() {
+        ResponseEntity<String> res = sut.setDeliveryEstimate(deliveryId, "vendor", sampleOffsetDateTime);
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId).get().getDeliveryTimeEstimate(), sampleOffsetDateTime);
+    }
+
+    @Test
+    void testSetDeliveryEstimate2() {
+        ResponseEntity<String> res = sut.setDeliveryEstimate(deliveryId, "courier", sampleOffsetDateTime);
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId).get().getDeliveryTimeEstimate(), sampleOffsetDateTime);
+    }
+
+    @Test
+    void testSetInvalidDeliveryEstimate() {
+        ResponseEntity<String> res = sut.setDeliveryEstimate(deliveryId, "vendor", null);
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+    }
+
+    @Test
+    void testSetDeliveryUnauthorized() {
+        ResponseEntity<String> res = sut.setDeliveryEstimate(deliveryId, "noVendor", sampleOffsetDateTime);
+        assertEquals(HttpStatus.FORBIDDEN, res.getStatusCode());
+    }
+
+    @Test
+    void testSetDeliveryNotFound() {
+        ResponseEntity<String> res = sut.setDeliveryEstimate(UUID.randomUUID(), "vendor", sampleOffsetDateTime);
+        assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
+    }
 }

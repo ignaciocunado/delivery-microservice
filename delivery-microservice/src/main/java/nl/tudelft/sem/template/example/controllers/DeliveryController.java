@@ -223,4 +223,28 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<UUID> getOrderByDeliveryId(UUID deliveryId, String role) {
         return globalController.getOrderByDeliveryId(deliveryId, role);
     }
+
+
+    /**
+     * Integrates controller with API for get delivery time estimate endpoint.
+     * @param deliveryID The ID of the delivery for which the delivery time estimate will be queried. (required)
+     * @param role The role of the user (required)
+     * @return The delivery time estimate.
+     */
+    @Override
+    public ResponseEntity<OffsetDateTime> getDeliveryEstimate(UUID deliveryID, String role) {
+        return vendorController.getDeliveryEstimate(deliveryID, role);
+    }
+
+    /**
+     * Integrates controller with API for set delivery time endpoint.
+     * @param deliveryID The id of the delivery to which the delivery time will be assigned (required)
+     * @param role The role of the user (required)
+     * @param body  (required)
+     * @return ID of the delivery
+     */
+    @Override
+    public ResponseEntity<String> setDeliveryEstimate(UUID deliveryID, String role, OffsetDateTime body) {
+        return vendorController.setDeliveryEstimate(deliveryID, role, body);
+    }
 }
