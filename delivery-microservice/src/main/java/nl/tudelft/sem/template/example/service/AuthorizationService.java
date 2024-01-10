@@ -17,8 +17,6 @@ public class AuthorizationService {
         if (request == null) {
             return false;
         }
-        if (java.time.LocalDate.now().isBefore(java.time.LocalDate.of(2023, 12, 30)))
-            return true;
 
         String userId = request.getHeader("X-User-Id");
         String role = request.getParameter("role");
