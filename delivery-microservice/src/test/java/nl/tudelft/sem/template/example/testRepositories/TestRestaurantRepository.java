@@ -87,7 +87,7 @@ public class TestRestaurantRepository implements RestaurantRepository {
 
     @Override
     public boolean existsById(UUID s) {
-        return false;
+        return list.stream().filter(x -> x.getRestaurantID().equals(s)).collect(Collectors.toList()).size() !=0;
     }
 
     @Override
