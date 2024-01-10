@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import nl.tudelft.sem.model.Restaurant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -20,7 +21,10 @@ class RestaurantControllerTest {
     @Mock
     CourierController cc = Mockito.mock(CourierController.class);
 
-    RestaurantController sut = new RestaurantController(cc, vc);
+    @Mock
+    AdminController ac = Mockito.mock(AdminController.class);
+
+    RestaurantController sut = new RestaurantController(cc, vc, ac);
     @BeforeEach
     public void setup() {
         sut.setVendorController(vc);
@@ -42,6 +46,11 @@ class RestaurantControllerTest {
         verify(vc).removeCourierRest(id1, id2, "a");
     }
 
+    @Test
+    public void testCreateRestaurant() {
+        Restaurant restaurant = new Restaurant();
+        sut.createRestaurant("admin", restaurant);
 
-
+        verify(ac).createRestaurant("admin", restaurant);
+    }
 }
