@@ -83,7 +83,7 @@ public class GlobalController {
     }
 
     /**
-     * Queries the Max Delivery Zone for a given restaurant and provides adequate error codes
+     * Queries the Max Delivery Zone for a given restaurant and provides adequate error codes.
      * @param restaurantId id of the restaurant to be queried
      * @param role the role of the user
      * @return the delivery zone, should it exist

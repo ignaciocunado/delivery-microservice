@@ -28,7 +28,12 @@ class VendorControllerTest {
     VendorController sut;
 
     UUID restaurantId;
+    UUID restaurantId2;
     UUID deliveryId;
+    UUID deliveryId2;
+
+    UUID vendorId;
+    UUID vendorId2;
 
     OffsetDateTime sampleOffsetDateTime;
 
@@ -42,8 +47,12 @@ class VendorControllerTest {
 
         // generate random UUID
         restaurantId = UUID.randomUUID();
+        restaurantId2 = UUID.randomUUID();
         deliveryId = UUID.randomUUID();
         courierId = UUID.randomUUID();
+        vendorId = UUID.randomUUID();
+        vendorId2 = UUID.randomUUID();
+        deliveryId2 = UUID.randomUUID();
 
         RestaurantCourierIDsInner elem1 = new RestaurantCourierIDsInner();
         elem1.setCourierID(courierId);
@@ -52,8 +61,10 @@ class VendorControllerTest {
         param.add(elem1);
 
         // setup test repository with some sample objects
-        Restaurant r = new Restaurant(restaurantId, UUID.randomUUID(), param, 1.0d);
+        Restaurant r = new Restaurant(restaurantId, vendorId, param, 1.0d);
+        Restaurant r2 = new Restaurant(restaurantId2, vendorId2, param, 1.0d);
         restaurantRepo.save(r);
+        restaurantRepo.save(r2);
 
         sampleOffsetDateTime = OffsetDateTime.of(
                 2023, 12, 31, 10, 30, 0, 0,
@@ -61,10 +72,20 @@ class VendorControllerTest {
         );
 
         Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(),
-                UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime,
+                UUID.randomUUID(), restaurantId, "pending", sampleOffsetDateTime,
                 sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
                 "", "", 1);
+        Delivery d2 = new  Delivery(deliveryId2, UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), restaurantId, "pending", sampleOffsetDateTime,
+                sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
+                "", 1);
+        Delivery d3 = new  Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime,
+                sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
+                "", 1);
         deliveryRepo.save(d);
+        deliveryRepo.save(d2);
+        deliveryRepo.save(d3);
         sut = new VendorController(restaurantRepo, deliveryRepo);
     }
 
@@ -324,6 +345,39 @@ class VendorControllerTest {
     void testSetPickUpNotFound() {
         ResponseEntity<String> res = sut.setPickUpEstimate(UUID.randomUUID(), "vendor", sampleOffsetDateTime.toString());
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
+    }
+
+    @Test
+    void testGetAllDeliveriesUnauthorized() {
+        ResponseEntity<List<UUID>> res = sut.getAllDeliveriesVendor(UUID.randomUUID(), "a");
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testGetAllDeliveriesNotFound() {
+        UUID id = UUID.randomUUID();
+
+        while(id.equals(vendorId) || id.equals(vendorId2)) {
+            id = UUID.randomUUID();
+        }
+
+        ResponseEntity<List<UUID>> res = sut.getAllDeliveriesVendor(id, "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+
+    }
+
+    @Test
+    void testGetAllDeliveriesOkEmptyArray() {
+        ResponseEntity<List<UUID>> res = sut.getAllDeliveriesVendor(vendorId2, "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        assertEquals(res.getBody(), new ArrayList<>());
+    }
+
+    @Test
+    void testGetAllDeliveriesOkNonEmpty() {
+        ResponseEntity<List<UUID>> res = sut.getAllDeliveriesVendor(vendorId, "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        assertEquals(res.getBody(), List.of(deliveryId, deliveryId2));
     }
 
     @Test

@@ -27,6 +27,13 @@ public class RestaurantController implements RestaurantApi {
     private final transient AdminController adminController;
     private final transient GlobalController globalController;
 
+    /**
+     * Constructor for the RestaurantController.
+     * @param courierController the courier controller
+     * @param vendorController the vendor controller
+     * @param adminController the admin controller
+     * @param globalController the generic global controller
+     */
     @Autowired
     public RestaurantController(CourierController courierController, VendorController vendorController,
                                 AdminController adminController, GlobalController globalController) {
@@ -59,7 +66,7 @@ public class RestaurantController implements RestaurantApi {
     }
 
     /**
-     * Calls method in globalController for querying the maximum Delivery zone
+     * Calls method in globalController for querying the maximum Delivery zone.
      * @param deliveryID ID of the restaurant to query. (required)
      * @param role The role of the user (required)
      * @return the ResponseEntity returned
@@ -70,10 +77,10 @@ public class RestaurantController implements RestaurantApi {
     }
 
     /**
-     * Calls the method implemented in the vendorController for retrieving a Restaurant
+     * Calls the method implemented in the vendorController for retrieving a Restaurant.
      * @param restaurantId ID of the restaurant to query. (required)
      * @param role The role of the user (required)
-     * @return
+     * @return the ResponseEntity returned
      */
     @Override
     public ResponseEntity<String> getRest(UUID restaurantId, String role) {

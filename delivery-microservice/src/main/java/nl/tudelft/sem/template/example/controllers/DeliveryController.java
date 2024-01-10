@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.example.controllers;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+
+import java.util.List;
 import java.util.UUID;
 
 import lombok.Setter;
@@ -88,8 +90,10 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<OffsetDateTime> getPickUpEstimateDeliveryId(
-            @Parameter(name = "deliveryID", description = "ID of delivery to get the picked up timestamp of", required = true, in = ParameterIn.PATH) @PathVariable("deliveryID") UUID deliveryID,
-            @NotNull @Parameter(name = "role", description = "The role of the user", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "role", required = true) String role
+            @Parameter(name = "deliveryID", description = "ID of delivery to get the picked up timestamp of",
+                    required = true, in = ParameterIn.PATH) @PathVariable("deliveryID") UUID deliveryID,
+            @NotNull @Parameter(name = "role", description = "The role of the user", required = true,
+                    in = ParameterIn.QUERY) @Valid @RequestParam(value = "role", required = true) String role
     ) {
         return vendorController.getPickUpEstimate(deliveryID, role);
     }
@@ -102,8 +106,10 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> setPickUpTime(
-            @Parameter(name = "deliveryID", description = "ID of the delivery to query.", required = true, in = ParameterIn.PATH) @PathVariable("deliveryID") UUID deliveryID,
-            @NotNull @Parameter(name = "role", description = "The role of the user", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "role", required = true) String role,
+            @Parameter(name = "deliveryID", description = "ID of the delivery to query.", required = true,
+                    in = ParameterIn.PATH) @PathVariable("deliveryID") UUID deliveryID,
+            @NotNull @Parameter(name = "role", description = "The role of the user", required = true,
+                    in = ParameterIn.QUERY) @Valid @RequestParam(value = "role", required = true) String role,
             @Parameter(name = "body", description = "", required = true) @Valid @RequestBody String body
     ) {
         return vendorController.setPickUpEstimate(deliveryID, role, body);
@@ -202,6 +208,17 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
+     * Calls the implementation of the method in the vendorController.
+     * @param vendorId The ID of the vendor to query (required)
+     * @param role The role of the user (required)
+     * @return the corresponding ResponseEntity
+     */
+    @Override
+    public ResponseEntity<List<UUID>> getAllDeliveriesVendor(UUID vendorId, String role) {
+        return vendorController.getAllDeliveriesVendor(vendorId, role);
+    }
+
+    /**
      * Integrates controller with API for the create delivery endpoint.
      * @param role The role of the user (required)
      * @param delivery Delivery data to create. ID is ignored entirely. (required)
@@ -287,9 +304,10 @@ public class DeliveryController implements DeliveryApi {
     @lombok.Generated
     private static ResponseEntity<Double> sanityCheck(ResponseEntity<Double> r, UUID deliveryId) {
         if (r != null && r.getBody() != null) {
-            if (r.getBody() < 0 || r.getBody() > 1)
+            if (r.getBody() < 0 || r.getBody() > 1) {
                 System.out.println("\033[91;40m getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
                         + " \033[91;40m got response: \033[30;101m " + r.getBody() + " \033[0m");
+            }
         } else {
             System.out.println("\033[91;40m ** getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
                     + " \033[91;40m was NULL ** \033[0m");

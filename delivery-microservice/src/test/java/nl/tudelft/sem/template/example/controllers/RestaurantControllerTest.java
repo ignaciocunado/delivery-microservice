@@ -63,6 +63,7 @@ class RestaurantControllerTest {
         sut.getMaxDeliveryZone(id, "a");
         verify(gc).getMaxDeliveryZone(id, "a");
     }
+
     @Test
     public void testCallGetRest() {
         UUID id = UUID.randomUUID();

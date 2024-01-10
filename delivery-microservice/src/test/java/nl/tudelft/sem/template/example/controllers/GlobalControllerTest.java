@@ -276,7 +276,7 @@ public class GlobalControllerTest {
     }
 
     /**
-     * The specified delivery does not exist!
+     * The specified delivery does not exist.
      */
     @Test
     void testGetRestaurantIdByDeliveryIdNotFound() {
@@ -436,7 +436,7 @@ public class GlobalControllerTest {
     }
 
     /**
-     * The specified delivery does not exist!
+     * The specified delivery does not exist.
      */
     @Test
     void testGetRatingByDeliveryIdNotFound() {

@@ -17,12 +17,12 @@ public class TestDeliveryRepository implements DeliveryRepository {
 
     @Override
     public List<Delivery> findAll() {
-        return null;
+        return list;
     }
 
     @Override
     public List<Delivery> findAll(Sort sort) {
-        return null;
+        return list;
     }
 
     @Override

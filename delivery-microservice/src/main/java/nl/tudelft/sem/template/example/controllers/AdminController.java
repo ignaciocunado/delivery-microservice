@@ -16,8 +16,8 @@ import java.util.UUID;
  * and call them in view methods such as in RestaurantController.
  */
 @Component
-public class AdminController
-{
+public class AdminController {
+
     /**
      * Holds restaurant database objects.
      */
@@ -65,7 +65,8 @@ public class AdminController
         int newIdGenerationAttempts = 0;
 
         do {
-            newId = UUID.randomUUID(); newIdGenerationAttempts += 1;
+            newId = UUID.randomUUID();
+            newIdGenerationAttempts += 1;
         } while (restaurantRepository.findById(newId).isPresent() && newIdGenerationAttempts < 1000);
 
         // Ensure the new ID is unique. Otherwise, return that we got

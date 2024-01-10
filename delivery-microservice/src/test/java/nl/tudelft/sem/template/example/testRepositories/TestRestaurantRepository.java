@@ -86,7 +86,7 @@ public class TestRestaurantRepository implements RestaurantRepository {
 
     @Override
     public boolean existsById(UUID s) {
-        return list.stream().filter(x -> x.getRestaurantID().equals(s)).collect(Collectors.toList()).size() !=0;
+        return list.stream().filter(x -> x.getRestaurantID().equals(s)).collect(Collectors.toList()).size() != 0;
     }
 
     @Override
@@ -121,7 +121,7 @@ public class TestRestaurantRepository implements RestaurantRepository {
 
     @Override
     public <S extends Restaurant> List<S> findAll(Example<S> example) {
-        return null;
+        return (List<S>) list;
     }
 
     @Override
