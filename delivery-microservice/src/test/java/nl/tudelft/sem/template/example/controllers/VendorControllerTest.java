@@ -76,8 +76,14 @@ class VendorControllerTest {
                 UUID.randomUUID(), restaurantId, "pending", sampleOffsetDateTime,
                 sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
                 "", "", 1);
-        Delivery d2 = new  Delivery(deliveryId2, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "", "", 1);
-        Delivery d3 = new  Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "", "", 1);
+        Delivery d2 = new  Delivery(deliveryId2, UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), restaurantId, "pending", sampleOffsetDateTime,
+                sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
+                "", 1);
+        Delivery d3 = new  Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime,
+                sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
+                "", 1);
         deliveryRepo.save(d);
         deliveryRepo.save(d2);
         deliveryRepo.save(d3);
