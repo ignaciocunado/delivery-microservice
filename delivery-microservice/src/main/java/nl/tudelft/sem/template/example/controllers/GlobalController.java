@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,26 @@ public class GlobalController {
     }
 
     /**
+     * Queries the Max Delivery Zone for a given restaurant and provides adequate error codes
+     * @param restaurantId id of the restaurant to be queried
+     * @param role the role of the user
+     * @return the delivery zone, should it exist
+     */
+    public ResponseEntity<Double> getMaxDeliveryZone(UUID restaurantId, String role) {
+        if(!checkGeneral(role)) {
+            return new ResponseEntity<Double>(HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<Restaurant> r = restaurantRepository.findById(restaurantId);
+
+        if(r.isEmpty()) {
+            return new ResponseEntity<Double>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<Double>(r.get().getMaxDeliveryZone(), HttpStatus.OK);
+    }
+
+    /**
      * Implementation for the get delivery by ID endpoint. This fetches the full Delivery object from the database,
      * returning every piece of data relating to it.
      * @param deliveryId ID of the delivery to get.
@@ -102,6 +123,31 @@ public class GlobalController {
 
         final Delivery delivery = deliveryFromDB.get();
         return new ResponseEntity<>(delivery, HttpStatus.OK);
+    }
+
+    /**
+     * Implementation for the get restaurant ID by delivery ID endpoint. This points to a 'Restaurant' entity in the DB.
+     * @param deliveryId ID of the delivery to query.
+     * @param role Role of the querying user.
+     * @return The delivery's restaurant ID.
+     */
+    public ResponseEntity<UUID> getRestaurantIdByDeliveryId(UUID deliveryId, String role) {
+        // Authorize the user
+        if (!checkGeneral(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Attempt to fetch the delivery from the DB
+        final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
+        if (deliveryFromDB.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Fetch & validate the restaurant ID
+        final Delivery delivery = deliveryFromDB.get();
+        final UUID restaurantId = delivery.getRestaurantID();
+
+        return new ResponseEntity<>(restaurantId, HttpStatus.OK);
     }
 
     /**
@@ -129,5 +175,30 @@ public class GlobalController {
         final UUID orderId = delivery.getOrderID();
 
         return new ResponseEntity<>(orderId, HttpStatus.OK);
+    }
+
+    /**
+     * Fetches the 'rating' property of a delivery. This property reflects a customer-specified rating.
+     * @param deliveryId Delivery to query.
+     * @param role Role of the querying user.
+     * @return The delivery's customer rating.
+     */
+    public ResponseEntity<Double> getRatingByDeliveryId(UUID deliveryId, String role) {
+        // Authorize the user
+        if (!checkGeneral(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Attempt to fetch the delivery from the DB
+        final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
+        if (deliveryFromDB.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Fetch the rating
+        final Delivery delivery = deliveryFromDB.get();
+        final Double rating = delivery.getCustomerRating();
+
+        return new ResponseEntity<>(rating, HttpStatus.OK);
     }
 }

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class VendorControllerTest {
     TestRestaurantRepository restaurantRepo;
     TestDeliveryRepository deliveryRepo;
@@ -32,6 +33,7 @@ class VendorControllerTest {
     OffsetDateTime sampleOffsetDateTime;
 
     UUID courierId;
+
     @BeforeEach
     public void setup() {
         // create test repositories
@@ -58,7 +60,10 @@ class VendorControllerTest {
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
 
-        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "", "", 1);
+        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime,
+                sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
+                "", "", 1);
         deliveryRepo.save(d);
         sut = new VendorController(restaurantRepo, deliveryRepo);
     }
@@ -181,15 +186,16 @@ class VendorControllerTest {
 
     @Test
     void testGetPickUpEstimate() {
-        ResponseEntity<OffsetDateTime> res = sut.getPickUpEstimate(deliveryId  , "idk" );
+        ResponseEntity<OffsetDateTime> res = sut.getPickUpEstimate(deliveryId, "idk");
         OffsetDateTime resBody = res.getBody();
-        System.out.println("\033[96;40m testGetPickUpEstimate requested for UUID \033[30;106m " + deliveryId + " \033[96;40m got response: \033[30;106m " + res + " \033[0m");
+        System.out.println("\033[96;40m testGetPickUpEstimate requested for UUID \033[30;106m "
+                + deliveryId + " \033[96;40m got response: \033[30;106m " + res + " \033[0m");
         assertEquals(sampleOffsetDateTime, resBody);
     }
 
     @Test
     void pickUpEstimate404() {
-        ResponseEntity<OffsetDateTime> res = sut.getPickUpEstimate(UUID.randomUUID()  , "idk" );
+        ResponseEntity<OffsetDateTime> res = sut.getPickUpEstimate(UUID.randomUUID(), "idk");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
@@ -200,10 +206,13 @@ class VendorControllerTest {
         UUID rid = UUID.randomUUID();
         UUID did = UUID.randomUUID();
         restaurantRepo.save(new Restaurant(rid, UUID.randomUUID(), new ArrayList<>(), 1.0d));
-        dp.save(new Delivery(did, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", null, null, 1.d, null, "", "", 1));
+        dp.save(new Delivery(did, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "pending", null, null, 1.d, null,
+                "", "", 1));
         VendorController vc = new VendorController(rp, dp);
         ResponseEntity<OffsetDateTime> res = vc.getPickUpEstimate(did, "hi");
-        System.out.println("\033[96;40m pickUpEstimateDoesntExist requested for UUID \033[30;106m " + did + " \033[96;40m got response: \033[30;106m " + res.getBody() + " \033[0m");
+        System.out.println("\033[96;40m pickUpEstimateDoesntExist requested for UUID \033[30;106m " + did
+                + " \033[96;40m got response: \033[30;106m " + res.getBody() + " \033[0m");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
@@ -258,6 +267,30 @@ class VendorControllerTest {
         ResponseEntity<Void> res = sut.editStatusDelivery(deliveryId, "vendor", "given to courier");
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "given to courier");
+    }
+
+    @Test
+    void testGetRestaurantUnauthorized() {
+        ResponseEntity<String> res = sut.getRest(UUID.randomUUID(), "noVendor");
+
+        assertEquals(res.getBody(),"NOT AUTHORIZED \n Requires vendor permissions!" );
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testGetRestaurantNotFound() {
+        ResponseEntity<String> res = sut.getRest(UUID.randomUUID(), "vendor");
+
+        assertEquals(res.getBody(), "NOT FOUND \n No restaurant with the given id has been found");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testGetRestaurantOk() {
+        ResponseEntity<String> res = sut.getRest(restaurantId, "vendor");
+
+        assertEquals(res.getBody(), restaurantRepo.findById(restaurantId).get().toString());
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
     }
 
     @Test

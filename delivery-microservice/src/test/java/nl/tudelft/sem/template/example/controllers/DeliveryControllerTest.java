@@ -10,7 +10,6 @@ import org.mockito.Mockito;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests that delivery controller calls on its subcontrollers correctly.
@@ -41,7 +40,8 @@ class DeliveryControllerTest {
         vendorController = Mockito.mock(VendorController.class);
         globalController = Mockito.mock(GlobalController.class);
         vendorOrCourierController = Mockito.mock(VendorOrCourierController.class);
-        deliveryController = new DeliveryController(courierController, vendorController, globalController, vendorOrCourierController);
+        deliveryController = new DeliveryController(courierController,
+                vendorController, globalController, vendorOrCourierController);
     }
 
     @Test
@@ -153,9 +153,23 @@ class DeliveryControllerTest {
     }
 
     @Test
+    void testGetRestaurantIdByDeliveryId() {
+        deliveryController.getRestIdOfDel(deliveryId, role);
+
+        Mockito.verify(globalController).getRestaurantIdByDeliveryId(deliveryId, role);
+    }
+
+    @Test
     void testGetOrderByDeliveryId() {
         deliveryController.getOrderByDeliveryId(deliveryId, role);
 
         Mockito.verify(globalController).getOrderByDeliveryId(deliveryId, role);
+    }
+
+    @Test
+    void testGetRatingByDeliveryId() {
+        deliveryController.getRateByDeliveryId(deliveryId, role);
+
+        Mockito.verify(globalController).getRatingByDeliveryId(deliveryId, role);
     }
 }
