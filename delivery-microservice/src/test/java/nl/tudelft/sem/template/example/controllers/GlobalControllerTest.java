@@ -1,18 +1,23 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import static org.junit.jupiter.api.Assertions.*;
+
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class GlobalControllerTest {
 
@@ -21,6 +26,7 @@ public class GlobalControllerTest {
     private transient TestRestaurantRepository restaurantRepository;
 
     UUID deliveryId;
+    UUID restaurantId;
     UUID orderId;
 
     /**
@@ -34,16 +40,24 @@ public class GlobalControllerTest {
         restaurantRepository = new TestRestaurantRepository();
 
         deliveryId = UUID.randomUUID();
+        restaurantId = UUID.randomUUID();
+
         orderId = UUID.randomUUID();
         OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
                 2024, 1, 4, 18, 23, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
-        
+
         delivery = new Delivery(deliveryId, orderId, UUID.randomUUID(), UUID.randomUUID(),
                 UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
                 sampleOffsetDateTime, "69.655,69.425", "late", 1);
         deliveryRepository.save(delivery);
+
+        Restaurant r = new Restaurant(restaurantId, UUID.randomUUID(), new ArrayList<>(), 10.2d);
+
+        deliveryRepository.save(delivery);
+
+        restaurantRepository.save(r);
 
         globalController = new GlobalController(restaurantRepository, deliveryRepository);
     }
@@ -54,10 +68,12 @@ public class GlobalControllerTest {
      *         until used to save an object to the DB.
      */
     UUID generateNewDeliveryId() {
+
         UUID invalidDeliveryId;
 
-        do { invalidDeliveryId = UUID.randomUUID(); }
-        while (invalidDeliveryId == deliveryId);
+        do {
+            invalidDeliveryId = UUID.randomUUID();
+        } while (invalidDeliveryId == deliveryId);
 
         return invalidDeliveryId;
     }
@@ -71,14 +87,14 @@ public class GlobalControllerTest {
 
     @Test
     void getLiveLocationNotFound() {
-        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID() , "vendor");
+        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID(), "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
 
     @Test
     void getLiveLocationUnauthorized() {
-        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID() , "norole");
+        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID(), "norole");
         assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
         assertNull(res.getBody());
     }
@@ -92,14 +108,14 @@ public class GlobalControllerTest {
 
     @Test
     void getUserExceptionNotFound() {
-        ResponseEntity<String> res = globalController.getDeliveryException(UUID.randomUUID() , "vendor");
+        ResponseEntity<String> res = globalController.getDeliveryException(UUID.randomUUID(), "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
 
     @Test
     void getUserExceptionUnauthorized() {
-        ResponseEntity<String> res = globalController.getDeliveryException(deliveryId , "norole");
+        ResponseEntity<String> res = globalController.getDeliveryException(deliveryId, "norole");
         assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
         assertNull(res.getBody());
     }
@@ -111,11 +127,35 @@ public class GlobalControllerTest {
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
         UUID id = UUID.randomUUID();
-        Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "69.655,69.425", "", 1);
+        Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime,
+                sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
+                "69.655,69.425", "", 1);
+
         deliveryRepository.save(save);
-        ResponseEntity<String> res = globalController.getDeliveryException(id , "vendor");
+        ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "");
+    }
+
+    @Test
+    void testDeliveryZoneUnauthorized() {
+        ResponseEntity<Double> res = globalController.getMaxDeliveryZone(restaurantId, "nothing");
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testDeliveryZoneNotFound() {
+        ResponseEntity<Double> res = globalController.getMaxDeliveryZone(UUID.randomUUID(), "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testDeliveryZoneOk() {
+
+        ResponseEntity<Double> res = globalController.getMaxDeliveryZone(restaurantId, "vendor");
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        assertEquals(res.getBody(), 10.2d);
     }
 
     /**
@@ -136,7 +176,7 @@ public class GlobalControllerTest {
     }
 
     /**
-     * The specified delivery does not exist!
+     * The specified delivery does not exist.
      */
     @Test
     void testGetDeliveryByIdNotFound() {
@@ -205,7 +245,8 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetOrderByDeliveryIdGoodWeather() {
-        ResponseEntity<UUID> response = globalController.getOrderByDeliveryId(deliveryId, "courier");
+        ResponseEntity<UUID> response = globalController
+                .getOrderByDeliveryId(deliveryId, "courier");
 
         assertEquals(
                 HttpStatus.OK,
@@ -218,7 +259,7 @@ public class GlobalControllerTest {
     }
 
     /**
-     * The specified delivery does not exist!
+     * The specified delivery does not exist.
      */
     @Test
     void testGetOrderByDeliveryIdNotFound() {

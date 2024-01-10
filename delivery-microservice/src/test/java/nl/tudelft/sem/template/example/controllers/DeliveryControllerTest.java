@@ -9,7 +9,6 @@ import org.mockito.Mockito;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests that delivery controller calls on its subcontrollers correctly.
@@ -40,7 +39,8 @@ class DeliveryControllerTest {
         vendorController = Mockito.mock(VendorController.class);
         globalController = Mockito.mock(GlobalController.class);
         vendorOrCourierController = Mockito.mock(VendorOrCourierController.class);
-        deliveryController = new DeliveryController(courierController, vendorController, globalController, vendorOrCourierController);
+        deliveryController = new DeliveryController(courierController,
+                vendorController, globalController, vendorOrCourierController);
     }
 
     @Test
