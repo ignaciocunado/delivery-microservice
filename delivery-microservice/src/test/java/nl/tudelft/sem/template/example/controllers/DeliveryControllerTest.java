@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 
@@ -167,9 +169,21 @@ class DeliveryControllerTest {
     }
 
     @Test
+    void testGetDeliveryEstimate() {
+        deliveryController.getDeliveryEstimate(deliveryId, role);
+        Mockito.verify(vendorController).getDeliveryEstimate(deliveryId, role);
+    }
+
+    @Test
+    void testSetDeliveryEstimate() {
+        deliveryController.setDeliveryEstimate(deliveryId, role, OffsetDateTime.of(2024, 1, 1, 1, 1, 1, 1, ZoneOffset.ofHours(0)));
+        Mockito.verify(vendorController).setDeliveryEstimate(deliveryId, role, OffsetDateTime.of(2024, 1, 1, 1, 1, 1, 1, ZoneOffset.ofHours(0)));
+    }
+    @Test
     void testGetRatingByDeliveryId() {
         deliveryController.getRateByDeliveryId(deliveryId, role);
-
         Mockito.verify(globalController).getRatingByDeliveryId(deliveryId, role);
     }
+
+
 }

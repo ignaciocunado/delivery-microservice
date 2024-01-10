@@ -235,6 +235,52 @@ public class VendorController {
     }
 
     /**
+     * Gets the estimated time of delivery for a delivery.
+     * @param deliveryID UUID of the delivery object
+     * @param role User role
+     * @return OffsetDateTime of the estimated time of delivery
+     */
+    public ResponseEntity<OffsetDateTime> getDeliveryEstimate(UUID deliveryID, String role) {
+        if (!checkVendor(role) && !checkCourier(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        Optional<Delivery> estimate = deliveryRepository.findById(deliveryID);
+        if (estimate.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        OffsetDateTime r = estimate.get().getDeliveryTimeEstimate();
+        if (r == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(r, HttpStatus.OK);
+    }
+
+
+    /** Sets the estimated time of delivery for a delivery.
+     *
+     * @param deliveryID ID of the delivery to mark as rejected. (required)
+     * @param role      The role of the user (required)
+     * @param body      The estimated time of delivery (required)
+     * @return Whether the request was successful or not, the set time if successful
+     */
+    public ResponseEntity<String> setDeliveryEstimate(UUID deliveryID, String role, OffsetDateTime body) {
+        if (checkVendor(role) || checkCourier(role)) {
+            if (deliveryRepository.findById(deliveryID).isPresent()) {
+                if (body == null) {
+                    return new ResponseEntity<>("Invalid body.", HttpStatus.BAD_REQUEST);
+                }
+                Delivery delivery = deliveryRepository.findById(deliveryID).get();
+                delivery.setDeliveryTimeEstimate(body);
+                deliveryRepository.save(delivery);
+                return new ResponseEntity<>(body.toString(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    }
+
+
+    /**
      * Create a new Delivery object in the database. The Delivery is given a new, fully unique ID.
      * @param role Requesting user's role.
      * @param delivery Data of delivery to create. ID is ignored.
@@ -293,9 +339,9 @@ public class VendorController {
      * @return the ResponseEntity containing the status of the request
      */
     public ResponseEntity<String> getRest(UUID restaurantId, String role) {
-        if(!checkVendor(role))
+        if(!checkVendor(role)) {
             return new ResponseEntity<String>("NOT AUTHORIZED \n Requires vendor permissions!", HttpStatus.UNAUTHORIZED);
-
+        }
         Optional<Restaurant> r = restaurantRepository.findById(restaurantId);
         return r.map(restaurant -> new ResponseEntity<>(restaurant.toString(), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>("NOT FOUND \n No restaurant with the given id has been found", HttpStatus.NOT_FOUND));
     }
