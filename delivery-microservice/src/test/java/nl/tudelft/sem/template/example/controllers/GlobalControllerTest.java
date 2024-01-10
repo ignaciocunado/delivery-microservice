@@ -255,6 +255,88 @@ public class GlobalControllerTest {
     }
 
     /**
+     * The normal situation, in which a delivery and its restaurant ID both exist.
+     */
+    @Test
+    void testGetRestaurantIdByDeliveryIdGoodWeather() {
+        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(deliveryId, "courier");
+
+        assertEquals(
+                HttpStatus.OK,
+                response.getStatusCode()
+        );
+        assertEquals(
+                delivery.getRestaurantID(),
+                response.getBody()
+        );
+    }
+
+    /**
+     * The specified delivery does not exist!
+     */
+    @Test
+    void testGetRestaurantIdByDeliveryIdNotFound() {
+        UUID invalidDeliveryId = generateNewDeliveryId();
+
+        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(invalidDeliveryId, "courier");
+        assertEquals(
+                response.getStatusCode(),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    /**
+     * Ensures that every role can get a delivery's restaurant.
+     */
+    @Test
+    void testGetRestaurantIdByDeliveryIdAllRoles() {
+        List<String> rolesToTest = List.of("courier", "vendor", "admin", "customer");
+
+        for (String roleToTest : rolesToTest) {
+            ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(deliveryId, roleToTest);
+
+            assertEquals(
+                    HttpStatus.OK,
+                    response.getStatusCode()
+            );
+            assertEquals(
+                    delivery.getRestaurantID(),
+                    response.getBody()
+            );
+        }
+    }
+
+    /**
+     * Ensures that a valid role is required to access a delivery's restaurant.
+     */
+    @Test
+    void testGetRestaurantIdByDeliveryIdUnauthorized() {
+        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(deliveryId, "co");
+        assertEquals(
+                HttpStatus.UNAUTHORIZED,
+                response.getStatusCode()
+        );
+
+        response = globalController.getRestaurantIdByDeliveryId(deliveryId, "unauthorizedRole");
+        assertEquals(
+                HttpStatus.UNAUTHORIZED,
+                response.getStatusCode()
+        );
+    }
+
+    /**
+     * Ensures that a role is required at all to access a delivery's restaurant.
+     */
+    @Test
+    void testGetRestaurantIdByDeliveryIdNoAuthorization() {
+        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(deliveryId, "");
+        assertEquals(
+                HttpStatus.UNAUTHORIZED,
+                response.getStatusCode()
+        );
+    }
+
+    /**
      * The normal situation, in which a delivery and its order ID both exist.
      */
     @Test
