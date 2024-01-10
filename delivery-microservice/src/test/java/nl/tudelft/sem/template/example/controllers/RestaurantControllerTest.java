@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -24,6 +24,7 @@ class RestaurantControllerTest {
     GlobalController gc = Mockito.mock(GlobalController.class);
 
     RestaurantController sut = new RestaurantController(cc, vc, gc);
+
     @BeforeEach
     public void setup() {
         sut.setVendorController(vc);
