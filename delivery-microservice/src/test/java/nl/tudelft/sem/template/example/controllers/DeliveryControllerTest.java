@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import nl.tudelft.sem.model.Delivery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -135,6 +136,15 @@ class DeliveryControllerTest {
         deliveryController.assignOrderToCourier(courier, deliveryId, role);
 
         Mockito.verify(vendorOrCourierController).assignOrderToCourier(courier, deliveryId, role);
+    }
+
+    @Test
+    void testCreateDelivery() {
+        // Since only chained method calls are being tested, we don't need to pass data to the new Delivery.
+        final Delivery newDelivery = new Delivery();
+        deliveryController.createDelivery(role, newDelivery);
+
+        Mockito.verify(vendorController).createDelivery(role, newDelivery);
     }
 
     @Test
