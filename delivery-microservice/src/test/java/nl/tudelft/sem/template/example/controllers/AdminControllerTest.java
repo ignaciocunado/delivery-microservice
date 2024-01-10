@@ -1,14 +1,18 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
+import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -154,6 +158,85 @@ public class AdminControllerTest
 
         assertEquals(
                 HttpStatus.UNAUTHORIZED,
+                response.getStatusCode()
+        );
+    }
+
+    /**
+     * Tests the case where no more UUIDs are available
+     */
+    @Test
+    void testCreateRestaurantAllIdsUsed() {
+        // We mock the repositories, so we can fake all IDs being taken.
+        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
+        AdminController localAdminController = new AdminController(
+                mockedRestaurantRepository
+        );
+
+        // Every single restaurant ID is mapped to this one restaurant
+        Restaurant foundRestaurant = new Restaurant();
+        Mockito.when(mockedRestaurantRepository.findById(Mockito.any()))
+                .thenReturn(Optional.of(foundRestaurant));
+
+        // So, when a new restaurant is created, it should get stuck in a loop and exit!
+        final Restaurant restaurantToCreate = new Restaurant();
+        ResponseEntity<Restaurant> response = localAdminController.createRestaurant("admin", restaurantToCreate);
+
+        assertEquals(
+                HttpStatus.LOOP_DETECTED,
+                response.getStatusCode()
+        );
+    }
+
+    /**
+     * Saving to the database fails, and returns null. Error must be handled!
+     */
+    @Test
+    void testCreateRestaurantSavingFailed() {
+        // We mock the repositories, so we can fake saving failing.
+        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
+        AdminController localAdminController = new AdminController(
+                mockedRestaurantRepository
+        );
+
+        // Saving always fails and returns null
+        Mockito.when(mockedRestaurantRepository.save(Mockito.any()))
+                .thenReturn(null);
+
+        // Ensure a server error occurs
+        final Restaurant restaurantToCreate = new Restaurant();
+        ResponseEntity<Restaurant> response = localAdminController.createRestaurant("admin", restaurantToCreate);
+
+        assertEquals(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                response.getStatusCode()
+        );
+    }
+
+    /**
+     * Retrieving the created restaurant from the database fails! Ensure error occurs.
+     */
+    @Test
+    void testCreateRestaurantRetrievalFailed() {
+        // We mock the repositories, so we can fake saving failing.
+        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
+        AdminController localAdminController = new AdminController(
+                mockedRestaurantRepository
+        );
+
+        final Restaurant restaurantToCreate = new Restaurant();
+        Mockito.when(mockedRestaurantRepository.save(Mockito.any()))
+                .thenReturn(restaurantToCreate);
+
+        // Retrieval always fails and returns empty
+        Mockito.when(mockedRestaurantRepository.findById(Mockito.any()))
+                .thenReturn(Optional.empty());
+
+        // Ensure a server error occurs
+        ResponseEntity<Restaurant> response = localAdminController.createRestaurant("admin", restaurantToCreate);
+
+        assertEquals(
+                HttpStatus.INTERNAL_SERVER_ERROR,
                 response.getStatusCode()
         );
     }

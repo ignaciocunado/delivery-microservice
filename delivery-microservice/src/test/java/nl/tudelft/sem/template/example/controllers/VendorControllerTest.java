@@ -5,18 +5,17 @@ import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
-import org.hibernate.type.OffsetDateTimeType;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -420,6 +419,91 @@ class VendorControllerTest {
 
         assertEquals(
                 HttpStatus.UNAUTHORIZED,
+                response.getStatusCode()
+        );
+    }
+
+    /**
+     * Tests the case where no more UUIDs are available
+     */
+    @Test
+    void testCreateDeliveryAllIdsUsed() {
+        // We mock the repositories, so we can fake all IDs being taken.
+        TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
+        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
+
+        VendorController localVendorController = new VendorController(
+                mockedRestaurantRepository, mockedDeliveryRepository
+        );
+
+        // Every single delivery ID is mapped to this one delivery
+        Delivery foundDelivery = new Delivery();
+        Mockito.when(mockedDeliveryRepository.findById(Mockito.any()))
+                .thenReturn(Optional.of(foundDelivery));
+
+        // So, when a new delivery is created, it should get stuck in a loop and exit!
+        final Delivery deliveryToCreate = new Delivery();
+        ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
+
+        assertEquals(
+                HttpStatus.LOOP_DETECTED,
+                response.getStatusCode()
+        );
+    }
+
+    /**
+     * Saving to the database fails, and returns null. Error must be handled!
+     */
+    @Test
+    void testCreateDeliverySavingFailed() {
+        // We mock the repositories, so we can fake saving failing.
+        TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
+        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
+
+        VendorController localVendorController = new VendorController(
+                mockedRestaurantRepository, mockedDeliveryRepository
+        );
+
+        // Saving always fails and returns null
+        Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
+                .thenReturn(null);
+
+        // Ensure a server error occurs
+        final Delivery deliveryToCreate = new Delivery();
+        ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
+
+        assertEquals(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                response.getStatusCode()
+        );
+    }
+
+    /**
+     * Retrieving the created delivery from the database fails! Ensure error occurs.
+     */
+    @Test
+    void testCreateDeliveryRetrievalFailed() {
+        // We mock the repositories, so we can fake retrieval failing.
+        TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
+        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
+
+        VendorController localVendorController = new VendorController(
+                mockedRestaurantRepository, mockedDeliveryRepository
+        );
+
+        final Delivery deliveryToCreate = new Delivery();
+        Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
+                .thenReturn(deliveryToCreate);
+
+        // Retrieval always fails and returns empty
+        Mockito.when(mockedDeliveryRepository.findById(Mockito.any()))
+                .thenReturn(Optional.empty());
+
+        // Ensure a server error occurs
+        ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
+
+        assertEquals(
+                HttpStatus.INTERNAL_SERVER_ERROR,
                 response.getStatusCode()
         );
     }

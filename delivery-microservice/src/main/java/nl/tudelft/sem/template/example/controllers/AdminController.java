@@ -81,12 +81,13 @@ public class AdminController
 
         // As an extra layer of internal validation, ensure the newly created restaurant can be fetched from the DB.
         // Failure is considered a server-side error.
-        final UUID savedRestaurantId = savedRestaurant.getRestaurantID();
-        if (savedRestaurantId == null) {
+        if (savedRestaurant == null || savedRestaurant.getRestaurantID() == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        final Optional<Restaurant> databaseRestaurant = restaurantRepository.findById(savedRestaurantId);
+        final Optional<Restaurant> databaseRestaurant = restaurantRepository
+                .findById(savedRestaurant.getRestaurantID());
+
         if (databaseRestaurant.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

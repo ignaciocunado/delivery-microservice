@@ -267,7 +267,7 @@ public class VendorController {
         do {
             newId = UUID.randomUUID(); newIdGenerationAttempts += 1;
         }
-        while (deliveryRepository.findById(newId).isPresent() && newIdGenerationAttempts < 1000);
+        while (deliveryRepository.findById(newId).isPresent() && newIdGenerationAttempts < 500);
 
         // Ensure the new ID is unique. Otherwise, return that we got
         // stuck in the ID generation loop (and had to abort).
@@ -281,12 +281,11 @@ public class VendorController {
 
         // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
         // Failure is considered a server-side error.
-        final UUID savedDeliveryId = savedDelivery.getDeliveryID();
-        if (savedDeliveryId == null) {
+        if (savedDelivery == null || savedDelivery.getDeliveryID() == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDeliveryId);
+        final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDelivery.getDeliveryID());
         if (databaseDelivery.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
