@@ -332,7 +332,7 @@ class VendorControllerTest {
     void testGetAllDeliveriesNotFound() {
         UUID id = UUID.randomUUID();
 
-        while(!id.equals(vendorId) && !id.equals(vendorId2)) {
+        while(id.equals(vendorId) || id.equals(vendorId2)) {
             id = UUID.randomUUID();
         }
 
