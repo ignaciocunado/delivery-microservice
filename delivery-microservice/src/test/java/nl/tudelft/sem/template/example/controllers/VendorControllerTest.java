@@ -80,8 +80,9 @@ class VendorControllerTest {
     UUID generateNewDeliveryId() {
         UUID newDeliveryId;
 
-        do { newDeliveryId = UUID.randomUUID(); }
-        while (newDeliveryId == deliveryId);
+        do {
+            newDeliveryId = UUID.randomUUID();
+        } while (newDeliveryId == deliveryId);
 
         return newDeliveryId;
     }
