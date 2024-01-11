@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -148,7 +150,9 @@ public class GlobalControllerTest {
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
         UUID id = UUID.randomUUID();
-        Delivery save = new Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "69.655,69.425", null, 1);
+        Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
+                "69.655,69.425", "", 1);
         deliveryRepository.save(save);
         ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);

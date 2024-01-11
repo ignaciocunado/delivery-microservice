@@ -8,8 +8,6 @@ import org.mockito.Mockito;
 
 import java.util.UUID;
 
-
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 class RestaurantControllerTest {

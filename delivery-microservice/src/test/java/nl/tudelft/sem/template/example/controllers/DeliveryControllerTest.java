@@ -4,9 +4,6 @@ import nl.tudelft.sem.model.Delivery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.http.ResponseEntity;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -42,13 +39,12 @@ class DeliveryControllerTest {
         vendorController = Mockito.mock(VendorController.class);
         globalController = Mockito.mock(GlobalController.class);
         vendorOrCourierController = Mockito.mock(VendorOrCourierController.class);
-        deliveryController = new DeliveryController(courierController,
-                vendorController, globalController, vendorOrCourierController);
+        deliveryController = new DeliveryController(courierController, vendorController,
+                globalController, vendorOrCourierController);
     }
 
     @Test
     void getPickUpLocation() {
-
         deliveryController.getPickUpLocation(deliveryId, role);
 
         Mockito.verify(courierController).getPickUpLocation(deliveryId, role);

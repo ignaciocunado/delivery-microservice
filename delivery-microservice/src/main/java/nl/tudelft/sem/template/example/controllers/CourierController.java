@@ -1,8 +1,12 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import java.util.Optional;
 import java.util.UUID;
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
+import nl.tudelft.sem.template.example.database.RestaurantRepository;
+import nl.tudelft.sem.template.example.service.ExternalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,27 +20,75 @@ import org.springframework.stereotype.Component;
 public class CourierController  {
 
     DeliveryRepository deliveryRepository;
+    RestaurantRepository restaurantRepository;
+    ExternalService externalService;
 
+    /**
+     * Constructor for the delivery controller.
+     * @param deliveryRepository delivery DB
+     * @param restaurantRepository restaurant DB
+     * @param externalService external communication
+     */
     @Autowired
-    public CourierController(DeliveryRepository deliveryRepository) {
+    public CourierController(DeliveryRepository deliveryRepository, RestaurantRepository restaurantRepository,
+                             ExternalService externalService) {
         this.deliveryRepository = deliveryRepository;
+        this.restaurantRepository = restaurantRepository;
+        this.externalService = externalService;
     }
 
+    /**
+     * Returns if the user is courier.
+     * @param role the role of the user
+     * @return boolean
+     */
     private boolean checkCourier(String role) {
         return role.equals("courier");
     }
 
-    /** returns the pickup location.
-     *
+    /**
+     * Returns the pickup location.
      * @param deliveryId id of the delivery
      * @param role role of the user
      * @return the pickup location
      */
     public ResponseEntity<String> getPickUpLocation(UUID deliveryId, String role) {
-        if (checkCourier(role)) {
-            return new ResponseEntity<>("PickUp location is 123.321.666", HttpStatus.OK);
+        if(!checkCourier(role)) {
+            return new ResponseEntity<>("Authorization failed!", HttpStatus.UNAUTHORIZED);
         }
-        return new ResponseEntity<>("Authorization failed!", HttpStatus.UNAUTHORIZED);
+        Optional<Delivery> delivery = deliveryRepository.findById(deliveryId);
+        if(delivery.isEmpty()) {
+            return new ResponseEntity<>("Delivery not found!", HttpStatus.NOT_FOUND);
+        }
+
+        Restaurant rest = restaurantRepository.findById(delivery.get().getRestaurantID()).get();
+
+        String location = externalService.getRestaurantLocation(rest.getVendorID());
+
+        return new ResponseEntity<>("location: " + location, HttpStatus.OK);
+    }
+
+    /** Returns the destination of the order location.
+     *
+     * @param deliveryId id of the delivery
+     * @param role the role of the user
+     * @return the response Entity
+     */
+    public ResponseEntity<String> getLocationOfDelivery(UUID deliveryId, String role) {
+        if(!checkCourier(role)) {
+            return new ResponseEntity<>("Authorization failed!", HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<Delivery> delivery = deliveryRepository.findById(deliveryId);
+        if(delivery.isEmpty()) {
+            return new ResponseEntity<>("Delivery not found!", HttpStatus.NOT_FOUND);
+        }
+
+        UUID customerId = delivery.get().getCustomerID();
+        UUID orderId = delivery.get().getOrderID();
+
+        String location = externalService.getOrderDestination(customerId, orderId);
+        return new ResponseEntity<>("location: " + location, HttpStatus.OK);
     }
 
 
