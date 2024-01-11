@@ -45,6 +45,16 @@ class AuthorizationServiceTest {
     }
 
     @Test
+    public void testAuthorize_VendorRoleWithoutUserId_ReturnsFalse() {
+        when(request.getHeader("X-User-Id")).thenReturn(null);
+        when(request.getParameter("role")).thenReturn("vendor");
+
+        boolean result = authorizationService.authorize(request);
+
+        assertFalse(result);
+    }
+
+    @Test
     public void testAuthorizeNonCourierRole_ReturnsFalse() {
         when(request.getHeader("X-User-Id")).thenReturn("123");
         when(request.getParameter("role")).thenReturn("non-courier");
@@ -85,5 +95,19 @@ class AuthorizationServiceTest {
         boolean result = authorizationService.authorize(request);
 
         assertTrue(result);
+    }
+
+    @Test
+    public void testAuthorize_NullRequest_ReturnsFalse() {
+        boolean result = authorizationService.authorize(null);
+        assertFalse(result);
+    }
+
+    @Test
+    public void testAuthorize_NullRole_ReturnsFalse() {
+        when(request.getHeader("X-User-Id")).thenReturn("123");
+        when(request.getParameter("role")).thenReturn(null);
+        boolean result = authorizationService.authorize(request);
+        assertFalse(result);
     }
 }

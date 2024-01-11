@@ -1,9 +1,12 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import nl.tudelft.sem.model.Delivery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 
@@ -19,8 +22,8 @@ class DeliveryControllerTest {
     private transient GlobalController globalController;
     private transient VendorOrCourierController vendorOrCourierController;
 
-    private UUID deliveryId;
-    private String role;
+    private transient UUID deliveryId;
+    private transient String role;
 
     /**
      * Mocks courier controller to setup delivery controller.
@@ -132,10 +135,26 @@ class DeliveryControllerTest {
     }
 
     @Test
+    void testCreateDelivery() {
+        // Since only chained method calls are being tested, we don't need to pass data to the new Delivery.
+        final Delivery newDelivery = new Delivery();
+        deliveryController.createDelivery(role, newDelivery);
+
+        Mockito.verify(vendorController).createDelivery(role, newDelivery);
+    }
+
+    @Test
     void testGetDeliveryById() {
         deliveryController.getDeliveyById(deliveryId, role);
 
         Mockito.verify(globalController).getDeliveryById(deliveryId, role);
+    }
+
+    @Test
+    void testGetRestaurantIdByDeliveryId() {
+        deliveryController.getRestIdOfDel(deliveryId, role);
+
+        Mockito.verify(globalController).getRestaurantIdByDeliveryId(deliveryId, role);
     }
 
     @Test
@@ -179,5 +198,36 @@ class DeliveryControllerTest {
         deliveryController.getLocationOfDelivery(deliveryId, role);
 
         Mockito.verify(courierController).getLocationOfDelivery(deliveryId, role);
+
+    }
+
+    @Test
+    void testGetDeliveryEstimate() {
+        deliveryController.getDeliveryEstimate(deliveryId, role);
+        Mockito.verify(vendorController).getDeliveryEstimate(deliveryId, role);
+    }
+
+    @Test
+    void testSetDeliveryEstimate() {
+        deliveryController.setDeliveryEstimate(deliveryId, role,
+                OffsetDateTime.of(2024, 1, 1, 1,
+                        1, 1, 1, ZoneOffset.ofHours(0)));
+
+        Mockito.verify(vendorController).setDeliveryEstimate(deliveryId, role,
+                OffsetDateTime.of(2024, 1, 1, 1,
+                        1, 1, 1, ZoneOffset.ofHours(0)));
+    }
+
+    @Test
+    void testGetRatingByDeliveryId() {
+        deliveryController.getRateByDeliveryId(deliveryId, role);
+        Mockito.verify(globalController).getRatingByDeliveryId(deliveryId, role);
+    }
+
+    @Test
+    void testCallGetAllDeliveries() {
+        UUID vendorId = UUID.randomUUID();
+        deliveryController.getAllDeliveriesVendor(vendorId, "vendor");
+        Mockito.verify(vendorController).getAllDeliveriesVendor(vendorId, "vendor");
     }
 }

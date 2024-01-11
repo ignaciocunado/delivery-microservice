@@ -242,15 +242,159 @@ public class VendorController {
      * @return the UUID in the response entity
      */
     public ResponseEntity<UUID> getCourierIdByDelivery(UUID deliveryId, String role) {
-        if(!checkVendor(role)) {
+        if (!checkVendor(role)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Optional<Delivery> fetchedDelivery = deliveryRepository.findById(deliveryId);
-        if(fetchedDelivery.isEmpty()) {
+        if (fetchedDelivery.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(fetchedDelivery.get().getCourierID(), HttpStatus.OK);
+    }
+    /**
+     * Gets the estimated time of delivery for a delivery.
+     * @param deliveryID UUID of the delivery object
+     * @param role User role
+     * @return OffsetDateTime of the estimated time of delivery
+     */
+    public ResponseEntity<OffsetDateTime> getDeliveryEstimate(UUID deliveryID, String role) {
+        if (!checkVendor(role) && !checkCourier(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        Optional<Delivery> estimate = deliveryRepository.findById(deliveryID);
+        if (estimate.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        OffsetDateTime r = estimate.get().getDeliveryTimeEstimate();
+        if (r == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(r, HttpStatus.OK);
+    }
+
+
+    /** Sets the estimated time of delivery for a delivery.
+     *
+     * @param deliveryID ID of the delivery to mark as rejected. (required)
+     * @param role      The role of the user (required)
+     * @param body      The estimated time of delivery (required)
+     * @return Whether the request was successful or not, the set time if successful
+     */
+    public ResponseEntity<String> setDeliveryEstimate(UUID deliveryID, String role, OffsetDateTime body) {
+        if (checkVendor(role) || checkCourier(role)) {
+            if (deliveryRepository.findById(deliveryID).isPresent()) {
+                if (body == null) {
+                    return new ResponseEntity<>("Invalid body.", HttpStatus.BAD_REQUEST);
+                }
+                Delivery delivery = deliveryRepository.findById(deliveryID).get();
+                delivery.setDeliveryTimeEstimate(body);
+                deliveryRepository.save(delivery);
+                return new ResponseEntity<>(body.toString(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    }
+
+
+    /**
+     * Create a new Delivery object in the database. The Delivery is given a new, fully unique ID.
+     * @param role Requesting user's role.
+     * @param delivery Data of delivery to create. ID is ignored.
+     * @return The newly created Delivery object.
+     */
+    public ResponseEntity<Delivery> createDelivery(String role, Delivery delivery) {
+        // Authorize the user
+        if (!checkVendor(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Ensure delivery validity
+        if (delivery == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // Hacky fix: generated values do not seem to work with UUIDs, without OpenAPI YAML modifications.
+        // So, we generate new UUIDs until we find a unique one, because we don't want to overwrite or
+        // otherwise clash with existing database entities.
+        UUID newId;
+        int newIdGenerationAttempts = 0;
+
+        do {
+            newId = UUID.randomUUID();
+            newIdGenerationAttempts += 1;
+        } while (deliveryRepository.findById(newId).isPresent() && newIdGenerationAttempts < 500);
+
+        // Ensure the new ID is unique. Otherwise, return that we got
+        // stuck in the ID generation loop (and had to abort).
+        if (deliveryRepository.findById(newId).isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // Once we have the new ID - save delivery to the DB.
+        delivery.setDeliveryID(newId);
+        Delivery savedDelivery = deliveryRepository.save(delivery);
+
+        // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
+        // Failure is considered a server-side error, but this is unfortunately not permitted by the OpenAPI spec.
+        if (savedDelivery == null || savedDelivery.getDeliveryID() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDelivery.getDeliveryID());
+        if (databaseDelivery.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(databaseDelivery.get(), HttpStatus.OK);
+    }
+
+    /**
+     * Queries the database for a specific restaurant and throws respective errors.
+     * @param restaurantId id of the queried restaurant
+     * @param role the role of the user
+     * @return the ResponseEntity containing the status of the request
+     */
+    public ResponseEntity<String> getRest(UUID restaurantId, String role) {
+        if(!checkVendor(role)) {
+            return new ResponseEntity<String>("NOT AUTHORIZED \n Requires vendor permissions!",
+                    HttpStatus.UNAUTHORIZED);
+        }
+        Optional<Restaurant> r = restaurantRepository.findById(restaurantId);
+        return r.map(restaurant -> new ResponseEntity<>(restaurant.toString(), HttpStatus.OK)).orElseGet(() ->
+                new ResponseEntity<>("NOT FOUND \n No restaurant with the given id has been found",
+                        HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * Return all deliveries for a given vendor.
+     * @param vendorId the id of the vendor to be queried
+     * @param role the role of the user calling the endpoint
+     * @return all deliveries for the vendor
+     */
+    public ResponseEntity<List<UUID>> getAllDeliveriesVendor(UUID vendorId, String role) {
+        if(!checkVendor(role)) {
+            return new ResponseEntity<List<UUID>>(HttpStatus.UNAUTHORIZED);
+        }
+
+        List<Restaurant> restaurants = restaurantRepository.findAll();
+
+        List<UUID> filteredRestaurants = restaurants.stream().filter(x -> x.getVendorID().equals(vendorId))
+                .map(x -> x.getRestaurantID()).collect(Collectors.toList());
+        if(filteredRestaurants.isEmpty()) {
+            return new ResponseEntity<List<UUID>>(HttpStatus.NOT_FOUND);
+        }
+        List<Delivery> deliveries = deliveryRepository.findAll();
+
+        List<UUID> filteredDeliveries = deliveries.stream().filter(x -> filteredRestaurants
+                .contains(x.getRestaurantID())).map(x -> x.getDeliveryID()).collect(Collectors.toList());
+
+        if(filteredDeliveries.isEmpty()) {
+            return new ResponseEntity<List<UUID>>(new ArrayList<UUID>(), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<List<UUID>>(filteredDeliveries, HttpStatus.OK);
     }
 }

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ExternalServiceTest {
 
-    private ExternalService externalService;
+    private transient ExternalService externalService;
 
     @BeforeEach
     void setUp() {

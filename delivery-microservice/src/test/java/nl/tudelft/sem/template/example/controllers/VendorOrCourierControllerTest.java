@@ -16,12 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+
 class VendorOrCourierControllerTest {
 
     private transient VendorOrCourierController vendorOrCourierController;
     private transient TestDeliveryRepository deliveryRepository;
 
-    UUID deliveryId;
+    private transient UUID deliveryId;
 
     @BeforeEach
     void setUp() {
@@ -63,6 +64,15 @@ class VendorOrCourierControllerTest {
     void setDeliveryDelayBadBody() {
         assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 1);
         ResponseEntity<Integer> res = vendorOrCourierController.setDeliveryDelay(deliveryId, "vendor", -5);
+        assertEquals(res.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertNull(res.getBody());
+        assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 1);
+    }
+
+    @Test
+    void setDeliveryDelayNullBody() {
+        assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 1);
+        ResponseEntity<Integer> res = vendorOrCourierController.setDeliveryDelay(deliveryId, "vendor", null);
         assertEquals(res.getStatusCode(), HttpStatus.BAD_REQUEST);
         assertNull(res.getBody());
         assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 1);
