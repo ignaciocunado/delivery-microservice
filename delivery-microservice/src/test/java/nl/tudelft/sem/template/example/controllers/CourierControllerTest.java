@@ -45,7 +45,6 @@ class CourierControllerTest {
         restaurantRepository.save(restaurant);
         restaurantId = restaurantRepository.findAll().get(0).getRestaurantID();
 
-
         deliveryId = UUID.randomUUID();
         OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
                 2023, 12, 31, 10, 30, 0, 0,
@@ -74,15 +73,11 @@ class CourierControllerTest {
 
     @Test
     public void getPickUpLocationReturnsNotFound() {
-        // Arrange
         String role = "courier";
-        UUID randomId = UUID.randomUUID(); // assuming this deliveryId does not exist in the repository
+        UUID randomId = UUID.randomUUID();
 
-
-        // Act
         ResponseEntity<String> response = courierController.getPickUpLocation(randomId, role);
 
-        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Delivery not found!", response.getBody());
     }
@@ -162,5 +157,57 @@ class CourierControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Delivery marked as delivered!", response.getBody());
         assertEquals("delivered", deliveryRepository.findById(deliveryId).get().getStatus());
+    }
+
+    @Test
+    public void setLiveLocationReturnsOk() {
+        String role = "courier";
+        String location = "123.321.666";
+
+        ResponseEntity<String> response = courierController.setLiveLocation(deliveryId, role, location);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("200 OK", response.getBody());
+        assertEquals(location, deliveryRepository.findById(deliveryId).get().getLiveLocation());
+    }
+
+    @Test
+    public void setLiveLocationReturnsNotFound() {
+        String role = "courier";
+        String location = "123.321.666";
+        UUID randomId = UUID.randomUUID();
+
+        ResponseEntity<String> response = courierController.setLiveLocation(randomId, role, location);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("error 404: Delivery not found!", response.getBody());
+    }
+
+    @Test
+    public void setLiveLocationReturnsUnauthorized() {
+        String role = "vendor";
+        String location = "123.321.666";
+
+        ResponseEntity<String> response = courierController.setLiveLocation(deliveryId, role, location);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals("error 403: Authorization failed!", response.getBody());
+    }
+
+    @Test
+    public void setLiveLocationReturnsBadRequest() {
+        String role = "courier";
+
+        ResponseEntity<String> response = courierController.setLiveLocation(deliveryId, role, "");
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("error 400", response.getBody());
+
+        response = courierController.setLiveLocation(deliveryId, role, null);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("error 400", response.getBody());
+
+        response = courierController.setLiveLocation(deliveryId, role, "    ");
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("error 400", response.getBody());
     }
 }
