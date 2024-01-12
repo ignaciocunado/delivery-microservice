@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.config;
 
+import nl.tudelft.sem.template.example.authorization.AssociationFilterConfiguration;
 import nl.tudelft.sem.template.example.authorization.AuthorizationFilter;
 import nl.tudelft.sem.template.example.authorization.AuthorizationFilterConfiguration;
 import nl.tudelft.sem.template.example.service.AuthorizationService;
@@ -18,9 +19,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private transient AuthorizationFilterConfiguration authorizationFilterConfiguration;
+    private transient AssociationFilterConfiguration associationFilterConfiguration;
 
-    public SecurityConfig(AuthorizationFilterConfiguration authorizationFilterConfiguration) {
+    public SecurityConfig(AuthorizationFilterConfiguration authorizationFilterConfiguration,
+                          AssociationFilterConfiguration associationFilterConfiguration) {
         this.authorizationFilterConfiguration = authorizationFilterConfiguration;
+        this.associationFilterConfiguration = associationFilterConfiguration;
     }
 
     @Override
@@ -38,6 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(authorizationFilterConfiguration.authorizationFilter().getFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(associationFilterConfiguration.associationFilter().getFilter(),
                         UsernamePasswordAuthenticationFilter.class);
     }
 }
