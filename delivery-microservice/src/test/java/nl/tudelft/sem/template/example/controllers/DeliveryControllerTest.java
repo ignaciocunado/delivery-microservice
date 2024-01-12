@@ -21,6 +21,7 @@ class DeliveryControllerTest {
     private transient DeliveryController deliveryController;
     private transient GlobalController globalController;
     private transient VendorOrCourierController vendorOrCourierController;
+    private transient CustomerController customerController;
 
     private transient UUID deliveryId;
     private transient String role;
@@ -39,8 +40,9 @@ class DeliveryControllerTest {
         vendorController = Mockito.mock(VendorController.class);
         globalController = Mockito.mock(GlobalController.class);
         vendorOrCourierController = Mockito.mock(VendorOrCourierController.class);
+        customerController = Mockito.mock(CustomerController.class);
         deliveryController = new DeliveryController(courierController, vendorController,
-                globalController, vendorOrCourierController);
+                globalController, vendorOrCourierController, customerController);
     }
 
     @Test
