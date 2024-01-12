@@ -17,4 +17,9 @@ public class ExternalServiceMock implements ExternalService {
     public String getOrderDestination(UUID customerId, UUID orderID) {
         return "Destination in format xxx.xxx";
     }
+
+    @Override
+    public boolean verify(String userId, String role) {
+        return true;
+    }
 }

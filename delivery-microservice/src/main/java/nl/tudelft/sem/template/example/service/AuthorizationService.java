@@ -1,10 +1,19 @@
 package nl.tudelft.sem.template.example.service;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthorizationService {
+
+    private transient ExternalService externalService;
+
+    @Autowired
+    public AuthorizationService(ExternalService externalService) {
+        this.externalService = externalService;
+    }
 
     /**
      * Authorization method for user types.
@@ -24,9 +33,19 @@ public class AuthorizationService {
             System.out.println("\033[91;40m role was null \033[0m");
             return false;
         }
-        if (role.equals("courier") || role.equals("vendor")) {
-            // Here we should have a request to the other microservice
-            return userId != null;
+
+        if (userId == null) {
+            System.out.println("\033[91;40m API Key userId was null \033[0m");
+            return false;
+        }
+
+        if (role.equals("courier") || role.equals("vendor")
+                || role.equals("admin")) {
+            System.out.println("\033[92;40m role was courier or vendor \033[0m");
+
+            boolean verification = externalService.verify(userId, role);
+            System.out.println("\033[92;40m verification: \033[30;102m " + verification + " \033[0m");
+            return verification;
         }
 
         return false;
