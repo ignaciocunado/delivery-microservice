@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GlobalControllerTest {
 
@@ -538,11 +538,40 @@ public class GlobalControllerTest {
     }
 
     /**
-     * Ensure that an invalid delivery returns 404.
+     * Ensure that an invalid delivery returns 404, when getting its pick-up time estimate.
      */
     @Test
     void testGetPickupTimeEstimateInvalidDelivery() {
-        // Generate a delivery ID that is sure to be invalid
-        
+        final List<String> rolesToTest = List.of("customer", "courier", "vendor", "admin");
+        for (final String roleToTest : rolesToTest) {
+            // Generate a delivery ID that is sure to be invalid
+            Optional<UUID> invalidDeliveryId = Optional.of(UUID.randomUUID()); // TODO: merge w/ UUID generator
+            assertTrue(invalidDeliveryId.isPresent());
+
+            // Try to fetch that delivery
+            ResponseEntity<OffsetDateTime> response = globalController.getPickUpTime(
+                    invalidDeliveryId.get(), roleToTest);
+            assertEquals(
+                    HttpStatus.NOT_FOUND,
+                    response.getStatusCode()
+            );
+        }
+    }
+
+    /**
+     * Ensure that a valid role is required to get a delivery's pick-up time estimate.
+     */
+    @Test
+    void testGetPickupTimeEstimateUnauthorized() {
+        final List<String> rolesToTest = List.of("", "a", "aaa", "custom", "superuser", "sudo", "hi");
+
+        for (final String roleToTest : rolesToTest) {
+            ResponseEntity<OffsetDateTime> response = globalController.getPickUpTime(deliveryId, roleToTest);
+
+            assertEquals(
+                    HttpStatus.UNAUTHORIZED,
+                    response.getStatusCode()
+            );
+        }
     }
 }
