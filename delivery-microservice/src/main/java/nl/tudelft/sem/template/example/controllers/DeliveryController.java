@@ -352,6 +352,20 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
+     * Integrates controller with API for the get pick up time endpoint.
+     * Note: this returns the pickup time ESTIMATE, as specified in the OpenAPI spec.
+     * NOT the actual picked-up time. The methods are just named a little confusingly.
+     *
+     * @param deliveryId ID of the delivery to query. (required)
+     * @param role The role of the user (required)
+     * @return The delivery's pick up time.
+     */
+    @Override
+    public ResponseEntity<OffsetDateTime> getPickUpTime(UUID deliveryId, String role) {
+        return globalController.getPickUpTime(deliveryId, role);
+    }
+
+    /**
      * Integrates controller with API for the get all deliveries for a courier endpoint.
      * @param courierID The ID of the courier to query (required)
      * @param role The role of the user (required)

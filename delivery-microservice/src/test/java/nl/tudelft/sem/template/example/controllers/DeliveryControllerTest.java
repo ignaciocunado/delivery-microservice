@@ -225,6 +225,12 @@ class DeliveryControllerTest {
     }
 
     @Test
+    void testGetPickUpTime() {
+        deliveryController.getPickUpTime(deliveryId, role);
+        Mockito.verify(globalController).getPickUpTime(deliveryId, role);
+    }
+
+    @Test
     void testCallGetAllDeliveries() {
         UUID vendorId = UUID.randomUUID();
         deliveryController.getAllDeliveriesVendor(vendorId, "vendor");
