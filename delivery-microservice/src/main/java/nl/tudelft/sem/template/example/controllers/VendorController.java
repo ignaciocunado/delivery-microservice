@@ -321,13 +321,24 @@ public class VendorController {
         }
 
         // Generate a new ID for the delivery
-        final Optional<UUID> newId = uuidGenerationService.generateUniqueId(deliveryRepository);
-        if (newId.isEmpty()) {
+        final Optional<UUID> newDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepository);
+        if (newDeliveryId.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        // Check if this delivery's target restaurant exists. This requires a valid restaurant ID.
+        if (delivery.getRestaurantID() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        final boolean restaurantExists = restaurantRepository.existsById(delivery.getRestaurantID());
+
+        // If the restaurant does not exist, create a new one, and re-assign the delivery's restaurant ID.
+        if (!restaurantExists) {
+            // TODO
+        }
+
         // Once we have the new ID - save delivery to the DB.
-        delivery.setDeliveryID(newId.get());
+        delivery.setDeliveryID(newDeliveryId.get());
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
         // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
