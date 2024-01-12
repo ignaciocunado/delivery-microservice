@@ -1,8 +1,5 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -10,21 +7,11 @@ import lombok.Setter;
 import nl.tudelft.sem.api.DeliveryApi;
 import nl.tudelft.sem.model.Delivery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import java.time.OffsetDateTime;
 
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.print.DocFlavor;
-import javax.print.attribute.IntegerSyntax;
 
 /**
  * Main Delivery Controller. Calls on other controllers to handle requests.
@@ -145,13 +132,16 @@ public class DeliveryController implements DeliveryApi {
 
     /**
      * Integrates controller with API for getPickUpEstimate endpoint.
+     * NOTE: this method is named incorrectly. It returns the PICKED-UP time of a delivery,
+     * as is specified by the OpenAPI document.
+     *
      * @param deliveryID ID of delivery to get the picked up timestamp of (required)
      * @param role The role of the user (required)
-     * @return the estimated pickup time of the delivery object
+     * @return the picked time of the delivery object
      */
     @Override
     public ResponseEntity<OffsetDateTime> getPickUpEstimateDeliveryId(UUID deliveryID, String role) {
-        return vendorController.getPickUpEstimate(deliveryID, role);
+        return vendorController.getPickedUpEstimate(deliveryID, role);
     }
 
     /**
