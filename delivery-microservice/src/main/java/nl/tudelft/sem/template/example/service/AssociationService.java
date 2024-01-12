@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class AssociationService {
+public class AssociationService implements ChainHandler {
 
     private final DeliveryRepository deliveryRepository;
     private final RestaurantRepository restaurantRepository;
@@ -31,7 +31,7 @@ public class AssociationService {
      */
     public boolean authorize(HttpServletRequest request) {
         String userId = request.getHeader("X-User-Id");
-        UUID UserUuid = UUID.fromString(userId);
+        UUID userUuid = UUID.fromString(userId);
         String role = request.getParameter("role");
 
         // admins can do anything
@@ -50,10 +50,10 @@ public class AssociationService {
 
         if (endpoint.contains("/status/delivered")) {
             UUID deliveryId = UUID.fromString(endpoint.split("/")[2]);
-            return courierDeliveryAssociation(UserUuid, deliveryId);
+            return courierDeliveryAssociation(userUuid, deliveryId);
         } else if (endpoint.contains("/status/")) {
             UUID deliveryId = UUID.fromString(endpoint.split("/")[2]);
-            return vendorDeliveryAssociation(UserUuid, deliveryId);
+            return vendorDeliveryAssociation(userUuid, deliveryId);
         }
 
 

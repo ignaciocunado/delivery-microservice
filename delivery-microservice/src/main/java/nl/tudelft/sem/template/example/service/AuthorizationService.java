@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthorizationService {
+public class AuthorizationService implements ChainHandler {
 
     /**
      * Authorization method for user types.
