@@ -36,7 +36,7 @@ public class CustomerController {
      * @return true iff the role is valid
      */
     public boolean checkCustomer(String role) {
-        return role.equals("Customer");
+        return role.equals("customer");
     }
 
     /**
