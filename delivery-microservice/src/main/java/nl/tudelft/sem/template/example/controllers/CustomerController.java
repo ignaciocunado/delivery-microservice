@@ -40,7 +40,7 @@ public class CustomerController {
     }
 
     /**
-     * Implementation for the get all deliveries for a customer controller
+     * Implementation for the get all deliveries for a customer controller.
      * @param customerID id of the customer
      * @param role role of the calling user
      * @return a list containing all deliveries for a customer

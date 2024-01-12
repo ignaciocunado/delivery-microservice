@@ -253,6 +253,7 @@ public class VendorController {
 
         return new ResponseEntity<>(fetchedDelivery.get().getCourierID(), HttpStatus.OK);
     }
+
     /**
      * Gets the estimated time of delivery for a delivery.
      * @param deliveryID UUID of the delivery object
