@@ -316,22 +316,7 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        // Hacky fix: generated values do not seem to work with UUIDs, without OpenAPI YAML modifications.
-        // So, we generate new UUIDs until we find a unique one, because we don't want to overwrite or
-        // otherwise clash with existing database entities.
-        UUID newId;
-        int newIdGenerationAttempts = 0;
 
-        do {
-            newId = UUID.randomUUID();
-            newIdGenerationAttempts += 1;
-        } while (deliveryRepository.findById(newId).isPresent() && newIdGenerationAttempts < 500);
-
-        // Ensure the new ID is unique. Otherwise, return that we got
-        // stuck in the ID generation loop (and had to abort).
-        if (deliveryRepository.findById(newId).isPresent()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
 
         // Once we have the new ID - save delivery to the DB.
         delivery.setDeliveryID(newId);
