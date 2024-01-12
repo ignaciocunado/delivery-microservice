@@ -230,4 +230,11 @@ class DeliveryControllerTest {
         deliveryController.getAllDeliveriesVendor(vendorId, "vendor");
         Mockito.verify(vendorController).getAllDeliveriesVendor(vendorId, "vendor");
     }
+
+    @Test
+    void testGetAllDeliveriesCourier() {
+        UUID courierID = UUID.randomUUID();
+        deliveryController.getAllDeliveriesCourier(courierID, "courier");
+        Mockito.verify(courierController).getAllDeliveriesCourier(courierID, "courier");
+    }
 }
