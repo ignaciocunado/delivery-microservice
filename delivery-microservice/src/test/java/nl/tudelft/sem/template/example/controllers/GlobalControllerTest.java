@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
+import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,10 +34,16 @@ public class GlobalControllerTest {
      */
     private transient Delivery delivery;
 
+    /**
+     * Used to generate UUIDs for test objects.
+     */
+    private transient UUIDGenerationService uuidGenerationService;
+
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
         restaurantRepository = new TestRestaurantRepository();
+        uuidGenerationService = new UUIDGenerationService();
 
         deliveryId = UUID.randomUUID();
         restaurantId = UUID.randomUUID();
@@ -68,22 +75,6 @@ public class GlobalControllerTest {
         restaurantRepository.save(r);
 
         globalController = new GlobalController(restaurantRepository, deliveryRepository);
-    }
-
-    /**
-     * Helper that generates a new UUID, that is NOT equal to the current deliveryId.
-     * @return A delivery ID not equal to the test's 'deliveryId'. This ID is invalid for testing purposes,
-     *         until used to save an object to the DB.
-     */
-    UUID generateNewDeliveryId() {
-
-        UUID invalidDeliveryId;
-
-        do {
-            invalidDeliveryId = UUID.randomUUID();
-        } while (invalidDeliveryId == deliveryId);
-
-        return invalidDeliveryId;
     }
 
     @Test
@@ -206,9 +197,10 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetDeliveryByIdNotFound() {
-        UUID invalidDeliveryId = generateNewDeliveryId();
+        Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
+        assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<Delivery> response = globalController.getDeliveryById(invalidDeliveryId, "courier");
+        ResponseEntity<Delivery> response = globalController.getDeliveryById(invalidDeliveryId.get(), "courier");
         assertEquals(
                 HttpStatus.NOT_FOUND,
                 response.getStatusCode()
@@ -288,9 +280,10 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetRestaurantIdByDeliveryIdNotFound() {
-        UUID invalidDeliveryId = generateNewDeliveryId();
+        Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
+        assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(invalidDeliveryId, "courier");
+        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(invalidDeliveryId.get(), "courier");
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
@@ -371,9 +364,10 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetOrderByDeliveryIdNotFound() {
-        UUID invalidDeliveryId = generateNewDeliveryId();
+        Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
+        assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<UUID> response = globalController.getOrderByDeliveryId(invalidDeliveryId, "courier");
+        ResponseEntity<UUID> response = globalController.getOrderByDeliveryId(invalidDeliveryId.get(), "courier");
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
@@ -447,9 +441,10 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetRatingByDeliveryIdNotFound() {
-        UUID invalidDeliveryId = generateNewDeliveryId();
+        Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
+        assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(invalidDeliveryId, "courier");
+        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(invalidDeliveryId.get(), "courier");
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
@@ -544,8 +539,8 @@ public class GlobalControllerTest {
     void testGetPickupTimeEstimateInvalidDelivery() {
         final List<String> rolesToTest = List.of("customer", "courier", "vendor", "admin");
         for (final String roleToTest : rolesToTest) {
-            // Generate a delivery ID that is sure to be invalid
-            Optional<UUID> invalidDeliveryId = Optional.of(UUID.randomUUID()); // TODO: merge w/ UUID generator
+            // Generate a delivery ID that is sure to be invalid (it doesn't point to a DB object)
+            Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepository);
             assertTrue(invalidDeliveryId.isPresent());
 
             // Try to fetch that delivery
