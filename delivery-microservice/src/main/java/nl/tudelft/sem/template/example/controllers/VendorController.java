@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.model.GetVendorRest200ResponseInner;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
@@ -389,5 +390,34 @@ public class VendorController {
         }
 
         return new ResponseEntity<List<UUID>>(filteredDeliveries, HttpStatus.OK);
+    }
+
+    /**
+     * returns a list of restaurants for a vendor
+     * @param vendorId the vendor to query
+     * @param role the role of the user
+     * @return the list of restaurant Ids
+     */
+    public ResponseEntity<List<GetVendorRest200ResponseInner>> getVendorRest(UUID vendorId, String role) {
+        if(!checkVendor(role))
+            return  new ResponseEntity<List<GetVendorRest200ResponseInner>>(HttpStatus.UNAUTHORIZED);
+
+        List<Restaurant> allRestaurants= restaurantRepository.findAll();
+        List<Restaurant> filteredRestaurants = allRestaurants.stream().filter(x -> x.getVendorID().equals(vendorId)).collect(Collectors.toList());
+
+        if(filteredRestaurants.isEmpty())
+            return new ResponseEntity<List<GetVendorRest200ResponseInner>>(HttpStatus.NOT_FOUND);
+
+        List<GetVendorRest200ResponseInner> res = new ArrayList<>();
+
+        for(Restaurant r : filteredRestaurants) {
+            GetVendorRest200ResponseInner elem = new GetVendorRest200ResponseInner();
+            elem.setRestaurantID(r.getRestaurantID());
+
+            res.add(elem);
+        }
+
+        return new ResponseEntity<List<GetVendorRest200ResponseInner>>(res, HttpStatus.OK);
+
     }
 }

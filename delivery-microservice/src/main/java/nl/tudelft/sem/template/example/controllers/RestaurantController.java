@@ -86,4 +86,15 @@ public class RestaurantController implements RestaurantApi {
     public ResponseEntity<String> getRest(UUID restaurantId, String role) {
         return vendorController.getRest(restaurantId, role);
     }
+
+    /**
+     * Calls the method implemented in the vendorController for retrieving a list of restaurants
+     * @param vendorId ID of the vendor to query. (required)
+     * @param role The role of the user (required)
+     * @return the list of restaurants
+     */
+    @Override
+    public ResponseEntity<List<GetVendorRest200ResponseInner>> getVendorRest(UUID vendorId, String role) {
+        return vendorController.getVendorRest(vendorId, role);
+    }
 }
