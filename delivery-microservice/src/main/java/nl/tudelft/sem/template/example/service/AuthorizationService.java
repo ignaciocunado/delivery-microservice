@@ -19,12 +19,6 @@ public class AuthorizationService implements ChainHandler {
         this.externalService = externalService;
     }
 
-    private transient ExternalService externalService;
-
-    @Autowired
-    public AuthorizationService(ExternalService externalService) {
-        this.externalService = externalService;
-    }
 
     /**
      * Authorization method for user types.
@@ -41,7 +35,7 @@ public class AuthorizationService implements ChainHandler {
         String userId = request.getHeader("X-User-Id");
         String role = request.getParameter("role");
         if (role == null) {
-            //System.out.println("\033[91;40m role was null \033[0m");
+            System.out.println("\033[91;40m role was null \033[0m");
             return false;
         }
 
@@ -50,21 +44,14 @@ public class AuthorizationService implements ChainHandler {
             return false;
         }
 
-        if (role.equals("courier") || role.equals("vendor")
-                || role.equals("admin")) {
-            System.out.println("\033[92;40m role was courier or vendor \033[0m");
-
-            boolean verification = externalService.verify(userId, role);
-            System.out.println("\033[92;40m verification: \033[30;102m " + verification + " \033[0m");
-            return verification;
+        if (!role.equals("courier") && !role.equals("vendor") && !role.equals("customer") && !role.equals("admin")) {
+            System.out.println("\033[91;40m role was not courier, vendor, customer or admin \033[0m");
+            return false;
         }
 
-        return switch (role) {
-            case "courier" -> externalService.isCourier(userId);
-            case "vendor" -> externalService.isVendor(userId);
-            case "admin" -> externalService.isAdmin(userId);
-            case "customer" -> externalService.isCustomer(userId);
-            default -> false;
-        };
+        boolean verification = externalService.verify(userId, role);
+        System.out.println("\033[92;40m verification: \033[30;102m " + verification + " \033[0m");
+
+        return verification;
     }
 }

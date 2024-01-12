@@ -19,8 +19,6 @@ class AuthorizationServiceTest {
 
     private transient HttpServletRequest request;
     private transient AuthorizationService authorizationService;
-    private transient ExternalService externalService;
-
     @Autowired
     private transient ExternalService externalService;
 
@@ -35,7 +33,6 @@ class AuthorizationServiceTest {
     public void testAuthorizeCourierRoleWithUserId_ReturnsTrue() {
         when(request.getHeader("X-User-Id")).thenReturn("123");
         when(request.getParameter("role")).thenReturn("courier");
-        when(externalService.isCourier(any())).thenReturn(true);
 
         boolean result = authorizationService.authorize(request);
 
@@ -76,7 +73,6 @@ class AuthorizationServiceTest {
     public void authorizeVendor() {
         when(request.getHeader("X-User-Id")).thenReturn("123");
         when(request.getParameter("role")).thenReturn("vendor");
-        when(externalService.isVendor(any())).thenReturn(true);
 
         boolean result = authorizationService.authorize(request);
 
@@ -87,7 +83,6 @@ class AuthorizationServiceTest {
     public void authorizeAdmin() {
         when(request.getHeader("X-User-Id")).thenReturn("123");
         when(request.getParameter("role")).thenReturn("admin");
-        when(externalService.isAdmin(any())).thenReturn(true);
 
         boolean result = authorizationService.authorize(request);
 
@@ -98,7 +93,6 @@ class AuthorizationServiceTest {
     public void authorizeCustomer() {
         when(request.getHeader("X-User-Id")).thenReturn("123");
         when(request.getParameter("role")).thenReturn("customer");
-        when(externalService.isCustomer(any())).thenReturn(true);
 
         boolean result = authorizationService.authorize(request);
 

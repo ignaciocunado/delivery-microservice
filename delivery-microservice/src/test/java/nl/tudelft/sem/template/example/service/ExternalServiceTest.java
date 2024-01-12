@@ -42,22 +42,12 @@ public class ExternalServiceTest {
     }
 
     @Test
-    public void isCustomerReturnsTrue() {
-        assertTrue(externalService.isCustomer("123"));
-    }
+    public void verify_returnsTrue() {
+        String userId = "123";
+        String role = "courier";
 
-    @Test
-    public void isAdminReturnsTrue() {
-        assertTrue(externalService.isAdmin("123"));
-    }
+        boolean result = externalService.verify(userId, role);
 
-    @Test
-    public void isCourierReturnsTrue() {
-        assertTrue(externalService.isCourier("123"));
-    }
-
-    @Test
-    public void isVendorReturnsTrue() {
-        assertTrue(externalService.isVendor("123"));
+        assertTrue(result);
     }
 }

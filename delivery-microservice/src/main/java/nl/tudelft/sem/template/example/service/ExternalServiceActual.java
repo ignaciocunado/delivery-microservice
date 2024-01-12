@@ -72,6 +72,9 @@ public class ExternalServiceActual implements ExternalService {
             case "admin":
                 url.append("/admin/");
                 break;
+            case "customer":
+                url.append("/customer/");
+                break;
             default:
                 return false;
         }
