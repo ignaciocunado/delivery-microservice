@@ -44,7 +44,7 @@ public class RestaurantController implements RestaurantApi {
     }
 
 
-    @Override
+ /*   @Override
     public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
         return vendorController.addCourierToRest(courierId, restaurantId, role);
     }
@@ -52,7 +52,12 @@ public class RestaurantController implements RestaurantApi {
     @Override
     public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
         return vendorController.removeCourierRest(courierId, restaurantId, role);
+    }*/
+
+    public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
+        return vendorController.addCourierToRest(courierId, restaurantId, role);
     }
+
 
     /**
      * Integrates controller with API for the create restaurant endpoint.

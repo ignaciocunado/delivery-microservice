@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.model.RestaurantCourierIDsInner;
+
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
@@ -66,10 +66,7 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        RestaurantCourierIDsInner curr = new RestaurantCourierIDsInner();
-        curr.setCourierID(courierId);
-
-        r.addCourierIDsItem(curr);
+        r.addCourierIDsItem(courierId);
         restaurantRepository.save(r);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -168,7 +165,7 @@ public class VendorController {
      * @param role role of the user
      * @return void response entity with HTTP codes
      */
-    public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
+/*    public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
         if (!checkVendor(role)) {
             return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
         }
@@ -196,7 +193,7 @@ public class VendorController {
 
         return new ResponseEntity<Void>(HttpStatus.OK);
 
-    }
+    }*/
 
     /**
      * Implementation for the get customer ID endpoint.

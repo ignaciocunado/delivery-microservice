@@ -2055,12 +2055,10 @@ components:
           example: 550e8400-e29b-41d4-a716-446655440000
         courierIDs:
           type: array
-          x-field-extra-annotation: "@javax.persistence.ElementCollection(targetClass=String.class)"
+          x-field-extra-annotation: "@javax.persistence.ElementCollection(targetClass=UUID.class)"
           items:
-            properties:
-              courierID:
-                type: string
-                format: uuid
+            type: string
+            format: uuid
         maxDeliveryZone:
           type: number
           format: double
