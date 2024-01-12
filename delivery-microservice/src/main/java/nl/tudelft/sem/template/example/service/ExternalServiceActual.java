@@ -3,7 +3,9 @@ package nl.tudelft.sem.template.example.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
@@ -13,13 +15,23 @@ import java.util.UUID;
 public class ExternalServiceActual implements ExternalService {
 
     private final RestTemplate restTemplate;
-    private final String externalServiceUrl;
+    private final String orderServiceUrl;
+    private final String userServiceUrl;
 
+    /**
+     * Constructor for the external service integration implementation.
+     *
+     * @param restTemplate the rest template
+     * @param orderServiceUrl the order service url
+     * @param userServiceUrl the user service url
+     */
     @Autowired
     public ExternalServiceActual(RestTemplate restTemplate,
-                                 @Value("${external.ordersService.url}") String externalServiceUrl) {
+                                 @Value("${external.ordersService.url}") String orderServiceUrl,
+                                 @Value("${external.usersService.url}") String userServiceUrl) {
         this.restTemplate = restTemplate;
-        this.externalServiceUrl = externalServiceUrl;
+        this.orderServiceUrl = orderServiceUrl;
+        this.userServiceUrl = userServiceUrl;
     }
 
     @Override
@@ -30,7 +42,7 @@ public class ExternalServiceActual implements ExternalService {
 
         // header user id injection ...
 
-        String url = externalServiceUrl + "/vendor/" + vendorID + "/location";
+        String url = orderServiceUrl + "/vendor/" + vendorID + "/location";
         return restTemplate.getForObject(url, String.class);
     }
 
@@ -42,7 +54,48 @@ public class ExternalServiceActual implements ExternalService {
 
         // header user id injection ...
 
-        String url = externalServiceUrl + "/delivery/" + customerId + "/order/" + orderID + "/destination";
+        String url = orderServiceUrl + "/delivery/" + customerId + "/order/" + orderID + "/destination";
         return restTemplate.getForObject(url, String.class);
+    }
+
+    @Override
+    public boolean verify(String userId, String role) {
+        StringBuilder url = new StringBuilder(userServiceUrl);
+
+        switch (role) {
+            case "vendor":
+                url.append("/vendor/");
+                break;
+            case "courier":
+                url.append("/courier/");
+                break;
+            case "admin":
+                url.append("/admin/");
+                break;
+            default:
+                return false;
+        }
+
+        url.append(userId); // user ID
+        url.append("/proof"); // proof of role endpoint
+
+        // print the url
+        System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
+
+        // get the response entity and check if it is a 200 OK
+        // handle the response entity
+        int statusCode = 0;
+
+        try {
+            ResponseEntity<String> response = restTemplate.getForEntity(url.toString(), String.class);
+            statusCode = response.getStatusCodeValue();
+        } catch (HttpClientErrorException e) {
+            statusCode = e.getRawStatusCode();
+        }
+
+        // print the status code
+        System.out.println("\033[96;40m response status code: \033[30;106m " + statusCode + " \033[0m");
+
+        return statusCode == 200;
     }
 }

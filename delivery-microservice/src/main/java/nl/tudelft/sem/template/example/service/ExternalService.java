@@ -6,4 +6,6 @@ public interface ExternalService {
     String getRestaurantLocation(UUID vendorID);
 
     String getOrderDestination(UUID customerId, UUID orderID);
+
+    boolean verify(String userId, String role);
 }
