@@ -6,7 +6,7 @@ public class ExternalServiceActual implements ExternalService {
     @Override
     public String getRestaurantLocation(UUID vendorID) {
         // make a request to an external service
-
+        return "PickUp in format xxx.xxx";
     }
 
     @Override
