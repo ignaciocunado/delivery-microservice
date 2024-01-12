@@ -1,8 +1,6 @@
 package nl.tudelft.sem.template.example.service;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,6 +49,8 @@ public class UUIDGenerationService implements IdGenerationService<UUID> {
     @Override
     public <C> Optional<UUID> generateUniqueId(JpaRepository<C, UUID> repository) {
         // Since database lookups could be expensive, the generation iteration limit is low.
+        // Unfortunately, as models do not share a base class, we cannot simply fetch all
+        // entities and map them to their ID - as their type constraints are unbounded.
         final int maxNewIdGenerationAttempts = 10;
         int newIdGenerationAttempts = 0;
         UUID newId;
