@@ -1,11 +1,12 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.UUID;
 
 import nl.tudelft.sem.model.Delivery;
@@ -230,5 +231,45 @@ class CourierControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(0.0, response.getBody());
+    }
+
+    @Test
+    public void testGetAllDeliveriesCourierOk() {
+        UUID courierId = UUID.randomUUID();
+        OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
+                2023, 12, 31, 10, 30, 0, 0,
+                ZoneOffset.ofHoursMinutes(5, 30)
+        );
+        UUID del1ID = UUID.randomUUID();
+        Delivery d1 = new  Delivery(del1ID, UUID.randomUUID(), UUID.randomUUID(), courierId,
+                restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
+                sampleOffsetDateTime, "", "", 1);
+        UUID del2ID = UUID.randomUUID();
+        Delivery d2 = new  Delivery(del2ID, UUID.randomUUID(), UUID.randomUUID(), courierId,
+                restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
+                sampleOffsetDateTime, "", "", 1);
+        deliveryRepository.save(d1);
+        deliveryRepository.save(d2);
+
+        ResponseEntity<List<UUID>> response = courierController.getAllDeliveriesCourier(courierId, "courier");
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+
+        List<UUID> compare = List.of(del1ID, del2ID);
+        List<UUID> responseList = response.getBody();
+        assertEquals(compare, responseList);
+    }
+
+    @Test
+    public void testGetAllDeliveriesCourierUnauthorized() {
+        ResponseEntity<List<UUID>> response = courierController.getAllDeliveriesCourier(courierId, "vendor");
+        assertEquals(response.getStatusCode(), HttpStatus.UNAUTHORIZED);
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testGetAllDeliveriesCourierEmpty() {
+        ResponseEntity<List<UUID>> response = courierController.getAllDeliveriesCourier(UUID.randomUUID(), "courier");
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(0, response.getBody().size());
     }
 }
