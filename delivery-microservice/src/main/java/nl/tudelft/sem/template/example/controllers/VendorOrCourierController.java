@@ -49,7 +49,7 @@ public class VendorOrCourierController {
             return new ResponseEntity<>("error 403: Authorization failed!", HttpStatus.UNAUTHORIZED);
         }
 
-        if(body == null || body.isBlank() || body.isEmpty()) {
+        if(body == null || body.isBlank()) {
             return new ResponseEntity<>("error 400", HttpStatus.BAD_REQUEST);
         }
 

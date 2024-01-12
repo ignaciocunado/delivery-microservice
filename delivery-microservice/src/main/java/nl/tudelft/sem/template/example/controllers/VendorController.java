@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import io.swagger.v3.core.util.DeserializationModule31;
 import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
@@ -237,6 +236,24 @@ public class VendorController {
     }
 
     /**
+     * Get the courierId of the delivery.
+     * @param deliveryId the id of delivery
+     * @param role The role of the user (required)
+     * @return the UUID in the response entity
+     */
+    public ResponseEntity<UUID> getCourierIdByDelivery(UUID deliveryId, String role) {
+        if (!checkVendor(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<Delivery> fetchedDelivery = deliveryRepository.findById(deliveryId);
+        if (fetchedDelivery.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(fetchedDelivery.get().getCourierID(), HttpStatus.OK);
+    }
+    /**
      * Gets the estimated time of delivery for a delivery.
      * @param deliveryID UUID of the delivery object
      * @param role User role
@@ -379,6 +396,5 @@ public class VendorController {
         }
 
         return new ResponseEntity<List<UUID>>(filteredDeliveries, HttpStatus.OK);
-
     }
 }

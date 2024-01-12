@@ -89,6 +89,27 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
+     * Integrates controller with API to get the courierId of delivery.
+     * @param deliveryId the id of delivery
+     * @param role The role of the user (required)
+     * @return the UUID in the response entity
+     */
+    @Override
+    public ResponseEntity<UUID> getCourierByDeliveryId(UUID deliveryId, String role) {
+        return vendorController.getCourierIdByDelivery(deliveryId, role);
+    }
+
+    /**
+     * Integrates controller with API to get the rating of courier deliveries.
+     * @param courierID The ID of the courier to query (required)
+     * @return the average rating
+     */
+    @Override
+    public ResponseEntity<Double> getAvRateCourier(UUID courierID) {
+        return courierController.getAvrRating(courierID);
+    }
+
+    /**
      * Integrates controller with API to set the exception of delivery.
      * @param deliveryId the id of the delivery
      * @param role The role of the user (required)

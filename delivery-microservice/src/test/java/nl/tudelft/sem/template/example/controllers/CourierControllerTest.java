@@ -27,8 +27,10 @@ class CourierControllerTest {
     private transient TestDeliveryRepository deliveryRepository;
     private transient ExternalService externalService;
 
-    UUID deliveryId;
-    UUID restaurantId;
+    private transient UUID deliveryId;
+    private transient UUID restaurantId;
+    private transient UUID courierId;
+    private transient String role = "courier";
 
     @BeforeEach
     void setUp() {
@@ -46,11 +48,12 @@ class CourierControllerTest {
         restaurantId = restaurantRepository.findAll().get(0).getRestaurantID();
 
         deliveryId = UUID.randomUUID();
+        courierId = UUID.randomUUID();
         OffsetDateTime sampleOffsetDateTime = OffsetDateTime.of(
                 2023, 12, 31, 10, 30, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
-        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), courierId,
                 restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
                 sampleOffsetDateTime, "", "", 1);
         deliveryRepository.save(d);
@@ -60,8 +63,7 @@ class CourierControllerTest {
 
     @Test
     public void getPickUpLocationReturnsOk() {
-        String role = "courier";
-        String expectedLocation = "123.321.666";
+        String expectedLocation = "123.321.667";
 
         when(externalService.getRestaurantLocation(any())).thenReturn(expectedLocation);
 
@@ -73,7 +75,6 @@ class CourierControllerTest {
 
     @Test
     public void getPickUpLocationReturnsNotFound() {
-        String role = "courier";
         UUID randomId = UUID.randomUUID();
 
         ResponseEntity<String> response = courierController.getPickUpLocation(randomId, role);
@@ -95,8 +96,7 @@ class CourierControllerTest {
 
     @Test
     public void getLocationOfDeliveryReturnsOk() {
-        String role = "courier";
-        String expectedLocation = "123.321.666";
+        String expectedLocation = "123.321.656";
 
         when(externalService.getOrderDestination(any(), any())).thenReturn(expectedLocation);
 
@@ -108,8 +108,7 @@ class CourierControllerTest {
 
     @Test
     public void getLocationOfDeliveryReturnsNotFound() {
-        String role = "courier";
-        UUID randomId = UUID.randomUUID(); // assuming this deliveryId does not exist in the repository
+        UUID randomId = UUID.randomUUID();
         
         ResponseEntity<String> response = courierController.getLocationOfDelivery(randomId, role);
 
@@ -142,7 +141,6 @@ class CourierControllerTest {
     @Test
     public void deliveredDeliveryNotFound() {
         UUID deliveryId = UUID.randomUUID();
-        String role = "courier";
 
         ResponseEntity<String> response = courierController.deliveredDelivery(deliveryId, role);
 
@@ -152,7 +150,7 @@ class CourierControllerTest {
 
     @Test
     public void deliveredDeliveryOk() {
-        ResponseEntity<String> response = courierController.deliveredDelivery(deliveryId, "courier");
+        ResponseEntity<String> response = courierController.deliveredDelivery(deliveryId, role);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Delivery marked as delivered!", response.getBody());
@@ -161,8 +159,7 @@ class CourierControllerTest {
 
     @Test
     public void setLiveLocationReturnsOk() {
-        String role = "courier";
-        String location = "123.321.666";
+        String location = "123.331.666";
 
         ResponseEntity<String> response = courierController.setLiveLocation(deliveryId, role, location);
 
@@ -173,8 +170,7 @@ class CourierControllerTest {
 
     @Test
     public void setLiveLocationReturnsNotFound() {
-        String role = "courier";
-        String location = "123.321.666";
+        String location = "123.322.666";
         UUID randomId = UUID.randomUUID();
 
         ResponseEntity<String> response = courierController.setLiveLocation(randomId, role, location);
@@ -186,7 +182,7 @@ class CourierControllerTest {
     @Test
     public void setLiveLocationReturnsUnauthorized() {
         String role = "vendor";
-        String location = "123.321.666";
+        String location = "123.521.666";
 
         ResponseEntity<String> response = courierController.setLiveLocation(deliveryId, role, location);
 
@@ -196,8 +192,6 @@ class CourierControllerTest {
 
     @Test
     public void setLiveLocationReturnsBadRequest() {
-        String role = "courier";
-
         ResponseEntity<String> response = courierController.setLiveLocation(deliveryId, role, "");
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("error 400", response.getBody());
@@ -209,5 +203,32 @@ class CourierControllerTest {
         response = courierController.setLiveLocation(deliveryId, role, "    ");
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("error 400", response.getBody());
+    }
+
+    @Test
+    public void getAvrRatingReturnsAverageRating() {
+        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1.0, response.getBody());
+    }
+
+    @Test
+    public void getAvrRatingReturns0AverageRating() {
+        deliveryRepository.deleteAll();
+        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(0.0, response.getBody());
+    }
+
+    @Test
+    public void getAvrRatingReturnsZeroWhenNoRatings() {
+        UUID courierId = UUID.randomUUID();
+
+        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(0.0, response.getBody());
     }
 }
