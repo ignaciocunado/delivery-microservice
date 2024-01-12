@@ -351,6 +351,17 @@ public class DeliveryController implements DeliveryApi {
         return sanityCheck(globalController.getRatingByDeliveryId(deliveryId, role), deliveryId);
     }
 
+    /**
+     * Integrates controller with API for the get all deliveries for a courier endpoint.
+     * @param courierID The ID of the courier to query (required)
+     * @param role The role of the user (required)
+     * @return a list of all delvivery IDs for a courier
+     */
+    @Override
+    public ResponseEntity<List<UUID>> getAllDeliveriesCourier(UUID courierID, String role) {
+        return courierController.getAllDeliveriesCourier(courierID, role);
+    }
+
     @lombok.Generated
     private static ResponseEntity<Double> sanityCheck(ResponseEntity<Double> r, UUID deliveryId) {
         if (r != null && r.getBody() != null) {
