@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
+import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,17 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GlobalControllerTest {
 
@@ -27,21 +25,27 @@ public class GlobalControllerTest {
     private transient TestDeliveryRepository deliveryRepository;
     private transient TestRestaurantRepository restaurantRepository;
 
-    UUID deliveryId;
-    UUID restaurantId;
-    UUID orderId;
+    private transient UUID deliveryId;
+    private transient UUID restaurantId;
+    private transient UUID orderId;
 
     /**
      * The full delivery object that was created during test setup.
      */
-    Delivery delivery;
+    private transient Delivery delivery;
 
-    OffsetDateTime sampleOffsetDateTime;
+    /**
+     * Used to generate UUIDs for test objects.
+     */
+    private transient UUIDGenerationService uuidGenerationService;
+
+    private transient OffsetDateTime sampleOffsetDateTime;
 
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
         restaurantRepository = new TestRestaurantRepository();
+        uuidGenerationService = new UUIDGenerationService();
 
         deliveryId = UUID.randomUUID();
         restaurantId = UUID.randomUUID();
@@ -64,22 +68,6 @@ public class GlobalControllerTest {
         restaurantRepository.save(r);
 
         globalController = new GlobalController(restaurantRepository, deliveryRepository);
-    }
-
-    /**
-     * Helper that generates a new UUID, that is NOT equal to the current deliveryId.
-     * @return A delivery ID not equal to the test's 'deliveryId'. This ID is invalid for testing purposes,
-     *         until used to save an object to the DB.
-     */
-    UUID generateNewDeliveryId() {
-
-        UUID invalidDeliveryId;
-
-        do {
-            invalidDeliveryId = UUID.randomUUID();
-        } while (invalidDeliveryId == deliveryId);
-
-        return invalidDeliveryId;
     }
 
     @Test
@@ -202,9 +190,10 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetDeliveryByIdNotFound() {
-        UUID invalidDeliveryId = generateNewDeliveryId();
+        Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
+        assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<Delivery> response = globalController.getDeliveryById(invalidDeliveryId, "courier");
+        ResponseEntity<Delivery> response = globalController.getDeliveryById(invalidDeliveryId.get(), "courier");
         assertEquals(
                 HttpStatus.NOT_FOUND,
                 response.getStatusCode()
@@ -284,9 +273,10 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetRestaurantIdByDeliveryIdNotFound() {
-        UUID invalidDeliveryId = generateNewDeliveryId();
+        Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
+        assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(invalidDeliveryId, "courier");
+        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(invalidDeliveryId.get(), "courier");
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
@@ -367,9 +357,10 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetOrderByDeliveryIdNotFound() {
-        UUID invalidDeliveryId = generateNewDeliveryId();
+        Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
+        assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<UUID> response = globalController.getOrderByDeliveryId(invalidDeliveryId, "courier");
+        ResponseEntity<UUID> response = globalController.getOrderByDeliveryId(invalidDeliveryId.get(), "courier");
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
@@ -444,9 +435,10 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetRatingByDeliveryIdNotFound() {
-        UUID invalidDeliveryId = generateNewDeliveryId();
+        Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
+        assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(invalidDeliveryId, "courier");
+        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(invalidDeliveryId.get(), "courier");
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
@@ -502,9 +494,11 @@ public class GlobalControllerTest {
                 response.getStatusCode()
         );
         UUID id = UUID.randomUUID();
-        Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "69.655,69.425", null, 1);
+        Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
+                "69.655,69.425", null, 1);
         deliveryRepository.save(save);
-        ResponseEntity<String> res = globalController.getDeliveryException(id , "vendor");
+        ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "");
     }

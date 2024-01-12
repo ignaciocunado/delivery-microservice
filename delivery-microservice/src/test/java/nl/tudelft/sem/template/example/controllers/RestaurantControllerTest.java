@@ -56,6 +56,7 @@ class RestaurantControllerTest {
         verify(ac).createRestaurant("admin", restaurant);
     }
 
+    @Test
     public void testCallMaxZone() {
         UUID id = UUID.randomUUID();
         sut.getMaxDeliveryZone(id, "a");

@@ -9,6 +9,7 @@ import java.util.UUID;
 import lombok.Setter;
 import nl.tudelft.sem.api.DeliveryApi;
 import nl.tudelft.sem.model.Delivery;
+import org.apache.catalina.util.CustomObjectInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,20 +39,25 @@ public class DeliveryController implements DeliveryApi {
     private final transient VendorController vendorController;
     private final transient GlobalController globalController;
     private final transient VendorOrCourierController vendorOrCourierController;
+    private final transient CustomerController customerController;
 
     /**
      * Autowired constructor for the controller.
      * @param courierController subcontroller for couriers
      * @param vendorController subcontroller for vendors
      * @param globalController subcontroller for global endpoints
+     * @param customerController subcontroller for customers
+     * @param vendorOrCourierController subcontroller for vendors and couriers
      */
     @Autowired
     public DeliveryController(CourierController courierController, VendorController vendorController,
-                              GlobalController globalController, VendorOrCourierController vendorOrCourierController) {
+                              GlobalController globalController, VendorOrCourierController vendorOrCourierController,
+                              CustomerController customerController) {
         this.courierController = courierController;
         this.vendorController = vendorController;
         this.globalController = globalController;
         this.vendorOrCourierController = vendorOrCourierController;
+        this.customerController = customerController;
     }
 
     /**
@@ -86,6 +92,27 @@ public class DeliveryController implements DeliveryApi {
     @Override
     public ResponseEntity<String> setDeliveryException(UUID deliveryId, String role, String body) {
         return vendorOrCourierController.setDeliveryException(deliveryId, role, body);
+    }
+
+    /**
+     * Integrates controller with API to get the courierId of delivery.
+     * @param deliveryId the id of delivery
+     * @param role The role of the user (required)
+     * @return the UUID in the response entity
+     */
+    @Override
+    public ResponseEntity<UUID> getCourierByDeliveryId(UUID deliveryId, String role) {
+        return vendorController.getCourierIdByDelivery(deliveryId, role);
+    }
+
+    /**
+     * Integrates controller with API to get the rating of courier deliveries.
+     * @param courierID The ID of the courier to query (required)
+     * @return the average rating
+     */
+    @Override
+    public ResponseEntity<Double> getAvRateCourier(UUID courierID) {
+        return courierController.getAvrRating(courierID);
     }
 
     /**
@@ -328,6 +355,28 @@ public class DeliveryController implements DeliveryApi {
         // Note: the implementation function is named "get rating", to be more in line
         // with our model definitions. If necessary, this can be reverted to the original name.
         return sanityCheck(globalController.getRatingByDeliveryId(deliveryId, role), deliveryId);
+    }
+
+    /**
+     * Integrates controller with API for the get all deliveries for a courier endpoint.
+     * @param courierID The ID of the courier to query (required)
+     * @param role The role of the user (required)
+     * @return a list of all delivery IDs for a courier
+     */
+    @Override
+    public ResponseEntity<List<UUID>> getAllDeliveriesCourier(UUID courierID, String role) {
+        return courierController.getAllDeliveriesCourier(courierID, role);
+    }
+
+    /**
+     * Integrates controller with API for the get all deliveries for a customer endpoint.
+     * @param customerID The ID of the customer to query (required)
+     * @param role The role of the user (required)
+     * @return a list of all delivery IDs for a customer
+     */
+    @Override
+    public ResponseEntity<List<UUID>> getAllDeliveriesCustomer(UUID customerID, String role) {
+        return customerController.getAllDeliveriesCustomer(customerID, role);
     }
 
     @lombok.Generated

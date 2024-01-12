@@ -22,7 +22,7 @@ class VendorOrCourierControllerTest {
     private transient VendorOrCourierController vendorOrCourierController;
     private transient TestDeliveryRepository deliveryRepository;
 
-    UUID deliveryId;
+    private transient UUID deliveryId;
 
     @BeforeEach
     void setUp() {

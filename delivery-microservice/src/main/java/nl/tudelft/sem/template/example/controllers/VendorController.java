@@ -6,13 +6,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import io.swagger.v3.core.util.DeserializationModule31;
 import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
+import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,11 +27,14 @@ public class VendorController {
     @Getter
     RestaurantRepository restaurantRepository;
     DeliveryRepository deliveryRepository;
+    UUIDGenerationService uuidGenerationService;
 
     @Autowired
-    public VendorController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository) {
+    public VendorController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
+                            UUIDGenerationService uuidGenerationService) {
         this.restaurantRepository = restaurantRepository;
         this.deliveryRepository = deliveryRepository;
+        this.uuidGenerationService = uuidGenerationService;
     }
 
     public boolean checkVendor(String role) {
@@ -237,6 +240,25 @@ public class VendorController {
     }
 
     /**
+     * Get the courierId of the delivery.
+     * @param deliveryId the id of delivery
+     * @param role The role of the user (required)
+     * @return the UUID in the response entity
+     */
+    public ResponseEntity<UUID> getCourierIdByDelivery(UUID deliveryId, String role) {
+        if (!checkVendor(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<Delivery> fetchedDelivery = deliveryRepository.findById(deliveryId);
+        if (fetchedDelivery.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(fetchedDelivery.get().getCourierID(), HttpStatus.OK);
+    }
+
+    /**
      * Gets the estimated time of delivery for a delivery.
      * @param deliveryID UUID of the delivery object
      * @param role User role
@@ -299,25 +321,14 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        // Hacky fix: generated values do not seem to work with UUIDs, without OpenAPI YAML modifications.
-        // So, we generate new UUIDs until we find a unique one, because we don't want to overwrite or
-        // otherwise clash with existing database entities.
-        UUID newId;
-        int newIdGenerationAttempts = 0;
-
-        do {
-            newId = UUID.randomUUID();
-            newIdGenerationAttempts += 1;
-        } while (deliveryRepository.findById(newId).isPresent() && newIdGenerationAttempts < 500);
-
-        // Ensure the new ID is unique. Otherwise, return that we got
-        // stuck in the ID generation loop (and had to abort).
-        if (deliveryRepository.findById(newId).isPresent()) {
+        // Generate a new ID for the delivery
+        final Optional<UUID> newId = uuidGenerationService.generateUniqueId(deliveryRepository);
+        if (newId.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // Once we have the new ID - save delivery to the DB.
-        delivery.setDeliveryID(newId);
+        delivery.setDeliveryID(newId.get());
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
         // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
@@ -379,6 +390,5 @@ public class VendorController {
         }
 
         return new ResponseEntity<List<UUID>>(filteredDeliveries, HttpStatus.OK);
-
     }
 }

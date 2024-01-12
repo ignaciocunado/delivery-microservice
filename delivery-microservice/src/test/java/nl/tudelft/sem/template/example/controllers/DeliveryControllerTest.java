@@ -21,9 +21,10 @@ class DeliveryControllerTest {
     private transient DeliveryController deliveryController;
     private transient GlobalController globalController;
     private transient VendorOrCourierController vendorOrCourierController;
+    private transient CustomerController customerController;
 
-    private UUID deliveryId;
-    private String role;
+    private transient UUID deliveryId;
+    private transient String role;
 
     /**
      * Mocks courier controller to setup delivery controller.
@@ -39,8 +40,9 @@ class DeliveryControllerTest {
         vendorController = Mockito.mock(VendorController.class);
         globalController = Mockito.mock(GlobalController.class);
         vendorOrCourierController = Mockito.mock(VendorOrCourierController.class);
+        customerController = Mockito.mock(CustomerController.class);
         deliveryController = new DeliveryController(courierController, vendorController,
-                globalController, vendorOrCourierController);
+                globalController, vendorOrCourierController, customerController);
     }
 
     @Test
@@ -165,6 +167,43 @@ class DeliveryControllerTest {
     }
 
     @Test
+    void testSetLiveLocation() {
+        deliveryController.setLiveLocation(deliveryId, role, "Test");
+
+        Mockito.verify(courierController).setLiveLocation(deliveryId, role, "Test");
+    }
+
+    @Test
+    void testGetAvRateCourier() {
+        UUID courierId = UUID.randomUUID();
+        deliveryController.getAvRateCourier(courierId);
+
+        Mockito.verify(courierController).getAvrRating(courierId);
+    }
+
+    @Test
+    void testGetCourierByDeliveryId() {
+        deliveryController.getCourierByDeliveryId(deliveryId, role);
+
+        Mockito.verify(vendorController).getCourierIdByDelivery(deliveryId, role);
+    }
+
+    @Test
+    void testSetDeliveryException() {
+        deliveryController.setDeliveryException(deliveryId, role, "Fall");
+
+        Mockito.verify(vendorOrCourierController).setDeliveryException(deliveryId, role, "Fall");
+    }
+
+    @Test
+    void testGetLocationOfDelivery() {
+        deliveryController.getLocationOfDelivery(deliveryId, role);
+
+        Mockito.verify(courierController).getLocationOfDelivery(deliveryId, role);
+
+    }
+
+    @Test
     void testGetDeliveryEstimate() {
         deliveryController.getDeliveryEstimate(deliveryId, role);
         Mockito.verify(vendorController).getDeliveryEstimate(deliveryId, role);
@@ -172,9 +211,15 @@ class DeliveryControllerTest {
 
     @Test
     void testSetDeliveryEstimate() {
-        deliveryController.setDeliveryEstimate(deliveryId, role, OffsetDateTime.of(2024, 1, 1, 1, 1, 1, 1, ZoneOffset.ofHours(0)));
-        Mockito.verify(vendorController).setDeliveryEstimate(deliveryId, role, OffsetDateTime.of(2024, 1, 1, 1, 1, 1, 1, ZoneOffset.ofHours(0)));
+        deliveryController.setDeliveryEstimate(deliveryId, role,
+                OffsetDateTime.of(2024, 1, 1, 1,
+                        1, 1, 1, ZoneOffset.ofHours(0)));
+
+        Mockito.verify(vendorController).setDeliveryEstimate(deliveryId, role,
+                OffsetDateTime.of(2024, 1, 1, 1,
+                        1, 1, 1, ZoneOffset.ofHours(0)));
     }
+
     @Test
     void testGetRatingByDeliveryId() {
         deliveryController.getRateByDeliveryId(deliveryId, role);
@@ -186,5 +231,19 @@ class DeliveryControllerTest {
         UUID vendorId = UUID.randomUUID();
         deliveryController.getAllDeliveriesVendor(vendorId, "vendor");
         Mockito.verify(vendorController).getAllDeliveriesVendor(vendorId, "vendor");
+    }
+
+    @Test
+    void testGetAllDeliveriesCourier() {
+        UUID courierID = UUID.randomUUID();
+        deliveryController.getAllDeliveriesCourier(courierID, "courier");
+        Mockito.verify(courierController).getAllDeliveriesCourier(courierID, "courier");
+    }
+
+    @Test
+    void testGetAllDeliveriesCustomer() {
+        UUID customerID = UUID.randomUUID();
+        deliveryController.getAllDeliveriesCustomer(customerID, "customer");
+        Mockito.verify(customerController).getAllDeliveriesCustomer(customerID, "customer");
     }
 }
