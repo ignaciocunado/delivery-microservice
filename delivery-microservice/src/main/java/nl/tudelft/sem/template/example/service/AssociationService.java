@@ -31,7 +31,7 @@ public class AssociationService {
      */
     public boolean authorize(HttpServletRequest request) {
         String userId = request.getHeader("X-User-Id");
-        userId = formatUuid(userId);
+        UUID UserUuid = UUID.fromString(userId);
         String role = request.getParameter("role");
 
         // admins can do anything
@@ -49,20 +49,20 @@ public class AssociationService {
 
 
         if (endpoint.contains("/status/delivered")) {
-            String deliveryId = endpoint.split("/")[2];
-            return courierDeliveryAssociation(userId, deliveryId);
+            UUID deliveryId = UUID.fromString(endpoint.split("/")[2]);
+            return courierDeliveryAssociation(UserUuid, deliveryId);
         } else if (endpoint.contains("/status/")) {
-            String deliveryId = endpoint.split("/")[2];
-            return vendorDeliveryAssociation(userId, deliveryId);
+            UUID deliveryId = UUID.fromString(endpoint.split("/")[2]);
+            return vendorDeliveryAssociation(UserUuid, deliveryId);
         }
 
 
         return true;
     }
 
-    private boolean vendorDeliveryAssociation(String userId, String deliveryId) {
+    private boolean vendorDeliveryAssociation(UUID userId, UUID deliveryId) {
         // get the delivery object
-        Optional<Delivery> delivery = deliveryRepository.findById(UUID.fromString(deliveryId));
+        Optional<Delivery> delivery = deliveryRepository.findById(deliveryId);
 
         // if the delivery object is empty, let the request through (it will be caught by the controller)
         if (delivery.isEmpty()) {
@@ -77,7 +77,7 @@ public class AssociationService {
             return true;
         }
 
-        return restaurant.get().getVendorID().equals(UUID.fromString(userId));
+        return restaurant.get().getVendorID().equals(userId);
     }
 
     /**
@@ -87,27 +87,15 @@ public class AssociationService {
      * @param deliveryId the id of the delivery
      * @return true if the courier is associated with the delivery, false otherwise
      */
-    public boolean courierDeliveryAssociation(String userId, String deliveryId) {
+    public boolean courierDeliveryAssociation(UUID userId, UUID deliveryId) {
         // get the delivery object
-        Optional<Delivery> delivery = deliveryRepository.findById(UUID.fromString(deliveryId));
+        Optional<Delivery> delivery = deliveryRepository.findById(deliveryId);
 
         // if the delivery object is empty, let the request through (it will be caught by the controller)
         if (delivery.isEmpty()) {
             return true;
         }
 
-        return delivery.get().getCourierID().equals(UUID.fromString(userId));
-    }
-
-    private static String formatUuid(String uuidString) {
-        // Add hyphens to the UUID string to match the standard format
-        return String.format(
-                "%s-%s-%s-%s-%s",
-                uuidString.substring(0, 8),
-                uuidString.substring(8, 12),
-                uuidString.substring(12, 16),
-                uuidString.substring(16, 20),
-                uuidString.substring(20)
-        );
+        return delivery.get().getCourierID().equals(userId);
     }
 }
