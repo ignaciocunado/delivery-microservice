@@ -18,25 +18,22 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 public class GlobalControllerTest {
 
     private transient GlobalController globalController;
     private transient TestDeliveryRepository deliveryRepository;
     private transient TestRestaurantRepository restaurantRepository;
 
-    UUID deliveryId;
-    UUID restaurantId;
-    UUID orderId;
+    private transient UUID deliveryId;
+    private transient UUID restaurantId;
+    private transient UUID orderId;
 
     /**
      * The full delivery object that was created during test setup.
      */
-    Delivery delivery;
+    private transient Delivery delivery;
 
-    OffsetDateTime sampleOffsetDateTime;
+    private transient OffsetDateTime sampleOffsetDateTime;
 
     @BeforeEach
     void setUp() {
@@ -502,9 +499,11 @@ public class GlobalControllerTest {
                 response.getStatusCode()
         );
         UUID id = UUID.randomUUID();
-        Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "69.655,69.425", null, 1);
+        Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
+                "69.655,69.425", null, 1);
         deliveryRepository.save(save);
-        ResponseEntity<String> res = globalController.getDeliveryException(id , "vendor");
+        ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "");
     }

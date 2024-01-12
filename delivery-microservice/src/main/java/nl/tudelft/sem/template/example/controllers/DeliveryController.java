@@ -89,6 +89,27 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
+     * Integrates controller with API to get the courierId of delivery.
+     * @param deliveryId the id of delivery
+     * @param role The role of the user (required)
+     * @return the UUID in the response entity
+     */
+    @Override
+    public ResponseEntity<UUID> getCourierByDeliveryId(UUID deliveryId, String role) {
+        return vendorController.getCourierIdByDelivery(deliveryId, role);
+    }
+
+    /**
+     * Integrates controller with API to get the rating of courier deliveries.
+     * @param courierID The ID of the courier to query (required)
+     * @return the average rating
+     */
+    @Override
+    public ResponseEntity<Double> getAvRateCourier(UUID courierID) {
+        return courierController.getAvrRating(courierID);
+    }
+
+    /**
      * Integrates controller with API to set the exception of delivery.
      * @param deliveryId the id of the delivery
      * @param role The role of the user (required)
@@ -328,6 +349,17 @@ public class DeliveryController implements DeliveryApi {
         // Note: the implementation function is named "get rating", to be more in line
         // with our model definitions. If necessary, this can be reverted to the original name.
         return sanityCheck(globalController.getRatingByDeliveryId(deliveryId, role), deliveryId);
+    }
+
+    /**
+     * Integrates controller with API for the get all deliveries for a courier endpoint.
+     * @param courierID The ID of the courier to query (required)
+     * @param role The role of the user (required)
+     * @return a list of all delvivery IDs for a courier
+     */
+    @Override
+    public ResponseEntity<List<UUID>> getAllDeliveriesCourier(UUID courierID, String role) {
+        return courierController.getAllDeliveriesCourier(courierID, role);
     }
 
     @lombok.Generated

@@ -1,7 +1,12 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
+
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
@@ -11,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+
+import javax.swing.text.html.HTML;
 
 /**
  * Sub controller of DeliveryController. Handles requests from couriers.
@@ -124,7 +131,7 @@ public class CourierController  {
             return new ResponseEntity<>("error 403: Authorization failed!", HttpStatus.UNAUTHORIZED);
         }
 
-        if(body == null || body.isBlank() || body.isEmpty()) {
+        if(body == null || body.isBlank()) {
             return new ResponseEntity<>("error 400", HttpStatus.BAD_REQUEST);
         }
 
@@ -137,5 +144,51 @@ public class CourierController  {
         delivery.setLiveLocation(body);
         deliveryRepository.save(delivery);
         return new ResponseEntity<>("200 OK", HttpStatus.OK);
+    }
+
+    /**
+     * Get the average rating of courier deliveries.
+     * @param courierID The ID of the courier to query (required)
+     * @return the average rating
+     */
+    public ResponseEntity<Double> getAvrRating(UUID courierID) {
+        List<Delivery> deliveries = deliveryRepository.findAll();
+
+        if (deliveries.isEmpty()) {
+            return new ResponseEntity<>(0.0, HttpStatus.OK);
+        }
+
+        List<Double> ratingsList = deliveries
+                .stream()
+                .filter(d -> d.getCourierID().equals(courierID))
+                .map(Delivery::getCustomerRating)
+                .collect(Collectors.toList());
+
+        if (ratingsList.isEmpty()) {
+            return new ResponseEntity<>(0.0, HttpStatus.OK);
+        }
+
+        double sumOfRatings = ratingsList.stream().mapToDouble(Double::doubleValue).sum();
+        long cnt = ratingsList.size();
+
+        return new ResponseEntity<>(sumOfRatings/cnt, HttpStatus.OK);
+    }
+
+    /**
+     * Implementation for the get all deliveries for a courier endpoint.
+     * @param courierID id of the courier
+     * @param role role of the user
+     * @return a list of IDs of the deliveries for this courier
+     */
+    public ResponseEntity<List<UUID>> getAllDeliveriesCourier(UUID courierID, String role) {
+        if(!checkCourier(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        List<Delivery> fetched = deliveryRepository.findAll();
+        List<UUID> deliveries = fetched.stream()
+                .filter(delivery -> delivery.getCourierID().equals(courierID))
+                .map(delivery -> delivery.getDeliveryID())
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(deliveries, HttpStatus.OK);
     }
 }

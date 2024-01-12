@@ -18,14 +18,15 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 /**
  * Tests functionality of the Admin Controller method implementations.
  */
-public class AdminControllerTest
-{
+public class AdminControllerTest {
     private transient AdminController adminController;
 
     private transient TestRestaurantRepository restaurantRepository;
 
+    private final String role = "admin";
+
     @BeforeEach
-    void Setup() {
+    void setUp() {
         // Set up repositories
         restaurantRepository = new TestRestaurantRepository();
 
@@ -44,7 +45,7 @@ public class AdminControllerTest
         );
 
         // Check response status
-        ResponseEntity<Restaurant> response = adminController.createRestaurant("admin", restaurant);
+        ResponseEntity<Restaurant> response = adminController.createRestaurant(role, restaurant);
         assertEquals(
                 HttpStatus.OK,
                 response.getStatusCode()
@@ -82,8 +83,8 @@ public class AdminControllerTest
         );
 
         // Check both response statuses
-        ResponseEntity<Restaurant> firstResponse = adminController.createRestaurant("admin", firstRestaurant);
-        ResponseEntity<Restaurant> secondResponse = adminController.createRestaurant("admin", secondRestaurant);
+        ResponseEntity<Restaurant> firstResponse = adminController.createRestaurant(role, firstRestaurant);
+        ResponseEntity<Restaurant> secondResponse = adminController.createRestaurant(role, secondRestaurant);
 
         assertEquals(
                 HttpStatus.OK,
@@ -119,7 +120,7 @@ public class AdminControllerTest
      */
     @Test
     void testCreateRestaurantNull() {
-        ResponseEntity<Restaurant> response = adminController.createRestaurant("admin", null);
+        ResponseEntity<Restaurant> response = adminController.createRestaurant(role, null);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
@@ -160,7 +161,7 @@ public class AdminControllerTest
     }
 
     /**
-     * Tests the case where no more UUIDs are available
+     * Tests the case where no more UUIDs are available.
      */
     @Test
     void testCreateRestaurantAllIdsUsed() {
@@ -177,7 +178,7 @@ public class AdminControllerTest
 
         // So, when a new restaurant is created, it should get stuck in a loop and exit!
         final Restaurant restaurantToCreate = new Restaurant();
-        ResponseEntity<Restaurant> response = localAdminController.createRestaurant("admin", restaurantToCreate);
+        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(role, restaurantToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
@@ -202,7 +203,7 @@ public class AdminControllerTest
 
         // Ensure a server error occurs
         final Restaurant restaurantToCreate = new Restaurant();
-        ResponseEntity<Restaurant> response = localAdminController.createRestaurant("admin", restaurantToCreate);
+        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(role, restaurantToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
@@ -230,7 +231,7 @@ public class AdminControllerTest
                 .thenReturn(Optional.empty());
 
         // Ensure a server error occurs
-        ResponseEntity<Restaurant> response = localAdminController.createRestaurant("admin", restaurantToCreate);
+        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(role, restaurantToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
