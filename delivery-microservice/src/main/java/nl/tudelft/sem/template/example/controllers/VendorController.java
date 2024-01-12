@@ -12,6 +12,7 @@ import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
+import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +27,14 @@ public class VendorController {
     @Getter
     RestaurantRepository restaurantRepository;
     DeliveryRepository deliveryRepository;
+    UUIDGenerationService uuidGenerationService;
 
     @Autowired
-    public VendorController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository) {
+    public VendorController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
+                            UUIDGenerationService uuidGenerationService) {
         this.restaurantRepository = restaurantRepository;
         this.deliveryRepository = deliveryRepository;
+        this.uuidGenerationService = uuidGenerationService;
     }
 
     public boolean checkVendor(String role) {
@@ -316,10 +320,14 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-
+        // Generate a new ID for the delivery
+        final Optional<UUID> newId = uuidGenerationService.generateUniqueId(deliveryRepository);
+        if (newId.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         // Once we have the new ID - save delivery to the DB.
-        delivery.setDeliveryID(newId);
+        delivery.setDeliveryID(newId.get());
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
         // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.

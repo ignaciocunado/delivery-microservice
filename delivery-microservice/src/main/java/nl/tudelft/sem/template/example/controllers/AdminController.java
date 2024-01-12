@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
+import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +25,19 @@ public class AdminController {
     RestaurantRepository restaurantRepository;
 
     /**
+     * Generates unique UUIDs for our database. This is injected, instead of being a singleton,
+     * so that it can be mocked.
+     */
+    UUIDGenerationService uuidGenerationService;
+
+    /**
      * Construct a new Admin Controller.
      * @param restaurantRepository Restaurant repository.
      */
     @Autowired
-    public AdminController(RestaurantRepository restaurantRepository) {
+    public AdminController(RestaurantRepository restaurantRepository, UUIDGenerationService uuidGenerationService) {
         this.restaurantRepository = restaurantRepository;
+        this.uuidGenerationService = uuidGenerationService;
     }
 
     /**
@@ -58,25 +66,14 @@ public class AdminController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        // Hacky fix: generated values do not seem to work with UUIDs, without OpenAPI YAML modifications.
-        // So, we generate new UUIDs until we find a unique one, because we don't want to overwrite or
-        // otherwise clash with existing database entities.
-        UUID newId;
-        int newIdGenerationAttempts = 0;
-
-        do {
-            newId = UUID.randomUUID();
-            newIdGenerationAttempts += 1;
-        } while (restaurantRepository.findById(newId).isPresent() && newIdGenerationAttempts < 1000);
-
-        // Ensure the new ID is unique. Otherwise, return that we got
-        // stuck in the ID generation loop (and had to abort).
-        if (restaurantRepository.findById(newId).isPresent()) {
+        // Generate a new ID for the restaurant
+        final Optional<UUID> newId = uuidGenerationService.generateUniqueId(restaurantRepository);
+        if (newId.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // Once we have the new ID, save the restaurant to the DB.
-        restaurant.setRestaurantID(newId);
+        restaurant.setRestaurantID(newId.get());
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
 
         // As an extra layer of internal validation, ensure the newly created restaurant can be fetched from the DB.
