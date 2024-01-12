@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
+import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ public class AdminControllerTest {
         restaurantRepository = new TestRestaurantRepository();
 
         // Set up controllers
-        adminController = new AdminController(restaurantRepository);
+        adminController = new AdminController(restaurantRepository, new UUIDGenerationService());
     }
 
     /**
@@ -168,7 +169,7 @@ public class AdminControllerTest {
         // We mock the repositories, so we can fake all IDs being taken.
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
         AdminController localAdminController = new AdminController(
-                mockedRestaurantRepository
+                mockedRestaurantRepository, new UUIDGenerationService()
         );
 
         // Every single restaurant ID is mapped to this one restaurant
@@ -194,7 +195,7 @@ public class AdminControllerTest {
         // We mock the repositories, so we can fake saving failing.
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
         AdminController localAdminController = new AdminController(
-                mockedRestaurantRepository
+                mockedRestaurantRepository, new UUIDGenerationService()
         );
 
         // Saving always fails and returns null
@@ -219,7 +220,7 @@ public class AdminControllerTest {
         // We mock the repositories, so we can fake saving failing.
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
         AdminController localAdminController = new AdminController(
-                mockedRestaurantRepository
+                mockedRestaurantRepository, new UUIDGenerationService()
         );
 
         final Restaurant restaurantToCreate = new Restaurant();
