@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class VendorControllerTest {
     private transient TestRestaurantRepository restaurantRepo;
     private transient TestDeliveryRepository deliveryRepo;
+    private transient UUIDGenerationService uuidGenerationService;
     private transient VendorController sut;
 
     private transient UUID restaurantId;
@@ -49,6 +50,9 @@ class VendorControllerTest {
         // create test repositories
         restaurantRepo = new TestRestaurantRepository();
         deliveryRepo = new TestDeliveryRepository();
+
+        // initialize other services
+        uuidGenerationService = new UUIDGenerationService();
 
         // generate random UUID
         restaurantId = UUID.randomUUID();
@@ -92,23 +96,6 @@ class VendorControllerTest {
         deliveryRepo.save(d2);
         deliveryRepo.save(d3);
         sut = new VendorController(restaurantRepo, deliveryRepo, new UUIDGenerationService());
-    }
-
-    /**
-     * Helper that generates a new UUID, that is NOT equal to the current deliveryId.
-     * NOTE: as this method is re-used in several tests, this code should be extracted
-     * to e.g. its own service, so it can be used in multiple places at once.
-     * @return A delivery ID not equal to the test's 'deliveryId'. This ID is invalid for testing purposes,
-     *         until used to save an object to the DB.
-     */
-    UUID generateNewDeliveryId() {
-        UUID newDeliveryId;
-
-        do {
-            newDeliveryId = UUID.randomUUID();
-        } while (newDeliveryId == deliveryId);
-
-        return newDeliveryId;
     }
 
     /**
@@ -485,9 +472,11 @@ class VendorControllerTest {
 
         for (final String roleToTest : rolesToTest) {
             // Create a new uniquely IDd delivery
-            UUID newDeliveryId = generateNewDeliveryId();
+            Optional<UUID> newDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepo);
+            assertTrue(newDeliveryId.isPresent());
+
             Delivery newDelivery = new Delivery(
-                    newDeliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                    newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                     "status", OffsetDateTime.now(), OffsetDateTime.now(), 1.0, OffsetDateTime.now(),
                     "liveLocation", "userException", 0
             );
@@ -521,16 +510,18 @@ class VendorControllerTest {
     @Test
     void testCreateDeliveryDoubleId() {
         // Create a new uniquely IDd delivery
-        UUID newDeliveryId = generateNewDeliveryId();
+        Optional<UUID> newDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepo);
+        assertTrue(newDeliveryId.isPresent());
+
         Delivery firstNewDelivery = new Delivery(
-                newDeliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "status", OffsetDateTime.now(), OffsetDateTime.now(), 1.0, OffsetDateTime.now(),
                 "liveLocation", "userException", 0
         );
 
         // Create a different delivery, with that same ID
         Delivery secondNewDelivery = new Delivery(
-                newDeliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "secondStatus", OffsetDateTime.now(), OffsetDateTime.now(), 0.5, OffsetDateTime.now(),
                 "secondLiveLocation", "secondUserException", 1
         );
