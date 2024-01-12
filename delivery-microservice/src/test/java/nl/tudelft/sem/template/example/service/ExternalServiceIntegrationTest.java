@@ -49,36 +49,32 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void verifyVendorRole() {
-        boolean result = externalService.verify("123", "vendor");
-
         Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any())).thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
+        boolean result = externalService.verify("123", "vendor");
 
         assertTrue(result);
     }
 
     @Test
     void verifyCourierRole() {
-        boolean result = externalService.verify("123", "courier");
-
         Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any())).thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
+        boolean result = externalService.verify("123", "courier");
 
         assertTrue(result);
     }
 
     @Test
     void verifyAdminRole() {
-        boolean result = externalService.verify("123", "admin");
-
         Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any())).thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
+        boolean result = externalService.verify("123", "admin");
 
         assertTrue(result);
     }
 
     @Test
     void verifyValidRoleNon200ErrorCode() {
-        boolean result = externalService.verify("123", "admin");
-
         Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any())).thenReturn(new ResponseEntity<>(null, null, HttpStatus.UNAUTHORIZED));
+        boolean result = externalService.verify("123", "admin");
 
         assertFalse(result);
     }
