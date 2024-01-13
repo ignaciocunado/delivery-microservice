@@ -1848,6 +1848,17 @@ paths:
             format: uuid
           required: true
           description: The ID of the courier to query
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
