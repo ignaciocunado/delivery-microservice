@@ -396,4 +396,9 @@ public class DeliveryController implements DeliveryApi {
         }
         return r;
     }
+
+    @Override
+    public ResponseEntity<String> setRateOfDelivery(UUID deliveryID, String role, Double body) {
+        return vendorController.setRateOfDelivery(deliveryID, role, body);
+    }
 }

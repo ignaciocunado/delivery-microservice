@@ -52,6 +52,23 @@ public class VendorController {
         return role.equals("courier");
     }
 
+    /**
+     * Authorisation method.
+     * @param role the role of the user making the request
+     * @return true if the user is a customer, false otherwise
+     */
+    private boolean checkCustomer(String role) {
+        return role.equals("customer");
+    }
+
+    /**
+     * Authorisation method.
+     * @param role  the role of the user making the request
+     * @return true if the user is an admin, false otherwise
+     */
+    private boolean checkAdmin(String role) {
+        return role.equals("admin");
+    }
     /** Adds a courier to a restaurant.
      *
      * @param courierId   ID of the courier to add to the restaurant. (required)
@@ -433,5 +450,28 @@ public class VendorController {
 
         return new ResponseEntity<List<GetVendorRest200ResponseInner>>(res, HttpStatus.OK);
 
+    }
+
+
+    /**
+     * Rate a delivery.
+     * @param deliveryID the delivery to rate
+     * @param role the role of the user making the request
+     * @param body the rating to give the delivery
+     * @return a response entity with the given rating
+     */
+    public ResponseEntity<String> setRateOfDelivery(UUID deliveryID, String role, Double body) {
+        if (!checkCustomer(role) && !checkAdmin(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        if (deliveryRepository.existsById(deliveryID)) {
+            if (body < 0 || body > 1) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(deliveryRepository.save(deliveryRepository.findById(deliveryID).get()
+                    .customerRating(body)).toString(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
