@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.model.GetVendorRest200ResponseInner;
 import nl.tudelft.sem.model.Restaurant;
 
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
@@ -29,6 +30,12 @@ public class VendorController {
     DeliveryRepository deliveryRepository;
     UUIDGenerationService uuidGenerationService;
 
+    /**
+     * Constructor for the Vendor Controller.
+     * @param restaurantRepository the restaurant repository
+     * @param deliveryRepository the delivery repository
+     * @param uuidGenerationService the service for generating UUIDs
+     */
     @Autowired
     public VendorController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
                             UUIDGenerationService uuidGenerationService) {
@@ -96,12 +103,12 @@ public class VendorController {
     }
 
     /**
-     * Gets the estimated time of pick-up for a delivery.
+     * Gets the pick-up time for a delivery.
      * @param deliveryID UUID of the delivery object
      * @param role User role
-     * @return OffsetDateTime of the estimated time of pick-up
+     * @return OffsetDateTime of the picked-up time.
      */
-    public ResponseEntity<OffsetDateTime> getPickUpEstimate(UUID deliveryID, String role) {
+    public ResponseEntity<OffsetDateTime> getPickedUpEstimate(UUID deliveryID, String role) {
         Optional<Delivery> estimate = deliveryRepository.findById(deliveryID);
         if (estimate.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -318,13 +325,18 @@ public class VendorController {
         }
 
         // Generate a new ID for the delivery
-        final Optional<UUID> newId = uuidGenerationService.generateUniqueId(deliveryRepository);
-        if (newId.isEmpty()) {
+        final Optional<UUID> newDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepository);
+        if (newDeliveryId.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // If the given restaurant does not exist, fail.
+        if (delivery.getRestaurantID() == null || !restaurantRepository.existsById(delivery.getRestaurantID())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // Once we have the new ID - save delivery to the DB.
-        delivery.setDeliveryID(newId.get());
+        delivery.setDeliveryID(newDeliveryId.get());
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
         // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
@@ -386,5 +398,36 @@ public class VendorController {
         }
 
         return new ResponseEntity<List<UUID>>(filteredDeliveries, HttpStatus.OK);
+    }
+
+    /**
+     * returns a list of restaurants for a vendor
+     * @param vendorId the vendor to query
+     * @param role the role of the user
+     * @return the list of restaurant Ids
+     */
+    public ResponseEntity<List<GetVendorRest200ResponseInner>> getVendorRest(UUID vendorId, String role) {
+
+        if(!checkVendor(role)) {
+            return new ResponseEntity<List<GetVendorRest200ResponseInner>>(HttpStatus.UNAUTHORIZED);
+        }
+
+        List<Restaurant> allRestaurants= restaurantRepository.findAll();
+        List<Restaurant> filteredRestaurants = allRestaurants.stream().filter(x -> x.getVendorID().equals(vendorId)).collect(Collectors.toList());
+
+        if(filteredRestaurants.isEmpty()) {
+            return new ResponseEntity<List<GetVendorRest200ResponseInner>>(HttpStatus.NOT_FOUND);
+        }
+        List<GetVendorRest200ResponseInner> res = new ArrayList<>();
+
+        for (Restaurant r : filteredRestaurants) {
+            GetVendorRest200ResponseInner elem = new GetVendorRest200ResponseInner();
+            elem.setRestaurantID(r.getRestaurantID());
+
+            res.add(elem);
+        }
+
+        return new ResponseEntity<List<GetVendorRest200ResponseInner>>(res, HttpStatus.OK);
+
     }
 }

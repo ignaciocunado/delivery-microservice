@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.model.GetVendorRest200ResponseInner;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
@@ -188,7 +189,7 @@ class VendorControllerTest {
 
     @Test
     void testGetPickUpEstimate() {
-        ResponseEntity<OffsetDateTime> res = sut.getPickUpEstimate(deliveryId, "idk");
+        ResponseEntity<OffsetDateTime> res = sut.getPickedUpEstimate(deliveryId, "idk");
         OffsetDateTime resBody = res.getBody();
         //System.out.println("\033[96;40m testGetPickUpEstimate requested for UUID \033[30;106m " + deliveryId
         // + " \033[96;40m got response: \033[30;106m " + res + " \033[0m");
@@ -197,7 +198,7 @@ class VendorControllerTest {
 
     @Test
     void pickUpEstimate404() {
-        ResponseEntity<OffsetDateTime> res = sut.getPickUpEstimate(UUID.randomUUID(), "idk");
+        ResponseEntity<OffsetDateTime> res = sut.getPickedUpEstimate(UUID.randomUUID(), "idk");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
@@ -212,7 +213,7 @@ class VendorControllerTest {
                 "pending", null, null, 1.d, null,
                 "", "", 1));
         VendorController vc = new VendorController(rp, dp, new UUIDGenerationService());
-        ResponseEntity<OffsetDateTime> res = vc.getPickUpEstimate(did, "hi");
+        ResponseEntity<OffsetDateTime> res = vc.getPickedUpEstimate(did, "hi");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
@@ -416,7 +417,9 @@ class VendorControllerTest {
         VendorController vc = new VendorController(restaurantRepository, deliveryRepository,
                 new UUIDGenerationService());
         ResponseEntity<OffsetDateTime> res = vc.getDeliveryEstimate(newRandomDeliveryID, "vendor");
-        System.out.println("\033[96;40m getDeliveryEstimateDoesntExist requested for UUID \033[30;106m " + newRandomDeliveryID + " \033[96;40m got response: \033[30;106m " + res.getBody() + " \033[0m");
+        System.out.println("\033[96;40m getDeliveryEstimateDoesntExist requested for UUID \033[30;106m "
+                + newRandomDeliveryID + " \033[96;40m got response: \033[30;106m " + res.getBody()
+                + " \033[0m");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
@@ -466,7 +469,7 @@ class VendorControllerTest {
             assertTrue(newDeliveryId.isPresent());
 
             Delivery newDelivery = new Delivery(
-                    newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                    newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), restaurantId,
                     "status", OffsetDateTime.now(), OffsetDateTime.now(), 1.0, OffsetDateTime.now(),
                     "liveLocation", "userException", 0
             );
@@ -504,14 +507,14 @@ class VendorControllerTest {
         assertTrue(newDeliveryId.isPresent());
 
         Delivery firstNewDelivery = new Delivery(
-                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), restaurantId,
                 "status", OffsetDateTime.now(), OffsetDateTime.now(), 1.0, OffsetDateTime.now(),
                 "liveLocation", "userException", 0
         );
 
         // Create a different delivery, with that same ID
         Delivery secondNewDelivery = new Delivery(
-                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), restaurantId,
                 "secondStatus", OffsetDateTime.now(), OffsetDateTime.now(), 0.5, OffsetDateTime.now(),
                 "secondLiveLocation", "secondUserException", 1
         );
@@ -586,6 +589,8 @@ class VendorControllerTest {
     @Test
     void testCreateDeliveryNoRole() {
         Delivery delivery = new Delivery();
+        delivery.setRestaurantID(restaurantId);
+
         ResponseEntity<Delivery> response = sut.createDelivery("", delivery);
 
         assertEquals(
@@ -596,7 +601,7 @@ class VendorControllerTest {
 
 
     /**
-     * Tests the case where no more UUIDs are available
+     * Tests the case where no more UUIDs are available.
      */
     @Test
     void testCreateDeliveryAllIdsUsed() {
@@ -610,11 +615,15 @@ class VendorControllerTest {
 
         // Every single delivery ID is mapped to this one delivery
         Delivery foundDelivery = new Delivery();
+        foundDelivery.setRestaurantID(restaurantId);
+
         Mockito.when(mockedDeliveryRepository.findById(Mockito.any()))
                 .thenReturn(Optional.of(foundDelivery));
 
         // So, when a new delivery is created, it should get stuck in a loop and exit!
         final Delivery deliveryToCreate = new Delivery();
+        deliveryToCreate.setRestaurantID(restaurantId);
+
         ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
 
         assertEquals(
@@ -641,8 +650,13 @@ class VendorControllerTest {
         Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
                 .thenReturn(null);
 
+        // Restaurants always exist
+        Mockito.when(mockedRestaurantRepository.existsById(Mockito.any()))
+                .thenReturn(true);
+
         // Ensure a server error occurs
         final Delivery deliveryToCreate = new Delivery();
+        deliveryToCreate.setRestaurantID(restaurantId);
         ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
 
         assertEquals(
@@ -666,12 +680,18 @@ class VendorControllerTest {
         );
 
         final Delivery deliveryToCreate = new Delivery();
+        deliveryToCreate.setRestaurantID(restaurantId);
+
         Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
                 .thenReturn(deliveryToCreate);
 
         // Retrieval always fails and returns empty
         Mockito.when(mockedDeliveryRepository.findById(Mockito.any()))
                 .thenReturn(Optional.empty());
+
+        // Restaurants always exist
+        Mockito.when(mockedRestaurantRepository.existsById(Mockito.any()))
+                .thenReturn(true);
 
         // Ensure a server error occurs
         ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
@@ -681,4 +701,62 @@ class VendorControllerTest {
                 response.getStatusCode()
         );
     }
+
+    @Test
+    void testGetVendorRestUnauthorized() {
+        ResponseEntity<List<GetVendorRest200ResponseInner>> res = sut.getVendorRest(vendorId, "not");
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testGetVendorRestNotFound() {
+        UUID id = UUID.randomUUID();
+        while (id.equals(vendorId) || id.equals(vendorId2)) {
+            id = UUID.randomUUID();
+        }
+        ResponseEntity<List<GetVendorRest200ResponseInner>> res = sut.getVendorRest(id, "vendor");
+
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testGetVendorRestOk() {
+        ResponseEntity<List<GetVendorRest200ResponseInner>> res = sut.getVendorRest(vendorId, "vendor");
+
+        GetVendorRest200ResponseInner elem = new GetVendorRest200ResponseInner();
+        elem.setRestaurantID(restaurantId);
+        assertEquals(res.getBody(), List.of(elem));
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+    }
+
+    @Test
+    void testCreateDeliveryRestaurantNull() {
+        final Delivery deliveryToCreate = new Delivery();
+        deliveryToCreate.setRestaurantID(null);
+
+        ResponseEntity<Delivery> response = sut.createDelivery("vendor", deliveryToCreate);
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                response.getStatusCode()
+        );
+    }
+
+    @Test
+    void testCreateDeliveryRestaurantDoesNotExist() {
+        // Generate a new, non-existing restaurant ID
+        final Optional<UUID> invalidRestaurantId = uuidGenerationService.generateUniqueId(restaurantRepo);
+        assertTrue(invalidRestaurantId.isPresent());
+
+        final Delivery deliveryToCreate = new Delivery();
+        deliveryToCreate.setRestaurantID(invalidRestaurantId.get());
+
+        ResponseEntity<Delivery> response = sut.createDelivery("vendor", deliveryToCreate);
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                response.getStatusCode()
+        );
+    }
 }
+

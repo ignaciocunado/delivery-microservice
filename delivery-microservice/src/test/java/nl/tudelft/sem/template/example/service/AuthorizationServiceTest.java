@@ -9,17 +9,23 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
+@SpringBootTest
+@ActiveProfiles("test")
 class AuthorizationServiceTest {
 
     private transient HttpServletRequest request;
     private transient AuthorizationService authorizationService;
+    @Autowired
     private transient ExternalService externalService;
 
     @BeforeEach
     void setUp() {
         request = Mockito.mock(HttpServletRequest.class);
-        externalService = Mockito.mock(ExternalService.class);
+
         authorizationService = new AuthorizationService(externalService);
     }
 
@@ -27,7 +33,6 @@ class AuthorizationServiceTest {
     public void testAuthorizeCourierRoleWithUserId_ReturnsTrue() {
         when(request.getHeader("X-User-Id")).thenReturn("123");
         when(request.getParameter("role")).thenReturn("courier");
-        when(externalService.isCourier(any())).thenReturn(true);
 
         boolean result = authorizationService.authorize(request);
 
@@ -68,7 +73,6 @@ class AuthorizationServiceTest {
     public void authorizeVendor() {
         when(request.getHeader("X-User-Id")).thenReturn("123");
         when(request.getParameter("role")).thenReturn("vendor");
-        when(externalService.isVendor(any())).thenReturn(true);
 
         boolean result = authorizationService.authorize(request);
 
@@ -79,7 +83,6 @@ class AuthorizationServiceTest {
     public void authorizeAdmin() {
         when(request.getHeader("X-User-Id")).thenReturn("123");
         when(request.getParameter("role")).thenReturn("admin");
-        when(externalService.isAdmin(any())).thenReturn(true);
 
         boolean result = authorizationService.authorize(request);
 
@@ -90,7 +93,6 @@ class AuthorizationServiceTest {
     public void authorizeCustomer() {
         when(request.getHeader("X-User-Id")).thenReturn("123");
         when(request.getParameter("role")).thenReturn("customer");
-        when(externalService.isCustomer(any())).thenReturn(true);
 
         boolean result = authorizationService.authorize(request);
 

@@ -1,8 +1,5 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -11,21 +8,11 @@ import nl.tudelft.sem.api.DeliveryApi;
 import nl.tudelft.sem.model.Delivery;
 import org.apache.catalina.util.CustomObjectInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import java.time.OffsetDateTime;
 
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.print.DocFlavor;
-import javax.print.attribute.IntegerSyntax;
 
 /**
  * Main Delivery Controller. Calls on other controllers to handle requests.
@@ -151,13 +138,16 @@ public class DeliveryController implements DeliveryApi {
 
     /**
      * Integrates controller with API for getPickUpEstimate endpoint.
+     * NOTE: this method is named incorrectly. It returns the PICKED-UP time of a delivery,
+     * as is specified by the OpenAPI document.
+     *
      * @param deliveryID ID of delivery to get the picked up timestamp of (required)
      * @param role The role of the user (required)
-     * @return the estimated pickup time of the delivery object
+     * @return the picked time of the delivery object
      */
     @Override
     public ResponseEntity<OffsetDateTime> getPickUpEstimateDeliveryId(UUID deliveryID, String role) {
-        return vendorController.getPickUpEstimate(deliveryID, role);
+        return vendorController.getPickedUpEstimate(deliveryID, role);
     }
 
     /**
@@ -355,6 +345,20 @@ public class DeliveryController implements DeliveryApi {
         // Note: the implementation function is named "get rating", to be more in line
         // with our model definitions. If necessary, this can be reverted to the original name.
         return sanityCheck(globalController.getRatingByDeliveryId(deliveryId, role), deliveryId);
+    }
+
+    /**
+     * Integrates controller with API for the get pick up time endpoint.
+     * Note: this returns the pickup time ESTIMATE, as specified in the OpenAPI spec.
+     * NOT the actual picked-up time. The methods are just named a little confusingly.
+     *
+     * @param deliveryId ID of the delivery to query. (required)
+     * @param role The role of the user (required)
+     * @return The delivery's pick up time.
+     */
+    @Override
+    public ResponseEntity<OffsetDateTime> getPickUpTime(UUID deliveryId, String role) {
+        return globalController.getPickUpTime(deliveryId, role);
     }
 
     /**
