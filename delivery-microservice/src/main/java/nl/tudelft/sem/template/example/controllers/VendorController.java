@@ -258,6 +258,7 @@ public class VendorController {
 
         return new ResponseEntity<>(fetchedDelivery.get().getCourierID(), HttpStatus.OK);
     }
+
     /**
      * Gets the estimated time of delivery for a delivery.
      * @param deliveryID UUID of the delivery object
@@ -399,18 +400,20 @@ public class VendorController {
      * @return the list of restaurant Ids
      */
     public ResponseEntity<List<GetVendorRest200ResponseInner>> getVendorRest(UUID vendorId, String role) {
-        if(!checkVendor(role))
-            return  new ResponseEntity<List<GetVendorRest200ResponseInner>>(HttpStatus.UNAUTHORIZED);
+
+        if(!checkVendor(role)) {
+            return new ResponseEntity<List<GetVendorRest200ResponseInner>>(HttpStatus.UNAUTHORIZED);
+        }
 
         List<Restaurant> allRestaurants= restaurantRepository.findAll();
         List<Restaurant> filteredRestaurants = allRestaurants.stream().filter(x -> x.getVendorID().equals(vendorId)).collect(Collectors.toList());
 
-        if(filteredRestaurants.isEmpty())
+        if(filteredRestaurants.isEmpty()) {
             return new ResponseEntity<List<GetVendorRest200ResponseInner>>(HttpStatus.NOT_FOUND);
-
+        }
         List<GetVendorRest200ResponseInner> res = new ArrayList<>();
 
-        for(Restaurant r : filteredRestaurants) {
+        for (Restaurant r : filteredRestaurants) {
             GetVendorRest200ResponseInner elem = new GetVendorRest200ResponseInner();
             elem.setRestaurantID(r.getRestaurantID());
 
