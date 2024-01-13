@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
+import nl.tudelft.sem.template.example.controllers.interfaces.Controller;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * Sub controller that handles requests from admins.
@@ -17,7 +19,7 @@ import java.util.UUID;
  * and call them in view methods such as in RestaurantController.
  */
 @Component
-public class AdminController {
+public class AdminController implements Controller {
 
     /**
      * Holds restaurant database objects.
@@ -41,26 +43,11 @@ public class AdminController {
     }
 
     /**
-     * Returns whether the given role has authorization to access admin endpoints.
-     * @param role Role to query.
-     * @return Whether the role was authorized.
-     */
-    private boolean checkAdmin(String role) {
-        return "admin".equals(role);
-    }
-
-    /**
      * Creates and saves a new Restaurant object in the database. A new, unique ID is generated for the new Restaurant.
-     * @param role Role of the requesting user.
      * @param restaurant Data of the new Restaurant to create. ID field is ignored.
      * @return The newly created Restaurant.
      */
-    public ResponseEntity<Restaurant> createRestaurant(String role, Restaurant restaurant) {
-        // Authorize the user
-        if (!checkAdmin(role)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<Restaurant> createRestaurant(Restaurant restaurant) {
         // Ensure restaurant validity
         if (restaurant == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -90,5 +77,20 @@ public class AdminController {
         }
 
         return new ResponseEntity<>(databaseRestaurant.get(), HttpStatus.OK);
+    }
+
+    /**
+     * Check the role and handle it further
+     * @param role the role of the user
+     * @param operation the method that should be called
+     * @param <T> the passed param
+     * @return the response type obj
+     */
+    @Override
+    public <T> ResponseEntity<T> checkAndHandle(String role, Supplier<ResponseEntity<T>> operation) {
+        if(!role.equals("admin")) {
+            return new ResponseEntity<T>(HttpStatus.UNAUTHORIZED);
+        }
+        return operation.get();
     }
 }
