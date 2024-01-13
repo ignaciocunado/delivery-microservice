@@ -1,11 +1,7 @@
-/*
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
-*/
-/*import nl.tudelft.sem.model.RestaurantCourierIDsInner;*//*
-
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
@@ -23,11 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class VendorControllerTest {
@@ -66,15 +58,9 @@ class VendorControllerTest {
         vendorId2 = UUID.randomUUID();
         deliveryId2 = UUID.randomUUID();
 
-        RestaurantCourierIDsInner elem1 = new RestaurantCourierIDsInner();
-        elem1.setCourierID(courierId);
-
-        List<RestaurantCourierIDsInner> param = new ArrayList<>();
-        param.add(elem1);
-
         // setup test repository with some sample objects
-        Restaurant r = new Restaurant(restaurantId, vendorId, param, 1.0d);
-        Restaurant r2 = new Restaurant(restaurantId2, vendorId2, param, 1.0d);
+        Restaurant r = new Restaurant(restaurantId, vendorId, List.of(courierId), 1.0d);
+        Restaurant r2 = new Restaurant(restaurantId2, vendorId2, List.of(courierId), 1.0d);
         restaurantRepo.save(r);
         restaurantRepo.save(r2);
 
@@ -83,15 +69,15 @@ class VendorControllerTest {
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
 
-        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), courierId,
+        Delivery d = new Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), courierId,
                 restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime,
                 1.d, sampleOffsetDateTime, "", "", 1);
 
-        Delivery d2 = new  Delivery(deliveryId2, UUID.randomUUID(), UUID.randomUUID(),
+        Delivery d2 = new Delivery(deliveryId2, UUID.randomUUID(), UUID.randomUUID(),
                 UUID.randomUUID(), restaurantId, "pending", sampleOffsetDateTime,
                 sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
                 "", 1);
-        Delivery d3 = new  Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+        Delivery d3 = new Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime,
                 sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
                 "", 1);
@@ -101,10 +87,6 @@ class VendorControllerTest {
         sut = new VendorController(restaurantRepo, deliveryRepo, new UUIDGenerationService());
     }
 
-    */
-/**
-    Tests for the addCourierToRest endpoint.
-     **//*
 
     @Test
     public void testUnauthorized() {
@@ -122,13 +104,13 @@ class VendorControllerTest {
     @Test
     public void testOkNoDuplicate() {
         UUID courierId = UUID.randomUUID();
-        ResponseEntity<Void> res = sut.addCourierToRest(courierId, restaurantId, "vendor");
+        ResponseEntity<Void> res = sut.addCourierToRest(restaurantId, courierId, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
         Restaurant newRes = sut.getRestaurantRepository().findById(restaurantId).get();
         assertFalse(
                 newRes.getCourierIDs().stream()
-                        .filter(x -> x.getCourierID().equals(courierId))
+                        .filter(x -> x.equals(courierId))
                         .collect(Collectors.toList()).isEmpty()
         );
 
@@ -193,7 +175,7 @@ class VendorControllerTest {
     @Test
     void testRemoveCourierOk() {
 
-        ResponseEntity<Void> res = sut.removeCourierRest(courierId, restaurantId, "vendor");
+        ResponseEntity<Void> res = sut.removeCourierRest(restaurantId, courierId, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
         TestRestaurantRepository repo = (TestRestaurantRepository) sut.getRestaurantRepository();
@@ -288,7 +270,7 @@ class VendorControllerTest {
     void testGetRestaurantUnauthorized() {
         ResponseEntity<String> res = sut.getRest(UUID.randomUUID(), "noVendor");
 
-        assertEquals(res.getBody(),"NOT AUTHORIZED \n Requires vendor permissions!");
+        assertEquals(res.getBody(), "NOT AUTHORIZED \n Requires vendor permissions!");
         assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }
 
@@ -467,12 +449,6 @@ class VendorControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
-    */
-/**
-     * Good weather case: adding a new delivery, with a completely unique ID, to the database.
-     * Both admins and vendors should be able to do this.
-     *//*
-
     @Test
     void testCreateDeliveryGoodWeather() {
         final List<String> rolesToTest = List.of("vendor", "admin");
@@ -510,11 +486,6 @@ class VendorControllerTest {
             );
         }
     }
-
-    */
-/**
-     * Save two deliveries with the same ID to the database. This should still give them both unique IDs.
-     *//*
 
     @Test
     void testCreateDeliveryDoubleId() {
@@ -568,11 +539,6 @@ class VendorControllerTest {
         );
     }
 
-    */
-/**
-     * Passing a null delivery should result in a bad request.
-     *//*
-
     @Test
     void testCreateDeliveryNull() {
         ResponseEntity<Delivery> response = sut.createDelivery("vendor", null);
@@ -582,11 +548,6 @@ class VendorControllerTest {
                 response.getStatusCode()
         );
     }
-
-    */
-/**
-     * Only vendors & admins should be able to create deliveries.
-     *//*
 
     @Test
     void testCreateDeliveryWrongRoles() {
@@ -603,11 +564,6 @@ class VendorControllerTest {
         }
     }
 
-    */
-/**
-     * An empty role should not allow for delivery creation.
-     *//*
-
     @Test
     void testCreateDeliveryNoRole() {
         Delivery delivery = new Delivery();
@@ -619,10 +575,6 @@ class VendorControllerTest {
         );
     }
 
-    */
-/**
-     * Tests the case where no more UUIDs are available
-     *//*
 
     @Test
     void testCreateDeliveryAllIdsUsed() {
@@ -649,10 +601,6 @@ class VendorControllerTest {
         );
     }
 
-    */
-/**
-     * Saving to the database fails, and returns null. Error must be handled!
-     *//*
 
     @Test
     void testCreateDeliverySavingFailed() {
@@ -678,10 +626,6 @@ class VendorControllerTest {
         );
     }
 
-    */
-/**
-     * Retrieving the created delivery from the database fails! Ensure error occurs.
-     *//*
 
     @Test
     void testCreateDeliveryRetrievalFailed() {
@@ -709,4 +653,4 @@ class VendorControllerTest {
                 response.getStatusCode()
         );
     }
-}*/
+}

@@ -52,7 +52,7 @@ public class VendorController {
      * @param role       The role of the user (required)
      * @return Whether the request was successful or not
      */
-    public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
+    public ResponseEntity<Void> addCourierToRest(UUID restaurantId, UUID courierId, String role) {
 
         Restaurant r;
 
@@ -66,7 +66,9 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        r.addCourierIDsItem(courierId);
+        List<UUID> newCouriers = new ArrayList<>(r.getCourierIDs());
+        newCouriers.add(courierId);
+        r.setCourierIDs(newCouriers);
         restaurantRepository.save(r);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -160,40 +162,37 @@ public class VendorController {
 
     /**
      * Implementation for removing a courier from the database.
-     * @param courierId ID of the courier to remove
      * @param restaurantId ID of the restaurant
+     * @param courierId ID of the courier to remove
      * @param role role of the user
      * @return void response entity with HTTP codes
      */
-/*    public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
+    public ResponseEntity<Void> removeCourierRest(UUID restaurantId, UUID courierId, String role) {
         if (!checkVendor(role)) {
             return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
         }
-        Optional<Restaurant> rest = restaurantRepository.findById(restaurantId);
 
-        if (rest.isEmpty()) {
+        Optional<Restaurant> fetched = restaurantRepository.findById(restaurantId);
+        if (fetched.isEmpty()) {
             return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
         }
 
-        List<RestaurantCourierIDsInner> couriers = rest.get().getCourierIDs();
+        Restaurant restaurant = fetched.get();
+        List<UUID> couriers = restaurant.getCourierIDs();
 
-        if (couriers.stream().filter(x -> x.getCourierID().equals(courierId)).collect(Collectors.toList()).isEmpty()) {
+        if(!couriers.contains(courierId)) {
             return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
         }
 
-        RestaurantCourierIDsInner toRemove = couriers.stream()
-                .filter(x -> x.getCourierID().equals(courierId))
-                .collect(Collectors.toList()).get(0);
+        List<UUID> newList = couriers.stream().filter(c -> !c.equals(courierId)).collect(Collectors.toList());
 
-        couriers.remove(toRemove);
+        restaurant.setCourierIDs(newList);
 
-        rest.get().setCourierIDs(couriers);
-
-        restaurantRepository.save(rest.get());
+        restaurantRepository.save(restaurant);
 
         return new ResponseEntity<Void>(HttpStatus.OK);
 
-    }*/
+    }
 
     /**
      * Implementation for the get customer ID endpoint.

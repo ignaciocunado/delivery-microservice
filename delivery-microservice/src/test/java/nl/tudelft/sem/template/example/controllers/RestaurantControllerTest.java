@@ -1,4 +1,3 @@
-/*
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
@@ -72,4 +71,4 @@ class RestaurantControllerTest {
         sut.getRest(id, s);
         verify(vc).getRest(id, s);
     }
-}*/
+}
