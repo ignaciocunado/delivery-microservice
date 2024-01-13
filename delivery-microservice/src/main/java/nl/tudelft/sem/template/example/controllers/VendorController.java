@@ -192,28 +192,28 @@ public class VendorController {
      */
     public ResponseEntity<Void> removeCourierRest(UUID restaurantId, UUID courierId, String role) {
         if (!checkVendor(role)) {
-            return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Optional<Restaurant> fetched = restaurantRepository.findById(restaurantId);
         if (fetched.isEmpty()) {
-            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Restaurant restaurant = fetched.get();
         List<UUID> couriers = restaurant.getCourierIDs();
 
         if(!couriers.contains(courierId)) {
-            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<UUID> newList = couriers.stream().filter(c -> !c.equals(courierId)).collect(Collectors.toList());
+        couriers.remove(courierId);
 
-        restaurant.setCourierIDs(newList);
+        restaurant.setCourierIDs(couriers);
 
         restaurantRepository.save(restaurant);
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
 
     }
 
@@ -355,18 +355,9 @@ public class VendorController {
         delivery.setDeliveryID(newDeliveryId.get());
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
-        // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
-        // Failure is considered a server-side error, but this is unfortunately not permitted by the OpenAPI spec.
-        if (savedDelivery == null || savedDelivery.getDeliveryID() == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDelivery.getDeliveryID());
-        if (databaseDelivery.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return databaseDelivery.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
 
-        return new ResponseEntity<>(databaseDelivery.get(), HttpStatus.OK);
     }
 
     /**

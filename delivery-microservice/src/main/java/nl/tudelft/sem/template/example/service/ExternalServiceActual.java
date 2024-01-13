@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
@@ -92,8 +93,8 @@ public class ExternalServiceActual implements ExternalService {
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url.toString(), String.class);
             statusCode = response.getStatusCodeValue();
-        } catch (HttpClientErrorException e) {
-            statusCode = e.getRawStatusCode();
+        } catch (RestClientException e) {
+            statusCode = 401;
         }
 
         // print the status code

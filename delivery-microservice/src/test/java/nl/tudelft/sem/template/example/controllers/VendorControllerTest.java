@@ -7,7 +7,9 @@ import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,6 +22,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 
 class VendorControllerTest {
@@ -40,6 +44,10 @@ class VendorControllerTest {
 
     private transient UUID courierId;
 
+    private Restaurant r1;
+
+    private List<UUID> couriersList;
+
     @BeforeEach
     public void setup() {
         // create test repositories
@@ -59,9 +67,11 @@ class VendorControllerTest {
         deliveryId2 = UUID.randomUUID();
 
         // setup test repository with some sample objects
-        Restaurant r = new Restaurant(restaurantId, vendorId, List.of(courierId), 1.0d);
+        couriersList = Mockito.spy(new ArrayList<UUID>());
+        couriersList.add(courierId);
+        r1 = new Restaurant(restaurantId, vendorId, couriersList, 1.0d);
         Restaurant r2 = new Restaurant(restaurantId2, vendorId2, List.of(courierId), 1.0d);
-        restaurantRepo.save(r);
+        restaurantRepo.save(r1);
         restaurantRepo.save(r2);
 
         sampleOffsetDateTime = OffsetDateTime.of(
@@ -171,8 +181,12 @@ class VendorControllerTest {
 
     @Test
     void testRemoveCourierNotFound() {
-        ResponseEntity<Void> res = sut.removeCourierRest(UUID.randomUUID(), restaurantId, "vendor");
+        System.out.println(couriersList);
+        UUID randomCourierId = UUID.randomUUID();
+        ResponseEntity<Void> res = sut.removeCourierRest(restaurantId, randomCourierId, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+        // make sure that the restaurant is found AND that there is a check whether the courier is in the restaurant
+        verify(couriersList, atLeastOnce()).contains(randomCourierId);
     }
 
     @Test
@@ -632,37 +646,40 @@ class VendorControllerTest {
     }
 
 
-    /**
-     * Saving to the database fails, and returns null. Error must be handled!
-     */
-    @Test
-    void testCreateDeliverySavingFailed() {
-        // We mock the repositories, so we can fake saving failing.
-        TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
-        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
-
-        VendorController localVendorController = new VendorController(
-                mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
-        );
-
-        // Saving always fails and returns null
-        Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
-                .thenReturn(null);
-
-        // Restaurants always exist
-        Mockito.when(mockedRestaurantRepository.existsById(Mockito.any()))
-                .thenReturn(true);
-
-        // Ensure a server error occurs
-        final Delivery deliveryToCreate = new Delivery();
-        deliveryToCreate.setRestaurantID(restaurantId);
-        ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
-
-        assertEquals(
-                HttpStatus.BAD_REQUEST,
-                response.getStatusCode()
-        );
-    }
+    // Reason for removing this test:
+    // it is actually testing the JPA repository .save() method, not the controller.
+    // furthermore, the mocked output is something the actual repository can legally never return.
+//    /**
+//     * Saving to the database fails, and returns null. Error must be handled!
+//     */
+//    @Test
+//    void testCreateDeliverySavingFailed() {
+//        // We mock the repositories, so we can fake saving failing.
+//        TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
+//        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
+//
+//        VendorController localVendorController = new VendorController(
+//                mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
+//        );
+//
+//        // Saving always fails and returns null
+//        Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
+//                .thenReturn(null);
+//
+//        // Restaurants always exist
+//        Mockito.when(mockedRestaurantRepository.existsById(Mockito.any()))
+//                .thenReturn(true);
+//
+//        // Ensure a server error occurs
+//        final Delivery deliveryToCreate = new Delivery();
+//        deliveryToCreate.setRestaurantID(restaurantId);
+//        ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
+//
+//        assertEquals(
+//                HttpStatus.BAD_REQUEST,
+//                response.getStatusCode()
+//        );
+//    }
 
 
     /**
@@ -726,6 +743,14 @@ class VendorControllerTest {
         assertEquals(res.getStatusCode(), HttpStatus.OK);
     }
 
+    @Test
+    void testCreateDeliveryButDeliveryIsNull() {
+        ResponseEntity<Delivery> response = sut.createDelivery("vendor", null);
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                response.getStatusCode()
+        );
+    }
     @Test
     void testCreateDeliveryRestaurantNull() {
         final Delivery deliveryToCreate = new Delivery();

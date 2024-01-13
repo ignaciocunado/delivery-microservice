@@ -217,6 +217,27 @@ public class AdminControllerTest {
         );
     }
 
+    @Test
+    void testCreateRestaurantSavingFailedBecauseRestaurantIdIsNull() {
+        // We mock the repositories, so we can fake saving failing.
+        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
+        AdminController localAdminController = new AdminController(
+                mockedRestaurantRepository, new UUIDGenerationService()
+        );
+
+        // Saving always fails and returns a restaurant with a null ID
+        Mockito.when(mockedRestaurantRepository.save(Mockito.any()))
+                .thenReturn(new Restaurant(null, UUID.randomUUID(), List.of(), 100.0));
+        // Ensure a server error occurs
+        final Restaurant restaurantToCreate = new Restaurant();
+        restaurantToCreate.setVendorID(UUID.randomUUID());
+        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(role, restaurantToCreate);
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                response.getStatusCode()
+        );
+    }
+
     /**
      * Retrieving the created restaurant from the database fails! Ensure error occurs.
      */
