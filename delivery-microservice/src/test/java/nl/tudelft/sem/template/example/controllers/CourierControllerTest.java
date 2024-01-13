@@ -57,7 +57,11 @@ class CourierControllerTest {
         Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), courierId,
                 restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
                 sampleOffsetDateTime, "", "", 1);
+        Delivery d2 = new  Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), courierId,
+                restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 0.4d,
+                sampleOffsetDateTime, "", "", 1);
         deliveryRepository.save(d);
+        deliveryRepository.save(d2);
 
         courierController = new CourierController(deliveryRepository, restaurantRepository, externalService);
     }
@@ -219,7 +223,7 @@ class CourierControllerTest {
         ResponseEntity<Double> response = courierController.getAvrRating(courierId, "courier");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1.0, response.getBody());
+        assertEquals(0.7d, response.getBody());
     }
 
     @Test

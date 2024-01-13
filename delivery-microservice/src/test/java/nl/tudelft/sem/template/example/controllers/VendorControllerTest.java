@@ -320,9 +320,13 @@ class VendorControllerTest {
 
     @Test
     void testSetPickUpEstimate2() {
-        ResponseEntity<String> res = sut.setPickUpEstimate(deliveryId, "courier", sampleOffsetDateTime.toString());
+        OffsetDateTime otherOffsetDateTime = OffsetDateTime.of(
+                2027, 12, 31, 10, 30, 0, 0,
+                ZoneOffset.ofHoursMinutes(5, 30)
+        );
+        ResponseEntity<String> res = sut.setPickUpEstimate(deliveryId, "courier", otherOffsetDateTime.toString());
         assertEquals(HttpStatus.OK, res.getStatusCode());
-        assertEquals(deliveryRepo.findById(deliveryId).get().getPickupTimeEstimate(), sampleOffsetDateTime);
+        assertEquals(deliveryRepo.findById(deliveryId).get().getPickupTimeEstimate(), otherOffsetDateTime);
     }
 
     @Test
