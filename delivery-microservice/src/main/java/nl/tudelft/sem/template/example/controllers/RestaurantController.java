@@ -107,7 +107,7 @@ public class RestaurantController implements RestaurantApi {
      * @return the list of restaurants
      */
     @Override
-    public ResponseEntity<List<GetVendorRest200ResponseInner>> getVendorRest(UUID vendorId, String role) {
+    public ResponseEntity<List<UUID>> getVendorRest(UUID vendorId, String role) {
         return vendorController.getVendorRest(vendorId, role);
     }
 }

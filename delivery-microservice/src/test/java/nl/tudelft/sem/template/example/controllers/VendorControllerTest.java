@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
-import nl.tudelft.sem.model.GetVendorRest200ResponseInner;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
@@ -90,7 +89,7 @@ class VendorControllerTest {
 
 
     /**
-     Tests for the addCourierToRest endpoint.
+     * Tests for the addCourierToRest endpoint.
      **/
     @Test
     public void testUnauthorized() {
@@ -704,7 +703,7 @@ class VendorControllerTest {
 
     @Test
     void testGetVendorRestUnauthorized() {
-        ResponseEntity<List<GetVendorRest200ResponseInner>> res = sut.getVendorRest(vendorId, "not");
+        ResponseEntity<List<UUID>> res = sut.getVendorRest(vendorId, "not");
         assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }
 
@@ -714,18 +713,16 @@ class VendorControllerTest {
         while (id.equals(vendorId) || id.equals(vendorId2)) {
             id = UUID.randomUUID();
         }
-        ResponseEntity<List<GetVendorRest200ResponseInner>> res = sut.getVendorRest(id, "vendor");
+        ResponseEntity<List<UUID>> res = sut.getVendorRest(id, "vendor");
 
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
     void testGetVendorRestOk() {
-        ResponseEntity<List<GetVendorRest200ResponseInner>> res = sut.getVendorRest(vendorId, "vendor");
+        ResponseEntity<List<UUID>> res = sut.getVendorRest(vendorId, "vendor");
 
-        GetVendorRest200ResponseInner elem = new GetVendorRest200ResponseInner();
-        elem.setRestaurantID(restaurantId);
-        assertEquals(res.getBody(), List.of(elem));
+        assertEquals(res.getBody(), List.of(restaurantId));
         assertEquals(res.getStatusCode(), HttpStatus.OK);
     }
 
