@@ -71,4 +71,13 @@ class RestaurantControllerTest {
         sut.getRest(id, s);
         verify(vc).getRest(id, s);
     }
+
+    @Test
+    public void testCallGetVendorRest() {
+        UUID id = UUID.randomUUID();
+        String s = "a";
+
+        sut.getVendorRest(id, s);
+        verify(vc).getVendorRest(id, s);
+    }
 }
