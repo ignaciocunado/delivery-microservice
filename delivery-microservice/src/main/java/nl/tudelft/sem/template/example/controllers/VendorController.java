@@ -209,7 +209,7 @@ public class VendorController {
 
         couriers.remove(courierId);
 
-        restaurant.setCourierIDs(couriers);
+//        restaurant.setCourierIDs(couriers);
 
         restaurantRepository.save(restaurant);
 
