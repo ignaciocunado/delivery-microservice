@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -46,7 +47,7 @@ public class AdminControllerTest {
         );
 
         // Check response status
-        ResponseEntity<Restaurant> response = adminController.createRestaurant(role, restaurant);
+        ResponseEntity<Restaurant> response = adminController.createRestaurant(restaurant);
         assertEquals(
                 HttpStatus.OK,
                 response.getStatusCode()
@@ -84,8 +85,8 @@ public class AdminControllerTest {
         );
 
         // Check both response statuses
-        ResponseEntity<Restaurant> firstResponse = adminController.createRestaurant(role, firstRestaurant);
-        ResponseEntity<Restaurant> secondResponse = adminController.createRestaurant(role, secondRestaurant);
+        ResponseEntity<Restaurant> firstResponse = adminController.createRestaurant(firstRestaurant);
+        ResponseEntity<Restaurant> secondResponse = adminController.createRestaurant(secondRestaurant);
 
         assertEquals(
                 HttpStatus.OK,
@@ -121,7 +122,7 @@ public class AdminControllerTest {
      */
     @Test
     void testCreateRestaurantNull() {
-        ResponseEntity<Restaurant> response = adminController.createRestaurant(role, null);
+        ResponseEntity<Restaurant> response = adminController.createRestaurant(null);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
@@ -133,12 +134,12 @@ public class AdminControllerTest {
      * Only admins should be able to create restaurants.
      */
     @Test
-    void testCreateRestaurantWrongRoles() {
-        final List<String> rolesToTest = List.of("vendor", "courier", "customer", "sudo", "admi", "v", "c", "a");
+    void checkAndHandleWrongRoles() {
+        final List<String> rolesToTest = List.of("vendor", "courier", "customer", "sudo", "admi", "v", "c", "a", "");
+        Supplier<ResponseEntity<Restaurant>> operation = () -> new ResponseEntity<>(HttpStatus.OK);
 
         for (final String roleToTest : rolesToTest) {
-            Restaurant restaurant = new Restaurant();
-            ResponseEntity<Restaurant> response = adminController.createRestaurant(roleToTest, restaurant);
+            ResponseEntity<Restaurant> response = adminController.checkAndHandle(roleToTest, operation);
 
             assertEquals(
                     HttpStatus.UNAUTHORIZED,
@@ -147,19 +148,7 @@ public class AdminControllerTest {
         }
     }
 
-    /**
-     * An empty role should not allow for restaurant creation.
-     */
-    @Test
-    void testCreateRestaurantNoRole() {
-        Restaurant restaurant = new Restaurant();
-        ResponseEntity<Restaurant> response = adminController.createRestaurant("", restaurant);
 
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
-        );
-    }
 
     /**
      * Tests the case where no more UUIDs are available.
@@ -179,7 +168,7 @@ public class AdminControllerTest {
 
         // So, when a new restaurant is created, it should get stuck in a loop and exit!
         final Restaurant restaurantToCreate = new Restaurant();
-        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(role, restaurantToCreate);
+        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(restaurantToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
@@ -204,7 +193,7 @@ public class AdminControllerTest {
 
         // Ensure a server error occurs
         final Restaurant restaurantToCreate = new Restaurant();
-        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(role, restaurantToCreate);
+        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(restaurantToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
@@ -232,7 +221,7 @@ public class AdminControllerTest {
                 .thenReturn(Optional.empty());
 
         // Ensure a server error occurs
-        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(role, restaurantToCreate);
+        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(restaurantToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,

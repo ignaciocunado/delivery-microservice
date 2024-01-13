@@ -55,7 +55,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> getPickUpLocation(UUID deliveryId, String role) {
-        return courierController.getPickUpLocation(deliveryId, role);
+        return courierController.checkAndHandle(role,
+                () -> courierController.getPickUpLocation(deliveryId));
     }
 
     /**
@@ -66,7 +67,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> getLocationOfDelivery(UUID deliveryId, String role) {
-        return courierController.getLocationOfDelivery(deliveryId, role);
+        return courierController.checkAndHandle(role,
+                () -> courierController.getLocationOfDelivery(deliveryId));
     }
 
     /**
@@ -99,7 +101,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<Double> getAvRateCourier(UUID courierID) {
-        return courierController.getAvrRating(courierID);
+        return courierController.checkAndHandle("vendor",
+                () -> courierController.getAvrRating(courierID));
     }
 
     /**
@@ -111,7 +114,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> setLiveLocation(UUID deliveryId, String role, String body) {
-        return courierController.setLiveLocation(deliveryId, role, body);
+        return courierController.checkAndHandle(role,
+                () -> courierController.setLiveLocation(deliveryId, body));
     }
 
     /** Integrates controller with API for the get customer ID endpoint.
@@ -192,7 +196,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> deliveryIdDone(UUID deliveryId, String role) {
-        return courierController.deliveredDelivery(deliveryId, role);
+        return courierController.checkAndHandle(role,
+                () -> courierController.deliveredDelivery(deliveryId));
     }
 
     /** Integrates controller with API for edit status delivery endpoint.
@@ -369,7 +374,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<List<UUID>> getAllDeliveriesCourier(UUID courierID, String role) {
-        return courierController.getAllDeliveriesCourier(courierID, role);
+        return courierController.checkAndHandle(role,
+                () -> courierController.getAllDeliveriesCourier(courierID));
     }
 
     /**
