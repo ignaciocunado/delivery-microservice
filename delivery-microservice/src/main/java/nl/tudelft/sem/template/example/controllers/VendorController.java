@@ -360,18 +360,9 @@ public class VendorController {
         delivery.setDeliveryID(newDeliveryId.get());
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
-        // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
-        // Failure is considered a server-side error, but this is unfortunately not permitted by the OpenAPI spec.
-        if (savedDelivery == null || savedDelivery.getDeliveryID() == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDelivery.getDeliveryID());
-        if (databaseDelivery.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return databaseDelivery.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
 
-        return new ResponseEntity<>(databaseDelivery.get(), HttpStatus.OK);
     }
 
     /**

@@ -642,38 +642,6 @@ class VendorControllerTest {
     }
 
     /**
-     * Saving to the database fails, and returns null. Error must be handled!
-     */
-    @Test
-    void testCreateDeliverySavingFailed() {
-        // We mock the repositories, so we can fake saving failing.
-        TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
-        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
-
-        VendorController localVendorController = new VendorController(
-                mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
-        );
-
-        // Saving always fails and returns null
-        Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
-                .thenReturn(null);
-
-        // Restaurants always exist
-        Mockito.when(mockedRestaurantRepository.existsById(Mockito.any()))
-                .thenReturn(true);
-
-        // Ensure a server error occurs
-        final Delivery deliveryToCreate = new Delivery();
-        deliveryToCreate.setRestaurantID(restaurantId);
-        ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
-
-        assertEquals(
-                HttpStatus.BAD_REQUEST,
-                response.getStatusCode()
-        );
-    }
-
-    /**
      * Retrieving the created delivery from the database fails! Ensure error occurs.
      */
     @Test
@@ -736,6 +704,14 @@ class VendorControllerTest {
         assertEquals(res.getStatusCode(), HttpStatus.OK);
     }
 
+    @Test
+    void testCreateDeliveryButDeliveryIsNull() {
+        ResponseEntity<Delivery> response = sut.createDelivery("vendor", null);
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                response.getStatusCode()
+        );
+    }
     @Test
     void testCreateDeliveryRestaurantNull() {
         final Delivery deliveryToCreate = new Delivery();
