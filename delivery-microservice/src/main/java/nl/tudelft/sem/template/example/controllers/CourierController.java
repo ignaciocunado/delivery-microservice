@@ -171,7 +171,7 @@ public class CourierController  {
         double sumOfRatings = ratingsList.stream().mapToDouble(Double::doubleValue).sum();
         long cnt = ratingsList.size();
 
-        return new ResponseEntity<>(sumOfRatings/cnt, HttpStatus.OK);
+        return new ResponseEntity<>(sumOfRatings / cnt, HttpStatus.OK);
     }
 
     /**

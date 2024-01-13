@@ -21,6 +21,7 @@ class DeliveryControllerTest {
     private transient DeliveryController deliveryController;
     private transient GlobalController globalController;
     private transient VendorOrCourierController vendorOrCourierController;
+    private transient CustomerController customerController;
 
     private transient UUID deliveryId;
     private transient String role;
@@ -39,8 +40,9 @@ class DeliveryControllerTest {
         vendorController = Mockito.mock(VendorController.class);
         globalController = Mockito.mock(GlobalController.class);
         vendorOrCourierController = Mockito.mock(VendorOrCourierController.class);
+        customerController = Mockito.mock(CustomerController.class);
         deliveryController = new DeliveryController(courierController, vendorController,
-                globalController, vendorOrCourierController);
+                globalController, vendorOrCourierController, customerController);
     }
 
     @Test
@@ -60,7 +62,7 @@ class DeliveryControllerTest {
     @Test
     void testGetPickUpEstimateDeliveryId() {
         deliveryController.getPickUpEstimateDeliveryId(deliveryId, role);
-        Mockito.verify(vendorController).getPickUpEstimate(deliveryId, role);
+        Mockito.verify(vendorController).getPickedUpEstimate(deliveryId, role);
     }
 
     @Test
@@ -225,6 +227,12 @@ class DeliveryControllerTest {
     }
 
     @Test
+    void testGetPickUpTime() {
+        deliveryController.getPickUpTime(deliveryId, role);
+        Mockito.verify(globalController).getPickUpTime(deliveryId, role);
+    }
+
+    @Test
     void testCallGetAllDeliveries() {
         UUID vendorId = UUID.randomUUID();
         deliveryController.getAllDeliveriesVendor(vendorId, "vendor");
@@ -236,5 +244,12 @@ class DeliveryControllerTest {
         UUID courierID = UUID.randomUUID();
         deliveryController.getAllDeliveriesCourier(courierID, "courier");
         Mockito.verify(courierController).getAllDeliveriesCourier(courierID, "courier");
+    }
+
+    @Test
+    void testGetAllDeliveriesCustomer() {
+        UUID customerID = UUID.randomUUID();
+        deliveryController.getAllDeliveriesCustomer(customerID, "customer");
+        Mockito.verify(customerController).getAllDeliveriesCustomer(customerID, "customer");
     }
 }

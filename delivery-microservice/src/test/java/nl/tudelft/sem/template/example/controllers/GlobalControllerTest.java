@@ -42,8 +42,6 @@ public class GlobalControllerTest {
      */
     private transient UUIDGenerationService uuidGenerationService;
 
-    private transient OffsetDateTime sampleOffsetDateTime;
-
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
@@ -54,14 +52,23 @@ public class GlobalControllerTest {
         restaurantId = UUID.randomUUID();
 
         orderId = UUID.randomUUID();
-        sampleOffsetDateTime = OffsetDateTime.of(
+
+        OffsetDateTime pickupTimeEstimate = OffsetDateTime.of(
                 2024, 1, 4, 18, 23, 0, 0,
+                ZoneOffset.ofHoursMinutes(5, 30)
+        );
+        OffsetDateTime deliveryTimeEstimate = OffsetDateTime.of(
+                2024, 1, 4, 22, 10, 0, 0,
+                ZoneOffset.ofHoursMinutes(5, 30)
+        );
+        OffsetDateTime pickedUpTime = OffsetDateTime.of(
+                2024, 1, 4, 18, 30, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
 
         delivery = new Delivery(deliveryId, orderId, UUID.randomUUID(), UUID.randomUUID(),
-                UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
-                sampleOffsetDateTime, "69.655,69.425", "late", 1);
+                UUID.randomUUID(), "pending", pickupTimeEstimate, deliveryTimeEstimate, 1.d,
+                pickedUpTime, "69.655,69.425", "late", 1);
         deliveryRepository.save(delivery);
 
         Restaurant r = new Restaurant(restaurantId, UUID.randomUUID(), new ArrayList<>(), 10.2d);
@@ -415,7 +422,6 @@ public class GlobalControllerTest {
         );
     }
 
-
     /**
      * The normal situation, in which a delivery and its rating both exist.
      */
@@ -487,7 +493,7 @@ public class GlobalControllerTest {
     }
 
     /**
-     * Ensures that a role is required at all to access a delivery's order.
+     * Ensures that a role is required at all to access a delivery's rating.
      */
     @Test
     void testGetRatingByDeliveryIdNoAuthorization() {
@@ -496,13 +502,74 @@ public class GlobalControllerTest {
                 HttpStatus.UNAUTHORIZED,
                 response.getStatusCode()
         );
+
         UUID id = UUID.randomUUID();
         Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
-                "69.655,69.425", null, 1);
+                "pending", delivery.getPickupTimeEstimate(), delivery.getDeliveryTimeEstimate(), 1.d,
+                delivery.getPickedUpTime(), "69.655,69.425", null, 1);
         deliveryRepository.save(save);
+
         ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "");
+    }
+
+    /**
+     * Ensure that each authorized role can access a delivery's estimated pick-up time.
+     */
+    @Test
+    void testGetPickupTimeEstimateValidRoles() {
+        final List<String> rolesToTest = List.of("customer", "courier", "vendor", "admin");
+
+        for (final String roleToTest : rolesToTest) {
+            ResponseEntity<OffsetDateTime> response = globalController.getPickUpTime(deliveryId, roleToTest);
+
+            assertEquals(
+                    HttpStatus.OK,
+                    response.getStatusCode()
+            );
+            assertEquals(
+                    delivery.getPickupTimeEstimate(),
+                    response.getBody()
+            );
+        }
+    }
+
+    /**
+     * Ensure that an invalid delivery returns 404, when getting its pick-up time estimate.
+     */
+    @Test
+    void testGetPickupTimeEstimateInvalidDelivery() {
+        final List<String> rolesToTest = List.of("customer", "courier", "vendor", "admin");
+        for (final String roleToTest : rolesToTest) {
+            // Generate a delivery ID that is sure to be invalid (it doesn't point to a DB object)
+            Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepository);
+            assertTrue(invalidDeliveryId.isPresent());
+
+            // Try to fetch that delivery
+            ResponseEntity<OffsetDateTime> response = globalController.getPickUpTime(
+                    invalidDeliveryId.get(), roleToTest);
+            assertEquals(
+                    HttpStatus.NOT_FOUND,
+                    response.getStatusCode()
+            );
+        }
+    }
+
+    /**
+     * Ensure that a valid role is required to get a delivery's pick-up time estimate.
+     */
+    @Test
+    void testGetPickupTimeEstimateUnauthorized() {
+        final List<String> rolesToTest = List.of("", "a", "aaa", "custom", "superuser", "sudo", "hi");
+
+        for (final String roleToTest : rolesToTest) {
+            ResponseEntity<OffsetDateTime> response = globalController.getPickUpTime(deliveryId, roleToTest);
+
+            assertEquals(
+                    HttpStatus.UNAUTHORIZED,
+                    response.getStatusCode()
+            );
+        }
     }
 }
