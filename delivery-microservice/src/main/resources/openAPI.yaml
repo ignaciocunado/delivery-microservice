@@ -1886,19 +1886,19 @@ paths:
       description: A vendor can add a courier to its restaurant
       parameters:
         - in: path
-          name: courierID
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: The ID of the courier to query
-        - in: path
           name: restaurantID
           schema:
             type: string
             format: uuid
           required: true
           description: The ID of the restaurant to query
+        - in: path
+          name: courierID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: The ID of the courier to query
         - name: role
           in: query
           description: The role of the user
@@ -1939,19 +1939,19 @@ paths:
       description: A vendor can remove a courier from its restaurant
       parameters:
         - in: path
-          name: courierID
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: The ID of the courier to query
-        - in: path
           name: restaurantID
           schema:
             type: string
             format: uuid
           required: true
           description: The ID of the restaurant to query
+        - in: path
+          name: courierID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: The ID of the courier to query
         - name: role
           in: query
           description: The role of the user

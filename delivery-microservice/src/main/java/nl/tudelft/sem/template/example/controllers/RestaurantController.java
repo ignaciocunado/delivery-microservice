@@ -54,9 +54,6 @@ public class RestaurantController implements RestaurantApi {
         return vendorController.removeCourierRest(courierId, restaurantId, role);
     }*/
 
-    public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
-        return vendorController.addCourierToRest(courierId, restaurantId, role);
-    }
 
 
     /**
