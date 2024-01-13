@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthorizationService {
+public class AuthorizationService implements ChainHandler {
 
     ExternalService externalService;
 
@@ -18,6 +18,7 @@ public class AuthorizationService {
     public AuthorizationService(ExternalService externalService) {
         this.externalService = externalService;
     }
+
 
     /**
      * Authorization method for user types.
@@ -34,16 +35,23 @@ public class AuthorizationService {
         String userId = request.getHeader("X-User-Id");
         String role = request.getParameter("role");
         if (role == null) {
-            //System.out.println("\033[91;40m role was null \033[0m");
+            System.out.println("\033[91;40m role was null \033[0m");
             return false;
         }
 
-        return switch (role) {
-            case "courier" -> externalService.isCourier(userId);
-            case "vendor" -> externalService.isVendor(userId);
-            case "admin" -> externalService.isAdmin(userId);
-            case "customer" -> externalService.isCustomer(userId);
-            default -> false;
-        };
+        if (userId == null) {
+            System.out.println("\033[91;40m API Key userId was null \033[0m");
+            return false;
+        }
+
+        if (!role.equals("courier") && !role.equals("vendor") && !role.equals("customer") && !role.equals("admin")) {
+            System.out.println("\033[91;40m role was not courier, vendor, customer or admin \033[0m");
+            return false;
+        }
+
+        boolean verification = externalService.verify(userId, role);
+        System.out.println("\033[92;40m verification: \033[30;102m " + verification + " \033[0m");
+
+        return verification;
     }
 }

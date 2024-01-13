@@ -35,7 +35,7 @@ class AssociationServiceTest {
 
     @Test
     void testAdmin() {
-        when(request.getHeader("X-User-Id")).thenReturn("550e8400e29b41d4a716446655440001");
+        when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("admin");
 
         assertTrue(associationService.authorize(request));
@@ -43,7 +43,7 @@ class AssociationServiceTest {
 
     @Test
     void testNotPatchRequest() {
-        when(request.getHeader("X-User-Id")).thenReturn("550e8400e29b41d4a716446655440001");
+        when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("vendor");
         when(request.getMethod()).thenReturn("GET");
 
@@ -52,7 +52,7 @@ class AssociationServiceTest {
 
     @Test
     void notSensitiveEndpoint() {
-        when(request.getHeader("X-User-Id")).thenReturn("550e8400e29b41d4a716446655440001");
+        when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("vendor");
         when(request.getMethod()).thenReturn("PATCH");
         when(request.getRequestURI()).thenReturn("example/endpoint/without/sensitive/data");
@@ -62,7 +62,7 @@ class AssociationServiceTest {
 
     @Test
     void testVendorDeliveryAssociationNotFound() {
-        when(request.getHeader("X-User-Id")).thenReturn("550e8400e29b41d4a716446655440001");
+        when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("vendor");
         when(request.getMethod()).thenReturn("PATCH");
         when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
@@ -73,7 +73,7 @@ class AssociationServiceTest {
 
     @Test
     void testVendorDeliveryAssociationNotFoundInRestaurant() {
-        when(request.getHeader("X-User-Id")).thenReturn("550e8400e29b41d4a716446655440001");
+        when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("vendor");
         when(request.getMethod()).thenReturn("PATCH");
         when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
@@ -86,7 +86,7 @@ class AssociationServiceTest {
 
     @Test
     void testVendorDeliveryAssociationFoundNotEqual() {
-        when(request.getHeader("X-User-Id")).thenReturn("550e8400e29b41d4a716446655440001");
+        when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("vendor");
         when(request.getMethod()).thenReturn("PATCH");
         when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
@@ -104,7 +104,7 @@ class AssociationServiceTest {
 
     @Test
     void testVendorDeliveryAssociationFoundEqual() {
-        when(request.getHeader("X-User-Id")).thenReturn("550e8400e29b41d4a716446655440001");
+        when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("vendor");
         when(request.getMethod()).thenReturn("PATCH");
         when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
@@ -122,7 +122,7 @@ class AssociationServiceTest {
 
     @Test
     void testCourierDeliveryAssociationNotFound() {
-        when(request.getHeader("X-User-Id")).thenReturn("550e8400e29b41d4a716446655440001");
+        when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("courier");
         when(request.getMethod()).thenReturn("PATCH");
         when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/delivered/?role=courier");
@@ -133,7 +133,7 @@ class AssociationServiceTest {
 
     @Test
     void testCourierDeliveryAssociationFoundNotEqual() {
-        when(request.getHeader("X-User-Id")).thenReturn("550e8400e29b41d4a716446655440002");
+        when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440002");
         when(request.getParameter("role")).thenReturn("courier");
         when(request.getMethod()).thenReturn("PATCH");
         when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/delivered/?role=courier");
@@ -146,7 +146,7 @@ class AssociationServiceTest {
 
     @Test
     void testCourierDeliveryAssociationFoundEqual() {
-        when(request.getHeader("X-User-Id")).thenReturn("550e8400e29b41d4a716446655440000");
+        when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440000");
         when(request.getParameter("role")).thenReturn("courier");
         when(request.getMethod()).thenReturn("PATCH");
         when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/delivered/?role=courier");

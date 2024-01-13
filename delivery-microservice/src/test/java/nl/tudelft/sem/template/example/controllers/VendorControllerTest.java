@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.controllers;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.model.RestaurantCourierIDsInner;
+import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class VendorControllerTest {
     private transient TestRestaurantRepository restaurantRepo;
     private transient TestDeliveryRepository deliveryRepo;
+    private transient UUIDGenerationService uuidGenerationService;
     private transient VendorController sut;
 
     private transient UUID restaurantId;
@@ -48,6 +50,9 @@ class VendorControllerTest {
         // create test repositories
         restaurantRepo = new TestRestaurantRepository();
         deliveryRepo = new TestDeliveryRepository();
+
+        // initialize other services
+        uuidGenerationService = new UUIDGenerationService();
 
         // generate random UUID
         restaurantId = UUID.randomUUID();
@@ -90,24 +95,7 @@ class VendorControllerTest {
         deliveryRepo.save(d);
         deliveryRepo.save(d2);
         deliveryRepo.save(d3);
-        sut = new VendorController(restaurantRepo, deliveryRepo);
-    }
-
-    /**
-     * Helper that generates a new UUID, that is NOT equal to the current deliveryId.
-     * NOTE: as this method is re-used in several tests, this code should be extracted
-     * to e.g. its own service, so it can be used in multiple places at once.
-     * @return A delivery ID not equal to the test's 'deliveryId'. This ID is invalid for testing purposes,
-     *         until used to save an object to the DB.
-     */
-    UUID generateNewDeliveryId() {
-        UUID newDeliveryId;
-
-        do {
-            newDeliveryId = UUID.randomUUID();
-        } while (newDeliveryId == deliveryId);
-
-        return newDeliveryId;
+        sut = new VendorController(restaurantRepo, deliveryRepo, new UUIDGenerationService());
     }
 
     /**
@@ -233,7 +221,7 @@ class VendorControllerTest {
         dp.save(new Delivery(did, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "pending", null, null, 1.d, null,
                 "", "", 1));
-        VendorController vc = new VendorController(rp, dp);
+        VendorController vc = new VendorController(rp, dp, new UUIDGenerationService());
         ResponseEntity<OffsetDateTime> res = vc.getPickUpEstimate(did, "hi");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
@@ -435,7 +423,8 @@ class VendorControllerTest {
                 UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "pending", null, null,
                 1.d, null, "", "", 1));
-        VendorController vc = new VendorController(restaurantRepository, deliveryRepository);
+        VendorController vc = new VendorController(restaurantRepository, deliveryRepository,
+                new UUIDGenerationService());
         ResponseEntity<OffsetDateTime> res = vc.getDeliveryEstimate(newRandomDeliveryID, "vendor");
         System.out.println("\033[96;40m getDeliveryEstimateDoesntExist requested for UUID \033[30;106m " + newRandomDeliveryID + " \033[96;40m got response: \033[30;106m " + res.getBody() + " \033[0m");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
@@ -483,9 +472,11 @@ class VendorControllerTest {
 
         for (final String roleToTest : rolesToTest) {
             // Create a new uniquely IDd delivery
-            UUID newDeliveryId = generateNewDeliveryId();
+            Optional<UUID> newDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepo);
+            assertTrue(newDeliveryId.isPresent());
+
             Delivery newDelivery = new Delivery(
-                    newDeliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                    newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                     "status", OffsetDateTime.now(), OffsetDateTime.now(), 1.0, OffsetDateTime.now(),
                     "liveLocation", "userException", 0
             );
@@ -519,16 +510,18 @@ class VendorControllerTest {
     @Test
     void testCreateDeliveryDoubleId() {
         // Create a new uniquely IDd delivery
-        UUID newDeliveryId = generateNewDeliveryId();
+        Optional<UUID> newDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepo);
+        assertTrue(newDeliveryId.isPresent());
+
         Delivery firstNewDelivery = new Delivery(
-                newDeliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "status", OffsetDateTime.now(), OffsetDateTime.now(), 1.0, OffsetDateTime.now(),
                 "liveLocation", "userException", 0
         );
 
         // Create a different delivery, with that same ID
         Delivery secondNewDelivery = new Delivery(
-                newDeliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "secondStatus", OffsetDateTime.now(), OffsetDateTime.now(), 0.5, OffsetDateTime.now(),
                 "secondLiveLocation", "secondUserException", 1
         );
@@ -621,7 +614,7 @@ class VendorControllerTest {
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
 
         VendorController localVendorController = new VendorController(
-                mockedRestaurantRepository, mockedDeliveryRepository
+                mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
         );
 
         // Every single delivery ID is mapped to this one delivery
@@ -649,7 +642,7 @@ class VendorControllerTest {
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
 
         VendorController localVendorController = new VendorController(
-                mockedRestaurantRepository, mockedDeliveryRepository
+                mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
         );
 
         // Saving always fails and returns null
@@ -676,7 +669,7 @@ class VendorControllerTest {
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
 
         VendorController localVendorController = new VendorController(
-                mockedRestaurantRepository, mockedDeliveryRepository
+                mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
         );
 
         final Delivery deliveryToCreate = new Delivery();
