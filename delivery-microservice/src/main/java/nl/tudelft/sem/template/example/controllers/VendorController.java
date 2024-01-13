@@ -335,12 +335,15 @@ public class VendorController {
 
         // If the restaurant does not exist, create a new one, and re-assign the delivery's restaurant ID.
         if (!restaurantExists) {
+            // TODO For now, just return bad request...
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
             // We don't make use of the Admin Controller's endpoint here, because that is designed to be used by the
             // admin role. However, TODO this may be a good use case for the Builder pattern, in a future issue.
-            final Optional<UUID> newRestaurantId = uuidGenerationService.generateUniqueId(restaurantRepository);
-            if (newRestaurantId.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
+            // final Optional<UUID> newRestaurantId = uuidGenerationService.generateUniqueId(restaurantRepository);
+            // if (newRestaurantId.isEmpty()) {
+            //     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            // }
 
             // TODO this requires the user ID to determine the vendor
             // final Restaurant restaurantToCreate = new Restaurant(newRestaurantId, )
