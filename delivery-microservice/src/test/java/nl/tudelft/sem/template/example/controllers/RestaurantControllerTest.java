@@ -81,5 +81,13 @@ class RestaurantControllerTest {
 
         verify(gc).setMaxDeliveryZone(id, s, 10.0d);
     }
-}
 
+    @Test
+    public void testCallGetVendorRest() {
+        UUID id = UUID.randomUUID();
+        String s = "a";
+
+        sut.getVendorRest(id, s);
+        verify(vc).getVendorRest(id, s);
+    }
+}
