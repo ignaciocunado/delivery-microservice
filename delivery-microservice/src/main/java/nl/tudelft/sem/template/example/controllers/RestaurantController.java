@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -34,15 +35,28 @@ public class RestaurantController implements RestaurantApi {
         this.globalController = globalController;
     }
 
-
+    /**
+     * Integrates controller with API for the add courier to restaurant endpoint.
+     * @param restaurantId ID of the restaurant to modify. (required)
+     * @param courierId ID of the courier to add. (required)
+     * @param role The role of the user (required)
+     * @return the ResponseEntity returned by the method.
+     */
     @Override
-    public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
+    public ResponseEntity<Void> addCourierToRest(UUID restaurantId, UUID courierId, String role) {
         return vendorController.checkAndHandle(role,
                 () -> vendorController.addCourierToRest(courierId, restaurantId));
     }
 
+    /**
+     * Integrates controller with API for the remove courier from restaurant endpoint.
+     * @param restaurantId ID of the restaurant to modify. (required)
+     * @param courierId ID of the courier to remove. (required)
+     * @param role The role of the user (required)
+     * @return the ResponseEntity returned by the method.
+     */
     @Override
-    public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
+    public ResponseEntity<Void> removeCourierRest(UUID restaurantId, UUID courierId, String role) {
         return vendorController.checkAndHandle(role,
                 () -> vendorController.removeCourierRest(courierId, restaurantId));
     }
@@ -79,5 +93,29 @@ public class RestaurantController implements RestaurantApi {
     public ResponseEntity<String> getRest(UUID restaurantId, String role) {
         return vendorController.checkAndHandle(role,
                 () -> vendorController.getRest(restaurantId));
+    }
+
+    /**
+     * Calls the corresponding method in the globalController.
+     * @param restaurantId ID of the restaurant to modify. (required)
+     * @param role The role of the user (required)
+     * @param body Leave the delivery zone blank to reset to the default value instead. (optional)
+     * @return the ResponseEntity returned by the method.
+     */
+    @Override
+    public ResponseEntity<Void> setMaxDeliveryZone(UUID restaurantId, String role, Double body) {
+        return globalController.setMaxDeliveryZone(restaurantId, body);
+    }
+
+    /**
+     * Calls the method implemented in the vendorController for retrieving a list of restaurants.
+     * @param vendorId ID of the vendor to query. (required)
+     * @param role The role of the user (required)
+     * @return the list of restaurants
+     */
+    @Override
+    public ResponseEntity<List<UUID>> getVendorRest(UUID vendorId, String role) {
+        return vendorController.checkAndHandle(role,
+                () -> vendorController.getVendorRest(vendorId));
     }
 }

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,8 +42,6 @@ public class GlobalControllerTest {
      */
     private transient UUIDGenerationService uuidGenerationService;
 
-    private transient OffsetDateTime sampleOffsetDateTime;
-
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
@@ -53,14 +52,23 @@ public class GlobalControllerTest {
         restaurantId = UUID.randomUUID();
 
         orderId = UUID.randomUUID();
-        sampleOffsetDateTime = OffsetDateTime.of(
+
+        OffsetDateTime pickupTimeEstimate = OffsetDateTime.of(
                 2024, 1, 4, 18, 23, 0, 0,
+                ZoneOffset.ofHoursMinutes(5, 30)
+        );
+        OffsetDateTime deliveryTimeEstimate = OffsetDateTime.of(
+                2024, 1, 4, 22, 10, 0, 0,
+                ZoneOffset.ofHoursMinutes(5, 30)
+        );
+        OffsetDateTime pickedUpTime = OffsetDateTime.of(
+                2024, 1, 4, 18, 30, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
 
         delivery = new Delivery(deliveryId, orderId, UUID.randomUUID(), UUID.randomUUID(),
-                UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
-                sampleOffsetDateTime, "69.655,69.425", "late", 1);
+                UUID.randomUUID(), "pending", pickupTimeEstimate, deliveryTimeEstimate, 1.d,
+                pickedUpTime, "69.655,69.425", "late", 1);
         deliveryRepository.save(delivery);
 
         Restaurant r = new Restaurant(restaurantId, UUID.randomUUID(), new ArrayList<>(), 10.2d);
@@ -247,7 +255,6 @@ public class GlobalControllerTest {
         );
     }
 
-
     /**
      * The normal situation, in which a delivery and its rating both exist.
      */
@@ -278,5 +285,49 @@ public class GlobalControllerTest {
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
         );
+    }
+
+    @Test
+    void testSetMaxZoneNotFound() {
+        UUID id = UUID.randomUUID();
+        while (id.equals(restaurantId)) {
+            id = UUID.randomUUID();
+        }
+
+        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(id,25.0);
+
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testSetMaxZoneOk() {
+        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(restaurantId, 25.1d);
+
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+
+        Restaurant r = globalController.restaurantRepository.findById(restaurantId).get();
+
+        assertEquals(r.getMaxDeliveryZone(), 25.1d);
+    }
+
+    /**
+     * Ensure that an invalid delivery returns 404, when getting its pick-up time estimate.
+     */
+    @Test
+    void testGetPickupTimeEstimateInvalidDelivery() {
+        final List<String> rolesToTest = List.of("customer");
+        for (final String roleToTest : rolesToTest) {
+            // Generate a delivery ID that is sure to be invalid (it doesn't point to a DB object)
+            Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepository);
+            assertTrue(invalidDeliveryId.isPresent());
+
+            // Try to fetch that delivery
+            ResponseEntity<OffsetDateTime> response = globalController.getPickUpTime(
+                    invalidDeliveryId.get());
+            assertEquals(
+                    HttpStatus.NOT_FOUND,
+                    response.getStatusCode()
+            );
+        }
     }
 }

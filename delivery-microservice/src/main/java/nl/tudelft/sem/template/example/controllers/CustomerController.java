@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * Sub-controller of deliverycontroller.
+ * Sub-controller of delivery controller.
  */
 @Component
 public class CustomerController implements Controller {
@@ -43,6 +43,24 @@ public class CustomerController implements Controller {
                 .map(Delivery::getDeliveryID)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(deliveries, HttpStatus.OK);
+    }
+
+    /**
+     * Rate a delivery.
+     * @param deliveryID the delivery to rate
+     * @param body the rating to give the delivery
+     * @return a response entity with the given rating
+     */
+    public ResponseEntity<String> setRateOfDelivery(UUID deliveryID, Double body) {
+        if (deliveryRepository.existsById(deliveryID)) {
+            if (body < 0 || body > 1) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(deliveryRepository.save(deliveryRepository.findById(deliveryID).get()
+                    .customerRating(body)).toString(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     /**

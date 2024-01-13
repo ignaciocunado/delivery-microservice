@@ -53,6 +53,11 @@ public class AdminController implements Controller {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        // The vendor ID MUST be valid!
+        if (restaurant.getVendorID() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         // Generate a new ID for the restaurant
         final Optional<UUID> newId = uuidGenerationService.generateUniqueId(restaurantRepository);
         if (newId.isEmpty()) {

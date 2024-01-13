@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -134,6 +135,27 @@ public class GlobalController {
     }
 
     /**
+     * Implementation for the get pick up time endpoint.
+     * Note that this returns the pickup time ESTIMATE, as specified in the OpenAPI spec.
+     *
+     * @param deliveryId ID of the delivery to query.
+     * @return The estimated pickup time.
+     */
+    public ResponseEntity<OffsetDateTime> getPickUpTime(UUID deliveryId) {
+        // Attempt to fetch the delivery from the DB
+        final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
+        if (deliveryFromDB.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Fetch the pickup time estimate
+        final Delivery delivery = deliveryFromDB.get();
+        final OffsetDateTime pickUpTimeEstimate = delivery.getPickupTimeEstimate();
+
+        return new ResponseEntity<>(pickUpTimeEstimate, HttpStatus.OK);
+    }
+
+    /**
      * Fetches the 'rating' property of a delivery. This property reflects a customer-specified rating.
      * @param deliveryId Delivery to query.
      * @return The delivery's customer rating.
@@ -150,5 +172,24 @@ public class GlobalController {
         final Double rating = delivery.getCustomerRating();
 
         return new ResponseEntity<>(rating, HttpStatus.OK);
+    }
+
+    /**
+     * Sets the maxDeliveryZone of a given restaurant.
+     * @param restaurantId the id of the restaurant
+     * @param body the value to be set
+     * @return Corresponding responseEntity
+     */
+    public ResponseEntity<Void> setMaxDeliveryZone(UUID restaurantId, Double body) {
+        Optional<Restaurant> res = restaurantRepository.findById(restaurantId);
+        if(res.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Restaurant r = res.get();
+        r.setMaxDeliveryZone(body);
+        restaurantRepository.save(r);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

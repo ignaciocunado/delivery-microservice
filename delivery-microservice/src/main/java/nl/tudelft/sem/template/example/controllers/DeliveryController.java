@@ -9,6 +9,7 @@ import nl.tudelft.sem.model.Delivery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import java.time.OffsetDateTime;
+
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -95,13 +96,13 @@ public class DeliveryController implements DeliveryApi {
 
     /**
      * Integrates controller with API to get the rating of courier deliveries.
-     * @param courierID The ID of the courier to query (required)
+     * @param courierId The ID of the courier to query (required)
      * @return the average rating
      */
     @Override
-    public ResponseEntity<Double> getAvRateCourier(UUID courierID) {
-        return courierController.checkAndHandle("vendor",
-                () -> courierController.getAvrRating(courierID));
+    public ResponseEntity<Double> getAvRateCourier(UUID courierId, String role) {
+        return courierController.checkAndHandle(role,
+                () -> courierController.getAvrRating(courierId));
     }
 
     /**
@@ -143,9 +144,12 @@ public class DeliveryController implements DeliveryApi {
 
     /**
      * Integrates controller with API for getPickUpEstimate endpoint.
+     * NOTE: this method is named incorrectly. It returns the PICKED-UP time of a delivery,
+     * as is specified by the OpenAPI document.
+     *
      * @param deliveryID ID of delivery to get the picked up timestamp of (required)
      * @param role The role of the user (required)
-     * @return the estimated pickup time of the delivery object
+     * @return the picked time of the delivery object
      */
     @Override
     public ResponseEntity<OffsetDateTime> getPickUpEstimateDeliveryId(UUID deliveryID, String role) {
@@ -362,6 +366,20 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
+     * Integrates controller with API for the get pick up time endpoint.
+     * Note: this returns the pickup time ESTIMATE, as specified in the OpenAPI spec.
+     * NOT the actual picked-up time. The methods are just named a little confusingly.
+     *
+     * @param deliveryId ID of the delivery to query. (required)
+     * @param role The role of the user (required)
+     * @return The delivery's pick up time.
+     */
+    @Override
+    public ResponseEntity<OffsetDateTime> getPickUpTime(UUID deliveryId, String role) {
+        return globalController.getPickUpTime(deliveryId);
+    }
+
+    /**
      * Integrates controller with API for the get all deliveries for a courier endpoint.
      * @param courierID The ID of the courier to query (required)
      * @param role The role of the user (required)
@@ -383,6 +401,19 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<List<UUID>> getAllDeliveriesCustomer(UUID customerID, String role) {
         return customerController.checkAndHandle(role,
                 () -> customerController.getAllDeliveriesCustomer(customerID));
+    }
+
+    /**
+     * Integrates controller with API for the get all deliveries for a customer endpoint.
+     * @param deliveryID The ID of the customer to query (required)
+     * @param role The role of the user (required)
+     * @param body The new rating for the delivery
+     * @return a list of all delivery IDs for a customer
+     */
+    @Override
+    public ResponseEntity<String> setRateOfDelivery(UUID deliveryID, String role, Double body) {
+        return customerController.checkAndHandle(role,
+                () -> customerController.setRateOfDelivery(deliveryID, body));
     }
 
     @lombok.Generated

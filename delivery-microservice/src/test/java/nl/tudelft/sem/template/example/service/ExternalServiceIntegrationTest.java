@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -66,7 +67,8 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void verifyAdminRole() {
-        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any())).thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
+        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+                .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
         boolean result = externalService.verify("123", "admin");
 
         assertTrue(result);
@@ -74,8 +76,9 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void verifyValidRoleNon200ErrorCode() {
-        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any())).thenReturn(new ResponseEntity<>(null, null, HttpStatus.UNAUTHORIZED));
-        boolean result = externalService.verify("123", "admin");
+        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+                .thenThrow(new RestClientException(""));
+        boolean result = externalService.verify("123", "customer");
 
         assertFalse(result);
     }

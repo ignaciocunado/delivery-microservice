@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.controllers.interfaces.Controller;
+
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
@@ -31,10 +31,10 @@ public class VendorController implements Controller {
     UUIDGenerationService uuidGenerationService;
 
     /**
-     * Constructor for VendorController.
-     * @param restaurantRepository restaurant Repository
-     * @param deliveryRepository delivery Repository
-     * @param uuidGenerationService uuid generation service
+     * Constructor for the Vendor Controller.
+     * @param restaurantRepository the restaurant repository
+     * @param deliveryRepository the delivery repository
+     * @param uuidGenerationService the service for generating UUIDs
      */
     @Autowired
     public VendorController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
@@ -59,10 +59,9 @@ public class VendorController implements Controller {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        RestaurantCourierIDsInner curr = new RestaurantCourierIDsInner();
-        curr.setCourierID(courierId);
-
-        r.addCourierIDsItem(curr);
+        List<UUID> newCouriers = new ArrayList<>(r.getCourierIDs());
+        newCouriers.add(courierId);
+        r.setCourierIDs(newCouriers);
         restaurantRepository.save(r);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -86,7 +85,7 @@ public class VendorController implements Controller {
     }
 
     /**
-     * Gets the estimated time of pick-up for a delivery.
+     * Gets the pick-up time for a delivery.
      * @param deliveryID UUID of the delivery object
      * @return OffsetDateTime of the estimated time of pick-up
      */
@@ -122,7 +121,6 @@ public class VendorController implements Controller {
 
     /**
      * Implementation for removing a courier from the database.
-     * @param courierId ID of the courier to remove
      * @param restaurantId ID of the restaurant
      * @return void response entity with HTTP codes
      */
@@ -133,23 +131,25 @@ public class VendorController implements Controller {
             return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
         }
 
-        List<RestaurantCourierIDsInner> couriers = rest.get().getCourierIDs();
-
-        if (couriers.stream().filter(x -> x.getCourierID().equals(courierId)).collect(Collectors.toList()).isEmpty()) {
-            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+        Optional<Restaurant> fetched = restaurantRepository.findById(restaurantId);
+        if (fetched.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        RestaurantCourierIDsInner toRemove = couriers.stream()
-                .filter(x -> x.getCourierID().equals(courierId))
-                .collect(Collectors.toList()).get(0);
+        Restaurant restaurant = fetched.get();
+        List<UUID> couriers = restaurant.getCourierIDs();
 
-        couriers.remove(toRemove);
+        if(!couriers.contains(courierId)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-        rest.get().setCourierIDs(couriers);
+        couriers.remove(courierId);
 
-        restaurantRepository.save(rest.get());
+        // restaurant.setCourierIDs(couriers);
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        restaurantRepository.save(restaurant);
+
+        return new ResponseEntity<>(HttpStatus.OK);
 
     }
 
@@ -212,27 +212,23 @@ public class VendorController implements Controller {
         }
 
         // Generate a new ID for the delivery
-        final Optional<UUID> newId = uuidGenerationService.generateUniqueId(deliveryRepository);
-        if (newId.isEmpty()) {
+        final Optional<UUID> newDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepository);
+        if (newDeliveryId.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // If the given restaurant does not exist, fail.
+        if (delivery.getRestaurantID() == null || !restaurantRepository.existsById(delivery.getRestaurantID())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // Once we have the new ID - save delivery to the DB.
-        delivery.setDeliveryID(newId.get());
+        delivery.setDeliveryID(newDeliveryId.get());
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
-        // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
-        // Failure is considered a server-side error, but this is unfortunately not permitted by the OpenAPI spec.
-        if (savedDelivery == null || savedDelivery.getDeliveryID() == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDelivery.getDeliveryID());
-        if (databaseDelivery.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return databaseDelivery.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
 
-        return new ResponseEntity<>(databaseDelivery.get(), HttpStatus.OK);
     }
 
     /**
@@ -272,6 +268,37 @@ public class VendorController implements Controller {
         return new ResponseEntity<>(filteredDeliveries, HttpStatus.OK);
     }
 
+    /**
+     * Returns a list of restaurants for a vendor.
+     * @param vendorId the vendor to query
+     * @return the list of restaurant Ids
+     */
+    public ResponseEntity<List<UUID>> getVendorRest(UUID vendorId) {
+        List<Restaurant> allRestaurants= restaurantRepository.findAll();
+        List<Restaurant> filteredRestaurants = allRestaurants
+                .stream()
+                .filter(x -> x.getVendorID().equals(vendorId))
+                .collect(Collectors.toList());
+
+        if(filteredRestaurants.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<UUID> res = new ArrayList<>();
+
+        for (Restaurant r : filteredRestaurants) {
+            res.add(r.getRestaurantID());
+        }
+
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    /**
+     * Check the role and handle it further.
+     * @param role the role of the user
+     * @param operation the method that should be called
+     * @param <T> the passed param
+     * @return the response type obj
+     */
     @Override
     public <T> ResponseEntity<T> checkAndHandle(String role, Supplier<ResponseEntity<T>> operation) {
         final List<String> allowedRoles = List.of("admin", "vendor");

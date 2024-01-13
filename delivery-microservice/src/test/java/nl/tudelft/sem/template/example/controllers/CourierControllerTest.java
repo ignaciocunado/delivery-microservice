@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -25,19 +26,18 @@ import org.springframework.http.ResponseEntity;
 class CourierControllerTest {
 
     private transient CourierController courierController;
-    private transient RestaurantRepository restaurantRepository;
     private transient TestDeliveryRepository deliveryRepository;
     private transient ExternalService externalService;
 
     private transient UUID deliveryId;
     private transient UUID restaurantId;
     private transient UUID courierId;
-    private transient String role = "courier";
+    private final transient String role = "courier";
 
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
-        restaurantRepository = new TestRestaurantRepository();
+        RestaurantRepository restaurantRepository = new TestRestaurantRepository();
         externalService = Mockito.mock(ExternalService.class);
 
         Restaurant restaurant = new Restaurant(
@@ -58,7 +58,12 @@ class CourierControllerTest {
         Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), courierId,
                 restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
                 sampleOffsetDateTime, "", "", 1);
+        Delivery d2 = new  Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), courierId,
+                restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 0.4d,
+                sampleOffsetDateTime, "", "", 1);
+
         deliveryRepository.save(d);
+        deliveryRepository.save(d2);
 
         courierController = new CourierController(deliveryRepository, restaurantRepository, externalService);
     }
@@ -198,22 +203,12 @@ class CourierControllerTest {
         ResponseEntity<Double> response = courierController.getAvrRating(courierId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1.0, response.getBody());
+        assertEquals(0.7d, response.getBody());
     }
 
     @Test
     public void getAvrRatingReturns0AverageRating() {
         deliveryRepository.deleteAll();
-        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(0.0, response.getBody());
-    }
-
-    @Test
-    public void getAvrRatingReturnsZeroWhenNoRatings() {
-        UUID courierId = UUID.randomUUID();
-
         ResponseEntity<Double> response = courierController.getAvrRating(courierId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

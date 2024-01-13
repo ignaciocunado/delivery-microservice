@@ -125,7 +125,6 @@ public class CourierController implements Controller {
      */
     public ResponseEntity<Double> getAvrRating(UUID courierID) {
         List<Delivery> deliveries = deliveryRepository.findAll();
-
         if (deliveries.isEmpty()) {
             return new ResponseEntity<>(0.0, HttpStatus.OK);
         }

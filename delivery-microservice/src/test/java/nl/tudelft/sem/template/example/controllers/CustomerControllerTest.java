@@ -17,7 +17,6 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 public class CustomerControllerTest {
     private transient CustomerController customerController;
     private transient TestDeliveryRepository deliveryRepository;
@@ -97,5 +96,30 @@ public class CustomerControllerTest {
         ResponseEntity<List<UUID>> res = customerController.getAllDeliveriesCustomer(customerId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), Collections.emptyList());
+    }
+
+    @Test
+    void setRateOfDeliveryNotFound() {
+        ResponseEntity<String> response = customerController.setRateOfDelivery(UUID.randomUUID(), 0.5d);
+        assertEquals(404, response.getStatusCodeValue());
+    }
+
+    @Test
+    void setRateOfDeliveryBadRequest() {
+        ResponseEntity<String> response = customerController.setRateOfDelivery(deliveryId, 1.5d);
+        assertEquals(400, response.getStatusCodeValue());
+    }
+
+    @Test
+    void setRateOfDeliveryBadRequest2() {
+        ResponseEntity<String> response = customerController.setRateOfDelivery(deliveryId, -15d);
+        assertEquals(400, response.getStatusCodeValue());
+    }
+
+    @Test
+    void setRateOfDeliveryOk() {
+        ResponseEntity<String> response = customerController.setRateOfDelivery(deliveryId, 0.5d);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(0.5d, deliveryRepository.findById(deliveryId).get().getCustomerRating());
     }
 }
