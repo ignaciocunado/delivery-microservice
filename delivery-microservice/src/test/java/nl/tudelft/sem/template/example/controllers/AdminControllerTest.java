@@ -174,11 +174,15 @@ public class AdminControllerTest {
 
         // Every single restaurant ID is mapped to this one restaurant
         Restaurant foundRestaurant = new Restaurant();
+        foundRestaurant.setVendorID(UUID.randomUUID());
+
         Mockito.when(mockedRestaurantRepository.findById(Mockito.any()))
                 .thenReturn(Optional.of(foundRestaurant));
 
         // So, when a new restaurant is created, it should get stuck in a loop and exit!
         final Restaurant restaurantToCreate = new Restaurant();
+        restaurantToCreate.setVendorID(UUID.randomUUID());
+
         ResponseEntity<Restaurant> response = localAdminController.createRestaurant(role, restaurantToCreate);
 
         assertEquals(
@@ -204,6 +208,7 @@ public class AdminControllerTest {
 
         // Ensure a server error occurs
         final Restaurant restaurantToCreate = new Restaurant();
+        restaurantToCreate.setVendorID(UUID.randomUUID());
         ResponseEntity<Restaurant> response = localAdminController.createRestaurant(role, restaurantToCreate);
 
         assertEquals(
@@ -224,6 +229,7 @@ public class AdminControllerTest {
         );
 
         final Restaurant restaurantToCreate = new Restaurant();
+        restaurantToCreate.setVendorID(UUID.randomUUID());
         Mockito.when(mockedRestaurantRepository.save(Mockito.any()))
                 .thenReturn(restaurantToCreate);
 
@@ -233,6 +239,19 @@ public class AdminControllerTest {
 
         // Ensure a server error occurs
         ResponseEntity<Restaurant> response = localAdminController.createRestaurant(role, restaurantToCreate);
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                response.getStatusCode()
+        );
+    }
+
+    @Test
+    void testCreateRestaurantInvalidVendorId() {
+        Restaurant restaurantToCreate = new Restaurant();
+        restaurantToCreate.setVendorID(null);
+
+        ResponseEntity<Restaurant> response = adminController.createRestaurant("admin", restaurantToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
