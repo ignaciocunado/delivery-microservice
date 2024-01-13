@@ -45,8 +45,8 @@ public class VendorController {
         return role.equals("courier");
     }
 
+
     /** Adds a courier to a restaurant.
-     *
      * @param courierId   ID of the courier to add to the restaurant. (required)
      * @param restaurantId ID of the restaurant to add the courier to. (required)
      * @param role       The role of the user (required)
@@ -54,18 +54,28 @@ public class VendorController {
      */
     public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
 
-        Restaurant r;
-
         if (!checkVendor(role)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        if (restaurantRepository.findById(restaurantId).isPresent()) {
-            r = restaurantRepository.findById(restaurantId).get();
-        } else {
+        if (restaurantRepository.findById(restaurantId).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return executeAddCourierToRest(courierId, restaurantId);
 
+    }
+
+    /**
+     * private method for executing logic of AddCourierToRest
+     * used to lower LOC
+     * @param courierId id of courier to query
+     * @param restaurantId id of restaurant to query
+     * @return corresponding response entity
+     */
+    private ResponseEntity<Void> executeAddCourierToRest(UUID courierId, UUID restaurantId) {
+        Restaurant r;
+
+        r = restaurantRepository.findById(restaurantId).get();
         RestaurantCourierIDsInner curr = new RestaurantCourierIDsInner();
         curr.setCourierID(courierId);
 
@@ -75,25 +85,32 @@ public class VendorController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     /** Sets the status to accepted for a delivery.
-     *
      * @param deliveryId ID of the delivery to mark as accepted. (required)
      * @param role      The role of the user (required)
      * @return Whether the request was successful or not
      */
     public ResponseEntity<Void> acceptDelivery(UUID deliveryId, String role) {
-        if (checkVendor(role)) {
-            if (deliveryRepository.findById(deliveryId).isPresent()) {
-                Delivery delivery = deliveryRepository.findById(deliveryId).get();
-                delivery.setStatus("accepted");
-                deliveryRepository.save(delivery);
-
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
+        if (!checkVendor(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        if (!deliveryRepository.findById(deliveryId).isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return executeAcceptDelivery(deliveryId);
+    }
+
+    /**
+     * Private methods which executes the logic of acceptDelivery.
+     * Used to lower LOC for the method.
+     * @param deliveryId the id to query
+     * @return the corresponding response entity
+     */
+    private ResponseEntity<Void> executeAcceptDelivery(UUID deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId).get();
+        delivery.setStatus("accepted");
+        deliveryRepository.save(delivery);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -311,32 +328,54 @@ public class VendorController {
      * @return The newly created Delivery object.
      */
     public ResponseEntity<Delivery> createDelivery(String role, Delivery delivery) {
-        // Authorize the user
         if (!checkVendor(role)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        // Ensure delivery validity
         if (delivery == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        // Generate a new ID for the delivery
+        return createDeliveryNoIdCheck(delivery);
+    }
+
+    /**
+     * Checks whether a new Id is generated. Improves LOC and CC for createDelivery.
+     * @param delivery the delivery for which an Id is generated
+     * @return the resulting ResponseEntity
+     */
+    private ResponseEntity<Delivery> createDeliveryNoIdCheck(Delivery delivery) {
         final Optional<UUID> newId = uuidGenerationService.generateUniqueId(deliveryRepository);
         if (newId.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        // Once we have the new ID - save delivery to the DB.
+        return createDeliveryDeliveryNotValidCheck(delivery, newId);
+    }
+
+    /**
+     * Checks if the delivery saved is correctly created. Improves LOC and CC for createDelivery.
+     * @param delivery the delivery to be checked
+     * @param newId the id of the delivery
+     * @return the corresponding ResponseEntity
+     */
+    private ResponseEntity<Delivery> createDeliveryDeliveryNotValidCheck(Delivery delivery, Optional<UUID> newId) {
         delivery.setDeliveryID(newId.get());
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
-        // As an extra layer of internal validation, ensure the newly created delivery can be fetched from the DB.
-        // Failure is considered a server-side error, but this is unfortunately not permitted by the OpenAPI spec.
         if (savedDelivery == null || savedDelivery.getDeliveryID() == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        return createDeliveryCorrectlySaved(savedDelivery);
+    }
+
+    /**
+     * Checks if the delivery was correctly added to the database. Improves LOC and CC for createDelivery.
+     * @param savedDelivery the new delivery
+     * @return the corresponding ResponseEntity
+     */
+    private ResponseEntity<Delivery> createDeliveryCorrectlySaved(Delivery savedDelivery) {
         final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDelivery.getDeliveryID());
         if (databaseDelivery.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -344,6 +383,7 @@ public class VendorController {
 
         return new ResponseEntity<>(databaseDelivery.get(), HttpStatus.OK);
     }
+
 
     /**
      * Queries the database for a specific restaurant and throws respective errors.
