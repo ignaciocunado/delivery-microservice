@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.Setter;
 import nl.tudelft.sem.api.RestaurantApi;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.model.GetVendorRest200ResponseInner;
+//import nl.tudelft.sem.model.GetVendorRest200ResponseInner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
