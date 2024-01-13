@@ -252,4 +252,10 @@ class DeliveryControllerTest {
         deliveryController.getAllDeliveriesCustomer(customerID, "customer");
         Mockito.verify(customerController).getAllDeliveriesCustomer(customerID, "customer");
     }
+
+    @Test
+    void testSetRateOfDelivery() {
+        deliveryController.setRateOfDelivery(deliveryId, role, 1d);
+        Mockito.verify(vendorController).setRateOfDelivery(deliveryId, role, 1d);
+    }
 }

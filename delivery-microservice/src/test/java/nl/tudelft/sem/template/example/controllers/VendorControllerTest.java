@@ -755,5 +755,36 @@ class VendorControllerTest {
                 response.getStatusCode()
         );
     }
-}
 
+    @Test
+    void setRateOfDeliveryUnauthorised() {
+        ResponseEntity<String> response = sut.setRateOfDelivery(deliveryId, "not customer", 0.5d);
+        assertEquals(401, response.getStatusCodeValue());
+    }
+
+    @Test
+    void setRateOfDeliveryNotFound() {
+        ResponseEntity<String> response = sut.setRateOfDelivery(UUID.randomUUID(), "customer", 0.5d);
+        assertEquals(404, response.getStatusCodeValue());
+    }
+
+    @Test
+    void setRateOfDeliveryBadRequest() {
+        ResponseEntity<String> response = sut.setRateOfDelivery(deliveryId, "customer", 1.5d);
+        assertEquals(400, response.getStatusCodeValue());
+    }
+
+    @Test
+    void setRateOfDeliveryBadRequest2() {
+        ResponseEntity<String> response = sut.setRateOfDelivery(deliveryId, "admin", -15d);
+        assertEquals(400, response.getStatusCodeValue());
+    }
+
+
+    @Test
+    void setRateOfDeliveryOk() {
+        ResponseEntity<String> response = sut.setRateOfDelivery(deliveryId, "customer", 0.5d);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(0.5d, deliveryRepo.findById(deliveryId).get().getCustomerRating());
+    }
+}
