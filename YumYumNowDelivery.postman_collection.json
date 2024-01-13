@@ -1,0 +1,129 @@
+{
+	"info": {
+		"_postman_id": "1b608454-7505-44b2-966d-0a1eeeabda18",
+		"name": "YumYumNowDelivery",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26631163"
+	},
+	"item": [
+		{
+			"name": "Create Restaurant",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "8c262f5b-a743-4804-9025-fb509d6a13e0",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"vendorID\": \"8f0083f9-aee3-4254-8b50-14640c34a2f6\",\r\n    \"courierIDs\": [],\r\n    \"maxDeliveryZone\": 100\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/restaurant/?role=admin",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"restaurant",
+						""
+					],
+					"query": [
+						{
+							"key": "role",
+							"value": "admin"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Delivery",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-User-ID",
+						"value": "7ca58140-beb6-480c-b280-61b7a0a3e951",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    // Restaurant ID must exist in the database!\r\n    \"restaurantID\": \"cd6180de-408c-4cbd-8b32-bcbcd24b855d\",\r\n\r\n    // References to external object IDs\r\n    \"orderID\": \"b3e7ba08-b982-4a0e-9093-bca46569e8ad\",\r\n    \"customerID\": \"35a64124-c274-4125-be9c-9831d9a3ed15\",\r\n    \"courierID\": \"f1926a63-e2ea-4961-b4c6-180f25f1a80f\",\r\n    \r\n    // Initial status of a delivery\r\n    \"status\": \"preparing\",\r\n    \r\n    \"pickupTimeEstimate\": \"2024-01-13T14:30:10Z\",\r\n    \"pickedUpTime\": null,\r\n    \"deliveryTimeEstimate\": null,\r\n    \r\n    \"customerRating\": null,\r\n    \"liveLocation\": null,\r\n    \"userException\": null,\r\n    \"delay\": null\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/delivery/?role=vendor",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"delivery",
+						""
+					],
+					"query": [
+						{
+							"key": "role",
+							"value": "vendor"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Restaurants of Vendor",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "8c262f5b-a743-4804-9025-fb509d6a13e0",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8082/restaurant/vendor/{{vendorId}}/?role=admin",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"restaurant",
+						"vendor",
+						"{{vendorId}}",
+						""
+					],
+					"query": [
+						{
+							"key": "role",
+							"value": "admin"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "vendorId",
+			"value": "8f0083f9-aee3-4254-8b50-14640c34a2f6"
+		}
+	]
+}
