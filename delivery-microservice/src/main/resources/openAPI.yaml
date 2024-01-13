@@ -31,7 +31,7 @@ paths:
         - Vendor
       operationId: createDelivery
       summary: Create a delivery object
-      description: This endpoint is called automatically by the order microservice when an order instance is created. If no restaurant is associated with the given vendor, a new one will be created automatically.
+      description: This endpoint is called automatically by the order microservice when an order instance is created. Requires a valid restaurant.
       parameters:
         - name: role
           in: query
@@ -1603,10 +1603,8 @@ paths:
               schema:
                 type: array
                 items:
-                  properties:
-                    restaurantID:
-                      type: string
-                      format: uuid
+                  type: string
+                  format: uuid
         '403':
           description: Forbidden
         '404':
@@ -1850,6 +1848,17 @@ paths:
             format: uuid
           required: true
           description: The ID of the courier to query
+        - name: role
+          in: query
+          description: The role of the user
+          required: true
+          schema:
+            type: string
+            enum:
+              - vendor
+              - courier
+              - customer
+              - admin
       responses:
         '200':
           description: OK
@@ -1886,19 +1895,19 @@ paths:
       description: A vendor can add a courier to its restaurant
       parameters:
         - in: path
-          name: courierID
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: The ID of the courier to query
-        - in: path
           name: restaurantID
           schema:
             type: string
             format: uuid
           required: true
           description: The ID of the restaurant to query
+        - in: path
+          name: courierID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: The ID of the courier to query
         - name: role
           in: query
           description: The role of the user
@@ -1939,19 +1948,19 @@ paths:
       description: A vendor can remove a courier from its restaurant
       parameters:
         - in: path
-          name: courierID
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: The ID of the courier to query
-        - in: path
           name: restaurantID
           schema:
             type: string
             format: uuid
           required: true
           description: The ID of the restaurant to query
+        - in: path
+          name: courierID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: The ID of the courier to query
         - name: role
           in: query
           description: The role of the user
@@ -2055,12 +2064,10 @@ components:
           example: 550e8400-e29b-41d4-a716-446655440000
         courierIDs:
           type: array
-          x-field-extra-annotation: "@javax.persistence.ElementCollection(targetClass=String.class)"
+          x-field-extra-annotation: "@javax.persistence.ElementCollection(targetClass=UUID.class)"
           items:
-            properties:
-              courierID:
-                type: string
-                format: uuid
+            type: string
+            format: uuid
         maxDeliveryZone:
           type: number
           format: double

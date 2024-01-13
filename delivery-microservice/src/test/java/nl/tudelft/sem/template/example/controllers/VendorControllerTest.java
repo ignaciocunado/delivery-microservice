@@ -1,9 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
-import nl.tudelft.sem.model.GetVendorRest200ResponseInner;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.model.RestaurantCourierIDsInner;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
@@ -21,11 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class VendorControllerTest {
@@ -64,15 +58,9 @@ class VendorControllerTest {
         vendorId2 = UUID.randomUUID();
         deliveryId2 = UUID.randomUUID();
 
-        RestaurantCourierIDsInner elem1 = new RestaurantCourierIDsInner();
-        elem1.setCourierID(courierId);
-
-        List<RestaurantCourierIDsInner> param = new ArrayList<>();
-        param.add(elem1);
-
         // setup test repository with some sample objects
-        Restaurant r = new Restaurant(restaurantId, vendorId, param, 1.0d);
-        Restaurant r2 = new Restaurant(restaurantId2, vendorId2, param, 1.0d);
+        Restaurant r = new Restaurant(restaurantId, vendorId, List.of(courierId), 1.0d);
+        Restaurant r2 = new Restaurant(restaurantId2, vendorId2, List.of(courierId), 1.0d);
         restaurantRepo.save(r);
         restaurantRepo.save(r2);
 
@@ -81,15 +69,15 @@ class VendorControllerTest {
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
 
-        Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), courierId,
+        Delivery d = new Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), courierId,
                 restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime,
                 1.d, sampleOffsetDateTime, "", "", 1);
 
-        Delivery d2 = new  Delivery(deliveryId2, UUID.randomUUID(), UUID.randomUUID(),
+        Delivery d2 = new Delivery(deliveryId2, UUID.randomUUID(), UUID.randomUUID(),
                 UUID.randomUUID(), restaurantId, "pending", sampleOffsetDateTime,
                 sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
                 "", 1);
-        Delivery d3 = new  Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+        Delivery d3 = new Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime,
                 sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
                 "", 1);
@@ -99,8 +87,9 @@ class VendorControllerTest {
         sut = new VendorController(restaurantRepo, deliveryRepo, new UUIDGenerationService());
     }
 
+
     /**
-    Tests for the addCourierToRest endpoint.
+     * Tests for the addCourierToRest endpoint.
      **/
     @Test
     public void testUnauthorized() {
@@ -118,13 +107,13 @@ class VendorControllerTest {
     @Test
     public void testOkNoDuplicate() {
         UUID courierId = UUID.randomUUID();
-        ResponseEntity<Void> res = sut.addCourierToRest(courierId, restaurantId, "vendor");
+        ResponseEntity<Void> res = sut.addCourierToRest(restaurantId, courierId, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
         Restaurant newRes = sut.getRestaurantRepository().findById(restaurantId).get();
         assertFalse(
                 newRes.getCourierIDs().stream()
-                        .filter(x -> x.getCourierID().equals(courierId))
+                        .filter(x -> x.equals(courierId))
                         .collect(Collectors.toList()).isEmpty()
         );
 
@@ -189,7 +178,7 @@ class VendorControllerTest {
     @Test
     void testRemoveCourierOk() {
 
-        ResponseEntity<Void> res = sut.removeCourierRest(courierId, restaurantId, "vendor");
+        ResponseEntity<Void> res = sut.removeCourierRest(restaurantId, courierId, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
         TestRestaurantRepository repo = (TestRestaurantRepository) sut.getRestaurantRepository();
@@ -609,6 +598,7 @@ class VendorControllerTest {
         );
     }
 
+
     /**
      * Tests the case where no more UUIDs are available.
      */
@@ -640,6 +630,43 @@ class VendorControllerTest {
                 response.getStatusCode()
         );
     }
+
+
+    // Reason for removing this test:
+    // it is actually testing the JPA repository .save() method, not the controller.
+    // furthermore, the mocked output is something the actual repository can legally never return.
+//    /**
+//     * Saving to the database fails, and returns null. Error must be handled!
+//     */
+//    @Test
+//    void testCreateDeliverySavingFailed() {
+//        // We mock the repositories, so we can fake saving failing.
+//        TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
+//        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
+//
+//        VendorController localVendorController = new VendorController(
+//                mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
+//        );
+//
+//        // Saving always fails and returns null
+//        Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
+//                .thenReturn(null);
+//
+//        // Restaurants always exist
+//        Mockito.when(mockedRestaurantRepository.existsById(Mockito.any()))
+//                .thenReturn(true);
+//
+//        // Ensure a server error occurs
+//        final Delivery deliveryToCreate = new Delivery();
+//        deliveryToCreate.setRestaurantID(restaurantId);
+//        ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
+//
+//        assertEquals(
+//                HttpStatus.BAD_REQUEST,
+//                response.getStatusCode()
+//        );
+//    }
+
 
     /**
      * Retrieving the created delivery from the database fails! Ensure error occurs.
@@ -679,7 +706,7 @@ class VendorControllerTest {
 
     @Test
     void testGetVendorRestUnauthorized() {
-        ResponseEntity<List<GetVendorRest200ResponseInner>> res = sut.getVendorRest(vendorId, "not");
+        ResponseEntity<List<UUID>> res = sut.getVendorRest(vendorId, "not");
         assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }
 
@@ -689,18 +716,16 @@ class VendorControllerTest {
         while (id.equals(vendorId) || id.equals(vendorId2)) {
             id = UUID.randomUUID();
         }
-        ResponseEntity<List<GetVendorRest200ResponseInner>> res = sut.getVendorRest(id, "vendor");
+        ResponseEntity<List<UUID>> res = sut.getVendorRest(id, "vendor");
 
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
     void testGetVendorRestOk() {
-        ResponseEntity<List<GetVendorRest200ResponseInner>> res = sut.getVendorRest(vendorId, "vendor");
+        ResponseEntity<List<UUID>> res = sut.getVendorRest(vendorId, "vendor");
 
-        GetVendorRest200ResponseInner elem = new GetVendorRest200ResponseInner();
-        elem.setRestaurantID(restaurantId);
-        assertEquals(res.getBody(), List.of(elem));
+        assertEquals(res.getBody(), List.of(restaurantId));
         assertEquals(res.getStatusCode(), HttpStatus.OK);
     }
 
@@ -741,7 +766,6 @@ class VendorControllerTest {
                 response.getStatusCode()
         );
     }
-
 
     @Test
     void setRateOfDeliveryUnauthorised() {

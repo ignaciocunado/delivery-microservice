@@ -200,9 +200,9 @@ class DeliveryControllerTest {
     @Test
     void testGetAvRateCourier() {
         UUID courierId = UUID.randomUUID();
-        Mockito.when(courierController.getAvrRating(courierId)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-        ResponseEntity<?> r = deliveryController.getAvRateCourier(courierId);
-        Mockito.verify(courierController).getAvrRating(courierId);
+        Mockito.when(courierController.getAvrRating(courierId, "courier")).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        ResponseEntity<?> r = deliveryController.getAvRateCourier(courierId, "courier");
+        Mockito.verify(courierController).getAvrRating(courierId, "courier");
         assertNotNull(r);
     }
 
