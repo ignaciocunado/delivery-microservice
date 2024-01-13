@@ -84,9 +84,10 @@ public class CourierService implements RoleService {
      */
     public ResponseEntity<String> deliveredDelivery(UUID deliveryId) {
         Optional<Delivery> fetchedDelivery = deliveryRepository.findById(deliveryId);
-        if(fetchedDelivery.isEmpty()) {
+        if (fetchedDelivery.isEmpty()) {
             return new ResponseEntity<>("Delivery not found!", HttpStatus.NOT_FOUND);
         }
+
         Delivery d = fetchedDelivery.get();
         d.setStatus("delivered");
         deliveryRepository.save(d);
