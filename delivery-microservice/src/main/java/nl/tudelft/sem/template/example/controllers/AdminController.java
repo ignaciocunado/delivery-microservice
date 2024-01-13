@@ -80,7 +80,7 @@ public class AdminController implements Controller {
     }
 
     /**
-     * Check the role and handle it further
+     * Check the role and handle it further.
      * @param role the role of the user
      * @param operation the method that should be called
      * @param <T> the passed param

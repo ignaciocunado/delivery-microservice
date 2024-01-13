@@ -37,7 +37,7 @@ class RestaurantControllerTest {
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         sut.addCourierToRest(id1, id2, "a");
-        verify(vc).addCourierToRest(id1, id2, "a");
+        verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -45,7 +45,7 @@ class RestaurantControllerTest {
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         sut.removeCourierRest(id1, id2, "a");
-        verify(vc).removeCourierRest(id1, id2, "a");
+        verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -60,7 +60,7 @@ class RestaurantControllerTest {
     public void testCallMaxZone() {
         UUID id = UUID.randomUUID();
         sut.getMaxDeliveryZone(id, "a");
-        verify(gc).getMaxDeliveryZone(id, "a");
+        verify(gc).getMaxDeliveryZone(id);
     }
 
     @Test
@@ -69,6 +69,6 @@ class RestaurantControllerTest {
         String s = "";
 
         sut.getRest(id, s);
-        verify(vc).getRest(id, s);
+        verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
     }
 }

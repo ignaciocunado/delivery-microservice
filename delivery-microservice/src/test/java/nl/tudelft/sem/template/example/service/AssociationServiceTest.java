@@ -65,7 +65,8 @@ class AssociationServiceTest {
         when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("vendor");
         when(request.getMethod()).thenReturn("PATCH");
-        when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
+        when(request.getRequestURI())
+                .thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
         assertTrue(associationService.authorize(request));
@@ -76,7 +77,8 @@ class AssociationServiceTest {
         when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("vendor");
         when(request.getMethod()).thenReturn("PATCH");
-        when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
+        when(request.getRequestURI())
+                .thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
         Delivery d = Mockito.mock(Delivery.class);
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.of(d));
         when(restaurantRepository.findById(Mockito.any())).thenReturn(Optional.empty());
@@ -89,7 +91,8 @@ class AssociationServiceTest {
         when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("vendor");
         when(request.getMethod()).thenReturn("PATCH");
-        when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
+        when(request.getRequestURI())
+                .thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
         Delivery d = Mockito.mock(Delivery.class);
         Restaurant r = Mockito.mock(Restaurant.class);
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.of(d));
@@ -107,7 +110,8 @@ class AssociationServiceTest {
         when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("vendor");
         when(request.getMethod()).thenReturn("PATCH");
-        when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
+        when(request.getRequestURI())
+                .thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
         Delivery d = Mockito.mock(Delivery.class);
         Restaurant r = Mockito.mock(Restaurant.class);
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.of(d));
@@ -125,7 +129,9 @@ class AssociationServiceTest {
         when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("courier");
         when(request.getMethod()).thenReturn("PATCH");
-        when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/delivered/?role=courier");
+        when(request.getRequestURI())
+                .thenReturn(
+                        "127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/delivered/?role=courier");
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
         assertTrue(associationService.authorize(request));
@@ -136,7 +142,9 @@ class AssociationServiceTest {
         when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440002");
         when(request.getParameter("role")).thenReturn("courier");
         when(request.getMethod()).thenReturn("PATCH");
-        when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/delivered/?role=courier");
+        when(request.getRequestURI())
+                .thenReturn(
+                        "127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/delivered/?role=courier");
         Delivery d = Mockito.mock(Delivery.class);
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.of(d));
         when(d.getCourierID()).thenReturn(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
@@ -149,7 +157,9 @@ class AssociationServiceTest {
         when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440000");
         when(request.getParameter("role")).thenReturn("courier");
         when(request.getMethod()).thenReturn("PATCH");
-        when(request.getRequestURI()).thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/delivered/?role=courier");
+        when(request.getRequestURI())
+                .thenReturn
+                        ("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/delivered/?role=courier");
         Delivery d = Mockito.mock(Delivery.class);
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.of(d));
         when(d.getCourierID()).thenReturn(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));

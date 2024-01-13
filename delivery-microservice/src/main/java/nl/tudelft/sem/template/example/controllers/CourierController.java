@@ -161,7 +161,7 @@ public class CourierController implements Controller {
     }
 
     /**
-     * Check the role and handle it further
+     * Check the role and handle it further.
      * @param role the role of the user
      * @param operation the method that should be called
      * @param <T> the passed param
@@ -169,9 +169,10 @@ public class CourierController implements Controller {
      */
     @Override
     public <T> ResponseEntity<T> checkAndHandle(String role, Supplier<ResponseEntity<T>> operation) {
-        if(!role.equals("courier")) {
-            return new ResponseEntity<T>(HttpStatus.UNAUTHORIZED);
+        final List<String> allowedRoles = List.of("admin", "courier");
+        if(allowedRoles.contains(role)) {
+            return operation.get();
         }
-        return operation.get();
+        return new ResponseEntity<T>(HttpStatus.UNAUTHORIZED);
     }
 }

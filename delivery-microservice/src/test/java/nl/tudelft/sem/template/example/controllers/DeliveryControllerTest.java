@@ -56,27 +56,27 @@ class DeliveryControllerTest {
     void acceptDelivery() {
         deliveryController.acceptDelivery(deliveryId, role);
 
-        Mockito.verify(vendorController).acceptDelivery(deliveryId, role);
+        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
     void testGetPickUpEstimateDeliveryId() {
         deliveryController.getPickUpEstimateDeliveryId(deliveryId, role);
-        Mockito.verify(vendorController).getPickUpEstimate(deliveryId, role);
+        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
     void rejectDelivery() {
         deliveryController.rejectDelivery(deliveryId, role);
 
-        Mockito.verify(vendorController).rejectDelivery(deliveryId, role);
+        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
     void getCustomerID() {
         deliveryController.getCustomerByDeliveryId(deliveryId, role);
 
-        Mockito.verify(vendorController).getCustomerByDeliveryId(deliveryId, role);
+        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -90,42 +90,42 @@ class DeliveryControllerTest {
     void getLiveLocation() {
         deliveryController.getLiveLocation(deliveryId, role);
 
-        Mockito.verify(globalController).getLiveLocation(deliveryId, role);
+        Mockito.verify(globalController).getLiveLocation(deliveryId);
     }
 
     @Test
     void testEditStatusDelivery() {
         deliveryController.editStatusDelivery(deliveryId, role, "preparing");
 
-        Mockito.verify(vendorController).editStatusDelivery(deliveryId, role, "preparing");
+        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
     void testSetPickUpTime() {
         deliveryController.setPickUpTime(deliveryId, role, "preparing");
 
-        Mockito.verify(vendorController).setPickUpEstimate(deliveryId, role, "preparing");
+        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
     void testGetDeliveryException() {
         deliveryController.getDeliveryException(deliveryId, role);
 
-        Mockito.verify(globalController).getDeliveryException(deliveryId, role);
+        Mockito.verify(globalController).getDeliveryException(deliveryId);
     }
 
     @Test
     void testSetDeliveryDelay() {
         deliveryController.setDeliveryDelay(deliveryId, role, 4);
 
-        Mockito.verify(vendorOrCourierController).setDeliveryDelay(deliveryId, role, 4);
+        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
     void testGetDeliveryDelay() {
         deliveryController.getDeliveryDelay(deliveryId, role);
 
-        Mockito.verify(vendorOrCourierController).getDeliveryDelay(deliveryId, role);
+        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -133,7 +133,7 @@ class DeliveryControllerTest {
         UUID courier = UUID.randomUUID();
         deliveryController.assignOrderToCourier(courier, deliveryId, role);
 
-        Mockito.verify(vendorOrCourierController).assignOrderToCourier(courier, deliveryId, role);
+        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -142,28 +142,28 @@ class DeliveryControllerTest {
         final Delivery newDelivery = new Delivery();
         deliveryController.createDelivery(role, newDelivery);
 
-        Mockito.verify(vendorController).createDelivery(role, newDelivery);
+        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
     void testGetDeliveryById() {
         deliveryController.getDeliveyById(deliveryId, role);
 
-        Mockito.verify(globalController).getDeliveryById(deliveryId, role);
+        Mockito.verify(globalController).getDeliveryById(deliveryId);
     }
 
     @Test
     void testGetRestaurantIdByDeliveryId() {
         deliveryController.getRestIdOfDel(deliveryId, role);
 
-        Mockito.verify(globalController).getRestaurantIdByDeliveryId(deliveryId, role);
+        Mockito.verify(globalController).getRestaurantIdByDeliveryId(deliveryId);
     }
 
     @Test
     void testGetOrderByDeliveryId() {
         deliveryController.getOrderByDeliveryId(deliveryId, role);
 
-        Mockito.verify(globalController).getOrderByDeliveryId(deliveryId, role);
+        Mockito.verify(globalController).getOrderByDeliveryId(deliveryId);
     }
 
     @Test
@@ -185,14 +185,14 @@ class DeliveryControllerTest {
     void testGetCourierByDeliveryId() {
         deliveryController.getCourierByDeliveryId(deliveryId, role);
 
-        Mockito.verify(vendorController).getCourierIdByDelivery(deliveryId, role);
+        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
     void testSetDeliveryException() {
         deliveryController.setDeliveryException(deliveryId, role, "Fall");
 
-        Mockito.verify(vendorOrCourierController).setDeliveryException(deliveryId, role, "Fall");
+        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -205,7 +205,7 @@ class DeliveryControllerTest {
     @Test
     void testGetDeliveryEstimate() {
         deliveryController.getDeliveryEstimate(deliveryId, role);
-        Mockito.verify(vendorController).getDeliveryEstimate(deliveryId, role);
+        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -214,22 +214,20 @@ class DeliveryControllerTest {
                 OffsetDateTime.of(2024, 1, 1, 1,
                         1, 1, 1, ZoneOffset.ofHours(0)));
 
-        Mockito.verify(vendorController).setDeliveryEstimate(deliveryId, role,
-                OffsetDateTime.of(2024, 1, 1, 1,
-                        1, 1, 1, ZoneOffset.ofHours(0)));
+        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
     void testGetRatingByDeliveryId() {
         deliveryController.getRateByDeliveryId(deliveryId, role);
-        Mockito.verify(globalController).getRatingByDeliveryId(deliveryId, role);
+        Mockito.verify(globalController).getRatingByDeliveryId(deliveryId);
     }
 
     @Test
     void testCallGetAllDeliveries() {
         UUID vendorId = UUID.randomUUID();
         deliveryController.getAllDeliveriesVendor(vendorId, "vendor");
-        Mockito.verify(vendorController).getAllDeliveriesVendor(vendorId, "vendor");
+        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -243,6 +241,6 @@ class DeliveryControllerTest {
     void testGetAllDeliveriesCustomer() {
         UUID customerID = UUID.randomUUID();
         deliveryController.getAllDeliveriesCustomer(customerID, "customer");
-        Mockito.verify(customerController).getAllDeliveriesCustomer(customerID, "customer");
+        Mockito.verify(customerController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 }

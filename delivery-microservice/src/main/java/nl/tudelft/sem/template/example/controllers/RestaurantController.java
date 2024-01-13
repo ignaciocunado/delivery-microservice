@@ -1,21 +1,12 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.Setter;
 import nl.tudelft.sem.api.RestaurantApi;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.model.GetVendorRest200ResponseInner;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -46,12 +37,14 @@ public class RestaurantController implements RestaurantApi {
 
     @Override
     public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
-        return vendorController.addCourierToRest(courierId, restaurantId, role);
+        return vendorController.checkAndHandle(role,
+                () -> vendorController.addCourierToRest(courierId, restaurantId));
     }
 
     @Override
     public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
-        return vendorController.removeCourierRest(courierId, restaurantId, role);
+        return vendorController.checkAndHandle(role,
+                () -> vendorController.removeCourierRest(courierId, restaurantId));
     }
 
     /**
@@ -73,7 +66,7 @@ public class RestaurantController implements RestaurantApi {
      */
     @Override
     public ResponseEntity<Double> getMaxDeliveryZone(UUID deliveryID, String role) {
-        return globalController.getMaxDeliveryZone(deliveryID, role);
+        return globalController.getMaxDeliveryZone(deliveryID);
     }
 
     /**
@@ -84,6 +77,7 @@ public class RestaurantController implements RestaurantApi {
      */
     @Override
     public ResponseEntity<String> getRest(UUID restaurantId, String role) {
-        return vendorController.getRest(restaurantId, role);
+        return vendorController.checkAndHandle(role,
+                () -> vendorController.getRest(restaurantId));
     }
 }

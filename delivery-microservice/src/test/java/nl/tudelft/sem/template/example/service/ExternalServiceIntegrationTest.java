@@ -3,13 +3,13 @@ package nl.tudelft.sem.template.example.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.UUID;
 
@@ -29,9 +29,10 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void getRestaurantLocation() {
-        Mockito.when(restTemplate.getForObject(Mockito.anyString(), Mockito.any())).thenReturn("PickUp in format xxx.xxx");
+        Mockito.when(restTemplate.getForObject(Mockito.anyString(), Mockito.any()))
+                .thenReturn("PickUp in format xxx.xxx");
 
-        assert(externalService.getRestaurantLocation(UUID.randomUUID()).equals("PickUp in format xxx.xxx"));
+        assert (externalService.getRestaurantLocation(UUID.randomUUID()).equals("PickUp in format xxx.xxx"));
     }
 
     @Test

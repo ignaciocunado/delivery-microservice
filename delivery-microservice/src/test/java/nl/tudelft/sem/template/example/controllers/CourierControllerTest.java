@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -112,6 +112,16 @@ class CourierControllerTest {
         Supplier<ResponseEntity<String>> operation = () -> new ResponseEntity<>("Success", HttpStatus.OK);
 
         ResponseEntity<String> result = courierController.checkAndHandle(role, operation);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("Success", result.getBody());
+    }
+
+    @Test
+    public void checkAndHandleReturnsOk2() {
+        Supplier<ResponseEntity<String>> operation = () -> new ResponseEntity<>("Success", HttpStatus.OK);
+
+        ResponseEntity<String> result = courierController.checkAndHandle("admin", operation);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals("Success", result.getBody());
