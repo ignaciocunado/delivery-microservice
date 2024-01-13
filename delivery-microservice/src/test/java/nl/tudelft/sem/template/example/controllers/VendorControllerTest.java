@@ -596,6 +596,8 @@ class VendorControllerTest {
     @Test
     void testCreateDeliveryNoRole() {
         Delivery delivery = new Delivery();
+        delivery.setRestaurantID(restaurantId);
+
         ResponseEntity<Delivery> response = sut.createDelivery("", delivery);
 
         assertEquals(
@@ -619,11 +621,15 @@ class VendorControllerTest {
 
         // Every single delivery ID is mapped to this one delivery
         Delivery foundDelivery = new Delivery();
+        foundDelivery.setRestaurantID(restaurantId);
+
         Mockito.when(mockedDeliveryRepository.findById(Mockito.any()))
                 .thenReturn(Optional.of(foundDelivery));
 
         // So, when a new delivery is created, it should get stuck in a loop and exit!
         final Delivery deliveryToCreate = new Delivery();
+        deliveryToCreate.setRestaurantID(restaurantId);
+
         ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
 
         assertEquals(
@@ -649,8 +655,13 @@ class VendorControllerTest {
         Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
                 .thenReturn(null);
 
+        // Restaurants always exist
+        Mockito.when(mockedRestaurantRepository.existsById(Mockito.any()))
+                .thenReturn(true);
+
         // Ensure a server error occurs
         final Delivery deliveryToCreate = new Delivery();
+        deliveryToCreate.setRestaurantID(restaurantId);
         ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
 
         assertEquals(
@@ -673,12 +684,18 @@ class VendorControllerTest {
         );
 
         final Delivery deliveryToCreate = new Delivery();
+        deliveryToCreate.setRestaurantID(restaurantId);
+
         Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
                 .thenReturn(deliveryToCreate);
 
         // Retrieval always fails and returns empty
         Mockito.when(mockedDeliveryRepository.findById(Mockito.any()))
                 .thenReturn(Optional.empty());
+
+        // Restaurants always exist
+        Mockito.when(mockedRestaurantRepository.existsById(Mockito.any()))
+                .thenReturn(true);
 
         // Ensure a server error occurs
         ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
