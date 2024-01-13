@@ -31,7 +31,7 @@ paths:
         - Vendor
       operationId: createDelivery
       summary: Create a delivery object
-      description: This endpoint is called automatically by the order microservice when an order instance is created. If no restaurant is associated with the given vendor, a new one will be created automatically.
+      description: This endpoint is called automatically by the order microservice when an order instance is created. Requires a valid restaurant.
       parameters:
         - name: role
           in: query
