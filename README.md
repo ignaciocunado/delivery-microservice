@@ -13,6 +13,8 @@ In the repository's root, you will find a file with the extension `.postman_coll
 
 To import the template file, either (1) drag the file from your file explorer into your Postman 'Collections' window, or (2) press the 'Import' button in Postman and browse to it.
 
+> Note that your imported collection will **not** auto-update. You must manually reimport changes acquired from the repository.
+
 ### Request Requirements
 
 Two things are required to successfully make a request to the microservice:
