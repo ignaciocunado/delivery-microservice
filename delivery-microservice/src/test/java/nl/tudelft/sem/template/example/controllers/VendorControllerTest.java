@@ -476,7 +476,7 @@ class VendorControllerTest {
             assertTrue(newDeliveryId.isPresent());
 
             Delivery newDelivery = new Delivery(
-                    newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                    newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), restaurantId,
                     "status", OffsetDateTime.now(), OffsetDateTime.now(), 1.0, OffsetDateTime.now(),
                     "liveLocation", "userException", 0
             );
@@ -514,14 +514,14 @@ class VendorControllerTest {
         assertTrue(newDeliveryId.isPresent());
 
         Delivery firstNewDelivery = new Delivery(
-                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), restaurantId,
                 "status", OffsetDateTime.now(), OffsetDateTime.now(), 1.0, OffsetDateTime.now(),
                 "liveLocation", "userException", 0
         );
 
         // Create a different delivery, with that same ID
         Delivery secondNewDelivery = new Delivery(
-                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                newDeliveryId.get(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), restaurantId,
                 "secondStatus", OffsetDateTime.now(), OffsetDateTime.now(), 0.5, OffsetDateTime.now(),
                 "secondLiveLocation", "secondUserException", 1
         );
