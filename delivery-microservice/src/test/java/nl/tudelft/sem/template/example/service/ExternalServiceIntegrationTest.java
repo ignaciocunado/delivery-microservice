@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -79,4 +80,12 @@ public class ExternalServiceIntegrationTest {
         assertFalse(result);
     }
 
+    @Test
+    void verifyClientExceptionThrown() {
+        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+                .thenThrow(new HttpClientErrorException(HttpStatus.I_AM_A_TEAPOT));
+        boolean result = externalService.verify("123", "admin");
+
+        assertFalse(result);
+    }
 }
