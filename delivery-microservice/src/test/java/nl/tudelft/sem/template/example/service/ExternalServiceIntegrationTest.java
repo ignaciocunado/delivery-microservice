@@ -82,4 +82,12 @@ public class ExternalServiceIntegrationTest {
         assertFalse(result);
     }
 
+    @Test
+    void verifyClientExceptionThrown() {
+        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+                .thenThrow(new RestClientException(":)"));
+        boolean result = externalService.verify("123", "admin");
+
+        assertFalse(result);
+    }
 }
