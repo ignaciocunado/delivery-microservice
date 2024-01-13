@@ -13,7 +13,7 @@
 				"header": [
 					{
 						"key": "X-User-Id",
-						"value": "8c262f5b-a743-4804-9025-fb509d6a13e0",
+						"value": "{{user-id}}",
 						"type": "text"
 					}
 				],
@@ -52,7 +52,7 @@
 				"header": [
 					{
 						"key": "X-User-ID",
-						"value": "7ca58140-beb6-480c-b280-61b7a0a3e951",
+						"value": "{{user-id}}",
 						"type": "text"
 					}
 				],
@@ -91,7 +91,7 @@
 				"header": [
 					{
 						"key": "X-User-Id",
-						"value": "8c262f5b-a743-4804-9025-fb509d6a13e0",
+						"value": "{{user-id}}",
 						"type": "text"
 					}
 				],
@@ -143,12 +143,17 @@
 			"value": "localhost:8082"
 		},
 		{
+			"key": "role",
+			"value": "admin"
+		},
+		{
 			"key": "vendorId",
 			"value": "8f0083f9-aee3-4254-8b50-14640c34a2f6"
 		},
 		{
-			"key": "role",
-			"value": "admin"
+			"key": "user-id",
+			"value": "8c262f5b-a743-4804-9025-fb509d6a13e0",
+			"type": "string"
 		}
 	]
 }
