@@ -8,17 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import nl.tudelft.sem.template.example.controllers.interfaces.Controller;
+
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * Sub-controller of DeliveryController.
  */
 @Component
-public class GlobalController {
+public class GlobalController implements Controller {
 
     RestaurantRepository restaurantRepository;
     DeliveryRepository deliveryRepository;
@@ -228,5 +231,20 @@ public class GlobalController {
         final Double rating = delivery.getCustomerRating();
 
         return new ResponseEntity<>(rating, HttpStatus.OK);
+    }
+
+    /**
+     * Check the role and handle it further
+     * @param role the role of the user
+     * @param operation the method that should be called
+     * @param <T> the passed param
+     * @return the response type obj
+     */
+    @Override
+    public <T> ResponseEntity<T> checkAndHandle(String role, Supplier<ResponseEntity<T>> operation) {
+        if(!role.equals("admin")) {
+            return new ResponseEntity<T>(HttpStatus.UNAUTHORIZED);
+        }
+        return operation.get();
     }
 }

@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.template.example.controllers.interfaces.Controller;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * Sub-Controller of DeliveryController.
  */
 @Component
-public class VendorOrCourierController {
+public class VendorOrCourierController implements Controller {
 
     DeliveryRepository deliveryRepository;
 
@@ -130,5 +132,13 @@ public class VendorOrCourierController {
         delivery.setCourierID(courierID);
         deliveryRepository.save(delivery);
         return new ResponseEntity<>(delivery.getDeliveryID(), HttpStatus.OK);
+    }
+
+    @Override
+    public <T> ResponseEntity<T> checkAndHandle(String role, Supplier<ResponseEntity<T>> operation) {
+        if(!(role.equals("vendor") || role.equals("courier"))) {
+            return new ResponseEntity<T>(HttpStatus.UNAUTHORIZED);
+        }
+        return operation.get();
     }
 }
