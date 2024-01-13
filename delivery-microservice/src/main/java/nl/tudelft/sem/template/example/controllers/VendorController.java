@@ -207,13 +207,13 @@ public class VendorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<UUID> newList = couriers.stream().filter(c -> !c.equals(courierId)).collect(Collectors.toList());
+        couriers.remove(courierId);
 
-        restaurant.setCourierIDs(newList);
+        restaurant.setCourierIDs(couriers);
 
         restaurantRepository.save(restaurant);
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
 
     }
 

@@ -208,6 +208,14 @@ class CourierControllerTest {
     }
 
     @Test
+    void testGetAvrRatingUnauthorised() {
+        ResponseEntity<Double> response = courierController.getAvrRating(courierId, "vendor");
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
     public void getAvrRatingReturnsAverageRating() {
         ResponseEntity<Double> response = courierController.getAvrRating(courierId, "courier");
 
