@@ -25,19 +25,18 @@ import org.springframework.http.ResponseEntity;
 class CourierControllerTest {
 
     private transient CourierController courierController;
-    private transient RestaurantRepository restaurantRepository;
     private transient TestDeliveryRepository deliveryRepository;
     private transient ExternalService externalService;
 
     private transient UUID deliveryId;
     private transient UUID restaurantId;
     private transient UUID courierId;
-    private transient String role = "courier";
+    private final transient String role = "courier";
 
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
-        restaurantRepository = new TestRestaurantRepository();
+        RestaurantRepository restaurantRepository = new TestRestaurantRepository();
         externalService = Mockito.mock(ExternalService.class);
 
         Restaurant restaurant = new Restaurant(

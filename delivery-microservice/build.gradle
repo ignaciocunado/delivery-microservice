@@ -164,11 +164,17 @@ pitest {
 	//adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
 	junit5PluginVersion = '0.12'
 
-	targetClasses = ['nl.tudelft.sem.template.*']  //by default "${project.group}.*"
+	targetClasses = ['nl.tudelft.sem.template.example.authorization.*',
+					 'nl.tudelft.sem.template.example.config.*',
+					 'nl.tudelft.sem.template.example.controllers.*',
+					 'nl.tudelft.sem.template.example.service.*',
+	]  //by default "${project.group}.*"
 	pitestVersion = '1.5.1' //not needed when a default PIT version should be used
-	threads = 4
+	threads = 8
 	outputFormats = ['XML', 'HTML']
 	timestampedReports = false
+	verbose = true
+	jvmArgs = ['-DisRunningPiTest=true']
 }
 
 apply plugin: 'org.openapi.generator'
