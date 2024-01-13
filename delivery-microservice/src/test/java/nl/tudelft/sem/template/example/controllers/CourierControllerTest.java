@@ -208,8 +208,16 @@ class CourierControllerTest {
     }
 
     @Test
+    void testGetAvrRatingUnauthorised() {
+        ResponseEntity<Double> response = courierController.getAvrRating(courierId, "vendor");
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
     public void getAvrRatingReturnsAverageRating() {
-        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
+        ResponseEntity<Double> response = courierController.getAvrRating(courierId, "courier");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1.0, response.getBody());
@@ -218,7 +226,7 @@ class CourierControllerTest {
     @Test
     public void getAvrRatingReturns0AverageRating() {
         deliveryRepository.deleteAll();
-        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
+        ResponseEntity<Double> response = courierController.getAvrRating(courierId, "courier");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(0.0, response.getBody());
@@ -228,7 +236,7 @@ class CourierControllerTest {
     public void getAvrRatingReturnsZeroWhenNoRatings() {
         UUID courierId = UUID.randomUUID();
 
-        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
+        ResponseEntity<Double> response = courierController.getAvrRating(courierId, "courier");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(0.0, response.getBody());

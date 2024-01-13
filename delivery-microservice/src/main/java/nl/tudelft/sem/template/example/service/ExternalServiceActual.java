@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -79,6 +80,7 @@ public class ExternalServiceActual implements ExternalService {
 
         // Print debug info
         System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
+
         System.out.println("\033[96;40m response status code: \033[30;106m " + statusCode + " \033[0m");
 
         return statusCode == 200;
@@ -111,8 +113,8 @@ public class ExternalServiceActual implements ExternalService {
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url.toString(), String.class);
             return response.getStatusCodeValue();
-        } catch (HttpClientErrorException e) {
-            return e.getRawStatusCode();
+        } catch (RestClientException e) {
+            return 401;
         }
     }
 }
