@@ -1,3 +1,18 @@
+# YumYumNow Delivery Microservice
+
+## How to Run
+
+The microservice can be run by starting the Spring application. You can then [use Postman](#requests-using-postman)
+to perform requests.
+
+### Requests using Postman
+
+Two things are required to successfully make a request to the microservice:
+1) The `X-User-Id` header must be set to a valid `UUID`.
+2) The query parameter `role` is one of the following: [`customer`, `courier`, `vendor`, `admin`].
+
+>An example request URL would be `host:port/delivery/?role=courier`.
+
 # Lab Template
 
 This template contains two microservices:
