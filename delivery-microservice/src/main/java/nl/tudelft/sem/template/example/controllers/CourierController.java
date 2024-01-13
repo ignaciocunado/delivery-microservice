@@ -50,7 +50,8 @@ public class CourierController  {
      * @return boolean
      */
     private boolean checkCourier(String role) {
-        return role.equals("courier");
+        final List<String> validRoles = List.of("courier", "admin");
+        return validRoles.contains(role);
     }
 
     /**
