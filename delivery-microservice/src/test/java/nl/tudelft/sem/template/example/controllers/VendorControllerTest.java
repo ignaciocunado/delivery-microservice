@@ -705,4 +705,34 @@ class VendorControllerTest {
                 response.getStatusCode()
         );
     }
+
+    @Test
+    void testCreateDeliveryRestaurantNull() {
+        final Delivery deliveryToCreate = new Delivery();
+        deliveryToCreate.setRestaurantID(null);
+
+        ResponseEntity<Delivery> response = sut.createDelivery("vendor", deliveryToCreate);
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                response.getStatusCode()
+        );
+    }
+
+    @Test
+    void testCreateDeliveryRestaurantDoesNotExist() {
+        // Generate a new, non-existing restaurant ID
+        final Optional<UUID> invalidRestaurantId = uuidGenerationService.generateUniqueId(restaurantRepo);
+        assertTrue(invalidRestaurantId.isPresent());
+
+        final Delivery deliveryToCreate = new Delivery();
+        deliveryToCreate.setRestaurantID(invalidRestaurantId.get());
+
+        ResponseEntity<Delivery> response = sut.createDelivery("vendor", deliveryToCreate);
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                response.getStatusCode()
+        );
+    }
 }
