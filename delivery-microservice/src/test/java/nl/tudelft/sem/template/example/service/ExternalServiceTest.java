@@ -2,20 +2,23 @@ package nl.tudelft.sem.template.example.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpringBootTest
+@ActiveProfiles("test")
 public class ExternalServiceTest {
 
-    private transient ExternalService externalService;
 
-    @BeforeEach
-    void setUp() {
-        externalService = new ExternalService();
-    }
+    @Autowired
+    private ExternalService externalService;
+
 
     @Test
     public void getRestaurantLocation_returnsExpectedFormat() {
@@ -39,22 +42,12 @@ public class ExternalServiceTest {
     }
 
     @Test
-    public void isCustomerReturnsTrue() {
-        assertTrue(externalService.isCustomer("123"));
-    }
+    public void verify_returnsTrue() {
+        String userId = "123";
+        String role = "courier";
 
-    @Test
-    public void isAdminReturnsTrue() {
-        assertTrue(externalService.isAdmin("123"));
-    }
+        boolean result = externalService.verify(userId, role);
 
-    @Test
-    public void isCourierReturnsTrue() {
-        assertTrue(externalService.isCourier("123"));
-    }
-
-    @Test
-    public void isVendorReturnsTrue() {
-        assertTrue(externalService.isVendor("123"));
+        assertTrue(result);
     }
 }
