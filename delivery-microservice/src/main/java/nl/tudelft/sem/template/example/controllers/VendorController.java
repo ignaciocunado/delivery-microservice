@@ -192,19 +192,19 @@ public class VendorController {
      */
     public ResponseEntity<Void> removeCourierRest(UUID restaurantId, UUID courierId, String role) {
         if (!checkVendor(role)) {
-            return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Optional<Restaurant> fetched = restaurantRepository.findById(restaurantId);
         if (fetched.isEmpty()) {
-            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Restaurant restaurant = fetched.get();
         List<UUID> couriers = restaurant.getCourierIDs();
 
         if(!couriers.contains(courierId)) {
-            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         List<UUID> newList = couriers.stream().filter(c -> !c.equals(courierId)).collect(Collectors.toList());

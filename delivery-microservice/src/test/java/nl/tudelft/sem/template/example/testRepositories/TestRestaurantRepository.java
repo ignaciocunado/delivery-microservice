@@ -76,7 +76,7 @@ public class TestRestaurantRepository implements RestaurantRepository {
 
     @Override
     public Optional<Restaurant> findById(UUID s) {
-        List<Restaurant> matching = list.stream().filter(x -> x.getRestaurantID().equals(s)).collect(Collectors.toList());
+        List<Restaurant> matching = list.stream().filter(x -> s.equals(x.getRestaurantID())).collect(Collectors.toList());
         if(!matching.isEmpty()) {
             return Optional.of(matching.get(0));
         } else {
@@ -86,7 +86,7 @@ public class TestRestaurantRepository implements RestaurantRepository {
 
     @Override
     public boolean existsById(UUID s) {
-        return list.stream().filter(x -> x.getRestaurantID().equals(s)).collect(Collectors.toList()).size() != 0;
+        return list.stream().anyMatch(x -> x.getRestaurantID().equals(s));
     }
 
     @Override

@@ -7,7 +7,9 @@ import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,6 +22,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 
 class VendorControllerTest {
@@ -40,6 +44,10 @@ class VendorControllerTest {
 
     private transient UUID courierId;
 
+    private Restaurant r1;
+
+    private List<UUID> couriersList;
+
     @BeforeEach
     public void setup() {
         // create test repositories
@@ -59,9 +67,11 @@ class VendorControllerTest {
         deliveryId2 = UUID.randomUUID();
 
         // setup test repository with some sample objects
-        Restaurant r = new Restaurant(restaurantId, vendorId, List.of(courierId), 1.0d);
+        couriersList = Mockito.spy(new ArrayList<UUID>());
+        couriersList.add(courierId);
+        r1 = new Restaurant(restaurantId, vendorId, couriersList, 1.0d);
         Restaurant r2 = new Restaurant(restaurantId2, vendorId2, List.of(courierId), 1.0d);
-        restaurantRepo.save(r);
+        restaurantRepo.save(r1);
         restaurantRepo.save(r2);
 
         sampleOffsetDateTime = OffsetDateTime.of(
@@ -171,8 +181,12 @@ class VendorControllerTest {
 
     @Test
     void testRemoveCourierNotFound() {
-        ResponseEntity<Void> res = sut.removeCourierRest(UUID.randomUUID(), restaurantId, "vendor");
+        System.out.println(couriersList);
+        UUID randomCourierId = UUID.randomUUID();
+        ResponseEntity<Void> res = sut.removeCourierRest(restaurantId, randomCourierId, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+        // make sure that the restaurant is found AND that there is a check whether the courier is in the restaurant
+        verify(couriersList, atLeastOnce()).contains(randomCourierId);
     }
 
     @Test
