@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -175,6 +176,33 @@ public class GlobalController {
         final UUID orderId = delivery.getOrderID();
 
         return new ResponseEntity<>(orderId, HttpStatus.OK);
+    }
+
+    /**
+     * Implementation for the get pick up time endpoint.
+     * Note that this returns the pickup time ESTIMATE, as specified in the OpenAPI spec.
+     *
+     * @param deliveryId ID of the delivery to query.
+     * @param role Role of the querying user.
+     * @return The estimated pickup time.
+     */
+    public ResponseEntity<OffsetDateTime> getPickUpTime(UUID deliveryId, String role) {
+        // Authorize the user
+        if (!checkGeneral(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Attempt to fetch the delivery from the DB
+        final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
+        if (deliveryFromDB.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Fetch the pickup time estimate
+        final Delivery delivery = deliveryFromDB.get();
+        final OffsetDateTime pickUpTimeEstimate = delivery.getPickupTimeEstimate();
+
+        return new ResponseEntity<>(pickUpTimeEstimate, HttpStatus.OK);
     }
 
     /**
