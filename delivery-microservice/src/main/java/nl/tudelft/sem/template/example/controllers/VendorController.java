@@ -61,6 +61,14 @@ public class VendorController {
         return role.equals("customer");
     }
 
+    /**
+     * Authorisation method.
+     * @param role  the role of the user making the request
+     * @return true if the user is an admin, false otherwise
+     */
+    private boolean checkAdmin(String role) {
+        return role.equals("admin");
+    }
     /** Adds a courier to a restaurant.
      *
      * @param courierId   ID of the courier to add to the restaurant. (required)
@@ -453,7 +461,7 @@ public class VendorController {
      * @return a response entity with the given rating
      */
     public ResponseEntity<String> setRateOfDelivery(UUID deliveryID, String role, Double body) {
-        if (!checkCustomer(role)) {
+        if (!checkCustomer(role) && !checkAdmin(role)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         if (deliveryRepository.existsById(deliveryID)) {

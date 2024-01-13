@@ -787,7 +787,7 @@ class VendorControllerTest {
 
     @Test
     void setRateOfDeliveryBadRequest2() {
-        ResponseEntity<String> response = sut.setRateOfDelivery(deliveryId, "customer", -15d);
+        ResponseEntity<String> response = sut.setRateOfDelivery(deliveryId, "admin", -15d);
         assertEquals(400, response.getStatusCodeValue());
     }
 
