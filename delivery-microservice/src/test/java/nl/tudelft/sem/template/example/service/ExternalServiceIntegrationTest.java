@@ -38,9 +38,11 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void getOrderDestination() {
-        Mockito.when(restTemplate.getForObject(Mockito.anyString(), Mockito.any())).thenReturn("Destination in format xxx.xxx");
+        Mockito.when(restTemplate.getForObject(Mockito.anyString(), Mockito.any()))
+                .thenReturn("Destination in format xxx.xxx");
 
-        assert(externalService.getOrderDestination(UUID.randomUUID(), UUID.randomUUID()).equals("Destination in format xxx.xxx"));
+        assert(externalService.getOrderDestination(UUID.randomUUID(), UUID.randomUUID())
+                .equals("Destination in format xxx.xxx"));
     }
 
     @Test
@@ -51,7 +53,8 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void verifyVendorRole() {
-        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any())).thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
+        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+                .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
         boolean result = externalService.verify("123", "vendor");
 
         assertTrue(result);
@@ -59,7 +62,8 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void verifyCourierRole() {
-        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any())).thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
+        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+                .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
         boolean result = externalService.verify("123", "courier");
 
         assertTrue(result);
@@ -83,4 +87,12 @@ public class ExternalServiceIntegrationTest {
         assertFalse(result);
     }
 
+    @Test
+    void verifyClientExceptionThrown() {
+        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+                .thenThrow(new RestClientException(":)"));
+        boolean result = externalService.verify("123", "admin");
+
+        assertFalse(result);
+    }
 }

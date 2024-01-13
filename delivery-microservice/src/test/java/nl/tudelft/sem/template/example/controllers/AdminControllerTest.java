@@ -157,9 +157,6 @@ public class AdminControllerTest {
     void testCreateRestaurantAllIdsUsed() {
         // We mock the repositories, so we can fake all IDs being taken.
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
-        AdminController localAdminController = new AdminController(
-                mockedRestaurantRepository, new UUIDGenerationService()
-        );
 
         // Every single restaurant ID is mapped to this one restaurant
         Restaurant foundRestaurant = new Restaurant();
@@ -172,6 +169,9 @@ public class AdminControllerTest {
         final Restaurant restaurantToCreate = new Restaurant();
 
         restaurantToCreate.setVendorID(UUID.randomUUID());
+        AdminController localAdminController = new AdminController(
+                mockedRestaurantRepository, new UUIDGenerationService()
+        );
 
         ResponseEntity<Restaurant> response = localAdminController.createRestaurant(restaurantToCreate);
 
@@ -235,9 +235,6 @@ public class AdminControllerTest {
     void testCreateRestaurantRetrievalFailed() {
         // We mock the repositories, so we can fake saving failing.
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
-        AdminController localAdminController = new AdminController(
-                mockedRestaurantRepository, new UUIDGenerationService()
-        );
 
         final Restaurant restaurantToCreate = new Restaurant();
         restaurantToCreate.setVendorID(UUID.randomUUID());
@@ -247,6 +244,9 @@ public class AdminControllerTest {
         // Retrieval always fails and returns empty
         Mockito.when(mockedRestaurantRepository.findById(Mockito.any()))
                 .thenReturn(Optional.empty());
+        AdminController localAdminController = new AdminController(
+                mockedRestaurantRepository, new UUIDGenerationService()
+        );
 
         // Ensure a server error occurs
         ResponseEntity<Restaurant> response = localAdminController.createRestaurant(restaurantToCreate);

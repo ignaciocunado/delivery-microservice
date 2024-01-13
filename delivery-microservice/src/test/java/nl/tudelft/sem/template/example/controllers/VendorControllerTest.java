@@ -150,10 +150,11 @@ class VendorControllerTest {
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
+
     @Test
     void testRemoveCourierNotFound() {
         UUID randomCourierId = UUID.randomUUID();
-        ResponseEntity<Void> res = sut.removeCourierRest(restaurantId, randomCourierId);
+        ResponseEntity<Void> res = sut.removeCourierRest(randomCourierId, restaurantId);
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         // make sure that the restaurant is found AND that there is a check whether the courier is in the restaurant
         if (!"true".equals(System.getProperty("isRunningPiTest"))) {

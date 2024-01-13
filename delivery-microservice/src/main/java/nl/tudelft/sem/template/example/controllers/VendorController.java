@@ -128,7 +128,7 @@ public class VendorController implements Controller {
         Optional<Restaurant> rest = restaurantRepository.findById(restaurantId);
 
         if (rest.isEmpty()) {
-            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Optional<Restaurant> fetched = restaurantRepository.findById(restaurantId);
@@ -144,8 +144,6 @@ public class VendorController implements Controller {
         }
 
         couriers.remove(courierId);
-
-        // restaurant.setCourierIDs(couriers);
 
         restaurantRepository.save(restaurant);
 
@@ -227,8 +225,8 @@ public class VendorController implements Controller {
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
         final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDelivery.getDeliveryID());
-        return databaseDelivery.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
-
+        return databaseDelivery.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     /**
@@ -274,7 +272,7 @@ public class VendorController implements Controller {
      * @return the list of restaurant Ids
      */
     public ResponseEntity<List<UUID>> getVendorRest(UUID vendorId) {
-        List<Restaurant> allRestaurants= restaurantRepository.findAll();
+        List<Restaurant> allRestaurants = restaurantRepository.findAll();
         List<Restaurant> filteredRestaurants = allRestaurants
                 .stream()
                 .filter(x -> x.getVendorID().equals(vendorId))

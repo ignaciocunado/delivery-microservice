@@ -294,7 +294,7 @@ public class GlobalControllerTest {
             id = UUID.randomUUID();
         }
 
-        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(id,25.0);
+        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(id, 25.0);
 
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
