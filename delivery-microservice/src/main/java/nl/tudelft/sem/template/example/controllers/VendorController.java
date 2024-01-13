@@ -97,12 +97,12 @@ public class VendorController {
     }
 
     /**
-     * Gets the estimated time of pick-up for a delivery.
+     * Gets the pick-up time for a delivery.
      * @param deliveryID UUID of the delivery object
      * @param role User role
-     * @return OffsetDateTime of the estimated time of pick-up
+     * @return OffsetDateTime of the picked-up time.
      */
-    public ResponseEntity<OffsetDateTime> getPickUpEstimate(UUID deliveryID, String role) {
+    public ResponseEntity<OffsetDateTime> getPickedUpEstimate(UUID deliveryID, String role) {
         Optional<Delivery> estimate = deliveryRepository.findById(deliveryID);
         if (estimate.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

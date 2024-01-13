@@ -198,7 +198,7 @@ class VendorControllerTest {
 
     @Test
     void testGetPickUpEstimate() {
-        ResponseEntity<OffsetDateTime> res = sut.getPickUpEstimate(deliveryId, "idk");
+        ResponseEntity<OffsetDateTime> res = sut.getPickedUpEstimate(deliveryId, "idk");
         OffsetDateTime resBody = res.getBody();
         //System.out.println("\033[96;40m testGetPickUpEstimate requested for UUID \033[30;106m " + deliveryId
         // + " \033[96;40m got response: \033[30;106m " + res + " \033[0m");
@@ -207,7 +207,7 @@ class VendorControllerTest {
 
     @Test
     void pickUpEstimate404() {
-        ResponseEntity<OffsetDateTime> res = sut.getPickUpEstimate(UUID.randomUUID(), "idk");
+        ResponseEntity<OffsetDateTime> res = sut.getPickedUpEstimate(UUID.randomUUID(), "idk");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
@@ -222,7 +222,7 @@ class VendorControllerTest {
                 "pending", null, null, 1.d, null,
                 "", "", 1));
         VendorController vc = new VendorController(rp, dp, new UUIDGenerationService());
-        ResponseEntity<OffsetDateTime> res = vc.getPickUpEstimate(did, "hi");
+        ResponseEntity<OffsetDateTime> res = vc.getPickedUpEstimate(did, "hi");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
