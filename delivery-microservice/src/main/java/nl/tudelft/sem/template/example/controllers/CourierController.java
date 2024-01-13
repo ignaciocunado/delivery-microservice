@@ -107,17 +107,19 @@ public class CourierController  {
      * @return courier controller's response entity
      */
     public ResponseEntity<String> deliveredDelivery(UUID deliveryId, String role) {
-        if (checkCourier(role)) {
-            if (deliveryRepository.findById(deliveryId).isPresent()) {
-                Delivery d = deliveryRepository.findById(deliveryId).get();
-                d.setStatus("delivered");
-                deliveryRepository.save(d);
+        if (!checkCourier(role)) {
+            return new ResponseEntity<>("Authorization failed!", HttpStatus.UNAUTHORIZED);
+        }
 
-                return new ResponseEntity<>("Delivery marked as delivered!", HttpStatus.OK);
-            }
+        if (deliveryRepository.findById(deliveryId).isEmpty()) {
             return new ResponseEntity<>("Delivery not found!", HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>("Authorization failed!", HttpStatus.UNAUTHORIZED);
+
+        Delivery d = deliveryRepository.findById(deliveryId).get();
+        d.setStatus("delivered");
+        deliveryRepository.save(d);
+
+        return new ResponseEntity<>("Delivery marked as delivered!", HttpStatus.OK);
     }
 
     /**
