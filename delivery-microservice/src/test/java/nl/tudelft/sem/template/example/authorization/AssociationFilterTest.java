@@ -51,7 +51,9 @@ class AssociationFilterTest {
         associationFilter.doFilter(request, response, filterChain);
 
         assertEquals(401, response.getStatus());
-        assertEquals("Authorization failed! The object "
-                + "you are requesting does not belong to you.", response.getContentAsString());
+        assertEquals("Authorization failed! The object you are requesting does not belong to you.",
+                response.getContentAsString());
+//        assertEquals("Authorization failed! The object "
+//                + "you are requesting does not belong to you.", response.getContentAsString());
     }
 }

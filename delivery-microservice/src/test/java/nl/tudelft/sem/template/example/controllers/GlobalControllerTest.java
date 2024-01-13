@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
+
 public class GlobalControllerTest {
 
     private transient GlobalController globalController;
@@ -512,6 +513,36 @@ public class GlobalControllerTest {
         ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "");
+    }
+
+    @Test
+    void testSetMaxZoneUnauthorized() {
+        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(UUID.randomUUID(), "a", 20.0d);
+
+        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testSetMaxZoneNotFound() {
+        UUID id = UUID.randomUUID();
+        while (id.equals(restaurantId)) {
+            id = UUID.randomUUID();
+        }
+
+        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(id, "vendor", 25.0);
+
+        assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testSetMaxZoneOk() {
+        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(restaurantId, "vendor", 25.1d);
+
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+
+        Restaurant r = globalController.restaurantRepository.findById(restaurantId).get();
+
+        assertEquals(r.getMaxDeliveryZone(), 25.1d);
     }
 
     /**

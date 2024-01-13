@@ -428,8 +428,8 @@ class VendorControllerTest {
                 new UUIDGenerationService());
         ResponseEntity<OffsetDateTime> res = vc.getDeliveryEstimate(newRandomDeliveryID, "vendor");
         System.out.println("\033[96;40m getDeliveryEstimateDoesntExist requested for UUID \033[30;106m "
-                + newRandomDeliveryID + " \033[96;40m got response: \033[30;106m "
-                + res.getBody() + " \033[0m");
+                + newRandomDeliveryID + " \033[96;40m got response: \033[30;106m " + res.getBody()
+                + " \033[0m");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
