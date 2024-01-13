@@ -74,7 +74,7 @@ public class ExternalServiceIntegrationTest {
     @Test
     void verifyValidRoleNon200ErrorCode() {
         Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any())).thenReturn(new ResponseEntity<>(null, null, HttpStatus.UNAUTHORIZED));
-        boolean result = externalService.verify("123", "admin");
+        boolean result = externalService.verify("123", "customer");
 
         assertFalse(result);
     }

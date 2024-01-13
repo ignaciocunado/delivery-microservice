@@ -89,12 +89,12 @@ public class ExternalServiceActual implements ExternalService {
         // handle the response entity
         int statusCode = 0;
 
-        try {
+//        try {
             ResponseEntity<String> response = restTemplate.getForEntity(url.toString(), String.class);
             statusCode = response.getStatusCodeValue();
-        } catch (HttpClientErrorException e) {
-            statusCode = e.getRawStatusCode();
-        }
+//        } catch (HttpClientErrorException e) {
+//            statusCode = e.getRawStatusCode();
+//        }
 
         // print the status code
         System.out.println("\033[96;40m response status code: \033[30;106m " + statusCode + " \033[0m");
