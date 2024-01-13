@@ -160,9 +160,10 @@ class DeliveryControllerTest {
     void testCreateDelivery() {
         // Since only chained method calls are being tested, we don't need to pass data to the new Delivery.
         final Delivery newDelivery = new Delivery();
-        deliveryController.createDelivery(role, newDelivery);
-
+        Mockito.when(vendorController.createDelivery(role, newDelivery)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        ResponseEntity<?> r = deliveryController.createDelivery(role, newDelivery);
         Mockito.verify(vendorController).createDelivery(role, newDelivery);
+        assertNotNull(r);
     }
 
     @Test
