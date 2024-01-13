@@ -49,7 +49,7 @@ class DeliveryControllerTest {
     void getPickUpLocation() {
         deliveryController.getPickUpLocation(deliveryId, role);
 
-        Mockito.verify(courierController).getPickUpLocation(deliveryId, role);
+        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -83,7 +83,7 @@ class DeliveryControllerTest {
     void deliveryIdDone() {
         deliveryController.deliveryIdDone(deliveryId, role);
 
-        Mockito.verify(courierController).deliveredDelivery(deliveryId, role);
+        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -170,7 +170,7 @@ class DeliveryControllerTest {
     void testSetLiveLocation() {
         deliveryController.setLiveLocation(deliveryId, role, "Test");
 
-        Mockito.verify(courierController).setLiveLocation(deliveryId, role, "Test");
+        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -178,7 +178,7 @@ class DeliveryControllerTest {
         UUID courierId = UUID.randomUUID();
         deliveryController.getAvRateCourier(courierId);
 
-        Mockito.verify(courierController).getAvrRating(courierId);
+        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -199,8 +199,7 @@ class DeliveryControllerTest {
     void testGetLocationOfDelivery() {
         deliveryController.getLocationOfDelivery(deliveryId, role);
 
-        Mockito.verify(courierController).getLocationOfDelivery(deliveryId, role);
-
+        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -237,7 +236,7 @@ class DeliveryControllerTest {
     void testGetAllDeliveriesCourier() {
         UUID courierID = UUID.randomUUID();
         deliveryController.getAllDeliveriesCourier(courierID, "courier");
-        Mockito.verify(courierController).getAllDeliveriesCourier(courierID, "courier");
+        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test

@@ -62,7 +62,7 @@ public class RestaurantController implements RestaurantApi {
      */
     @Override
     public ResponseEntity<Restaurant> createRestaurant(String role, Restaurant restaurant) {
-        return adminController.createRestaurant(role, restaurant);
+        return adminController.createRestaurant(restaurant);
     }
 
     /**

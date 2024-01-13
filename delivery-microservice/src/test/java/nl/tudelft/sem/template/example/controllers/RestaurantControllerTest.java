@@ -53,7 +53,7 @@ class RestaurantControllerTest {
         Restaurant restaurant = new Restaurant();
         sut.createRestaurant("admin", restaurant);
 
-        verify(ac).createRestaurant("admin", restaurant);
+        verify(ac).createRestaurant(restaurant);
     }
 
     @Test
