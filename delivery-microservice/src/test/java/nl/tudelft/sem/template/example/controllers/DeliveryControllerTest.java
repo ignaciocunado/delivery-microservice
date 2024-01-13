@@ -176,9 +176,9 @@ class DeliveryControllerTest {
     @Test
     void testGetAvRateCourier() {
         UUID courierId = UUID.randomUUID();
-        deliveryController.getAvRateCourier(courierId);
+        deliveryController.getAvRateCourier(courierId, "courier");
 
-        Mockito.verify(courierController).getAvrRating(courierId);
+        Mockito.verify(courierController).getAvrRating(courierId, "courier");
     }
 
     @Test

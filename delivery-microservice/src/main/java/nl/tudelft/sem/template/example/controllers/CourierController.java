@@ -151,7 +151,10 @@ public class CourierController  {
      * @param courierID The ID of the courier to query (required)
      * @return the average rating
      */
-    public ResponseEntity<Double> getAvrRating(UUID courierID) {
+    public ResponseEntity<Double> getAvrRating(UUID courierID, String role) {
+        if(!checkCourier(role)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         List<Delivery> deliveries = deliveryRepository.findAll();
 
         if (deliveries.isEmpty()) {
