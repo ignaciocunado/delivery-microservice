@@ -29,6 +29,12 @@ public class VendorController {
     DeliveryRepository deliveryRepository;
     UUIDGenerationService uuidGenerationService;
 
+    /**
+     * Constructor for the Vendor Controller.
+     * @param restaurantRepository the restaurant repository
+     * @param deliveryRepository the delivery repository
+     * @param uuidGenerationService the service for generating UUIDs
+     */
     @Autowired
     public VendorController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
                             UUIDGenerationService uuidGenerationService) {

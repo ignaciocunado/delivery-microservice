@@ -283,7 +283,7 @@ class VendorControllerTest {
     void testGetRestaurantUnauthorized() {
         ResponseEntity<String> res = sut.getRest(UUID.randomUUID(), "noVendor");
 
-        assertEquals(res.getBody(),"NOT AUTHORIZED \n Requires vendor permissions!");
+        assertEquals(res.getBody(), "NOT AUTHORIZED \n Requires vendor permissions!");
         assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }
 
@@ -426,7 +426,9 @@ class VendorControllerTest {
         VendorController vc = new VendorController(restaurantRepository, deliveryRepository,
                 new UUIDGenerationService());
         ResponseEntity<OffsetDateTime> res = vc.getDeliveryEstimate(newRandomDeliveryID, "vendor");
-        System.out.println("\033[96;40m getDeliveryEstimateDoesntExist requested for UUID \033[30;106m " + newRandomDeliveryID + " \033[96;40m got response: \033[30;106m " + res.getBody() + " \033[0m");
+        System.out.println("\033[96;40m getDeliveryEstimateDoesntExist requested for UUID \033[30;106m "
+                + newRandomDeliveryID + " \033[96;40m got response: \033[30;106m " + res.getBody()
+                + " \033[0m");
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
@@ -605,7 +607,7 @@ class VendorControllerTest {
     }
 
     /**
-     * Tests the case where no more UUIDs are available
+     * Tests the case where no more UUIDs are available.
      */
     @Test
     void testCreateDeliveryAllIdsUsed() {

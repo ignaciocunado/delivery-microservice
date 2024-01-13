@@ -86,4 +86,16 @@ public class RestaurantController implements RestaurantApi {
     public ResponseEntity<String> getRest(UUID restaurantId, String role) {
         return vendorController.getRest(restaurantId, role);
     }
+
+    /**
+     * Calls the corresponding method in the globalController.
+     * @param restaurantId ID of the restaurant to modify. (required)
+     * @param role The role of the user (required)
+     * @param body Leave the delivery zone blank to reset to the default value instead. (optional)
+     * @return the ResponseEntity returned by the method.
+     */
+    @Override
+    public ResponseEntity<Void> setMaxDeliveryZone(UUID restaurantId, String role, Double body) {
+        return globalController.setMaxDeliveryZone(restaurantId, role, body);
+    }
 }

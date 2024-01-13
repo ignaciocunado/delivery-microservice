@@ -201,4 +201,28 @@ public class GlobalController {
 
         return new ResponseEntity<>(rating, HttpStatus.OK);
     }
+
+    /**
+     * Sets the maxDeliveryZone of a given restaurant.
+     * @param restaurantId the id of the restaurant
+     * @param role the role of the caller
+     * @param body the value to be set
+     * @return Corresponding responseEntity
+     */
+    public ResponseEntity<Void> setMaxDeliveryZone(UUID restaurantId, String role, Double body) {
+        if(!checkGeneral(role)) {
+            return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<Restaurant> res = restaurantRepository.findById(restaurantId);
+        if(res.isEmpty()) {
+            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+        }
+
+        Restaurant r = res.get();
+        r.setMaxDeliveryZone(body);
+        restaurantRepository.save(r);
+
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
 }
