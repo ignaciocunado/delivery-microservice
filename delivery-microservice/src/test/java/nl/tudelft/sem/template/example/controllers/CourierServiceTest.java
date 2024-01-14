@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -8,11 +8,13 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import nl.tudelft.sem.template.example.service.ExternalService;
+import nl.tudelft.sem.template.example.service.roles.CourierService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,22 +23,21 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-class CourierControllerTest {
+class CourierServiceTest {
 
-    private transient CourierController courierController;
-    private transient RestaurantRepository restaurantRepository;
+    private transient CourierService courierService;
     private transient TestDeliveryRepository deliveryRepository;
     private transient ExternalService externalService;
 
     private transient UUID deliveryId;
     private transient UUID restaurantId;
     private transient UUID courierId;
-    private transient String role = "courier";
+    private final transient String role = "courier";
 
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
-        restaurantRepository = new TestRestaurantRepository();
+        RestaurantRepository restaurantRepository = new TestRestaurantRepository();
         externalService = Mockito.mock(ExternalService.class);
 
         Restaurant restaurant = new Restaurant(
@@ -57,9 +58,13 @@ class CourierControllerTest {
         Delivery d = new  Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), courierId,
                 restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
                 sampleOffsetDateTime, "", "", 1);
+        Delivery d2 = new  Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), courierId,
+                restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 0.4d,
+                sampleOffsetDateTime, "", "", 1);
         deliveryRepository.save(d);
+        deliveryRepository.save(d2);
 
-        courierController = new CourierController(deliveryRepository, restaurantRepository, externalService);
+        courierService = new CourierService(deliveryRepository, restaurantRepository, externalService);
     }
 
     @Test
@@ -68,7 +73,7 @@ class CourierControllerTest {
 
         when(externalService.getRestaurantLocation(any())).thenReturn(expectedLocation);
 
-        ResponseEntity<String> response = courierController.getPickUpLocation(deliveryId, role);
+        ResponseEntity<String> response = courierService.getPickUpLocation(deliveryId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("location: " + expectedLocation, response.getBody());
@@ -78,21 +83,10 @@ class CourierControllerTest {
     public void getPickUpLocationReturnsNotFound() {
         UUID randomId = UUID.randomUUID();
 
-        ResponseEntity<String> response = courierController.getPickUpLocation(randomId, role);
+        ResponseEntity<String> response = courierService.getPickUpLocation(randomId);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Delivery not found!", response.getBody());
-    }
-
-    @Test
-    public void getPickUpLocationReturnsUnauthorized() {
-        UUID deliveryId = UUID.randomUUID();
-        String role = "non-courier";
-
-        ResponseEntity<String> response = courierController.getPickUpLocation(deliveryId, role);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("Authorization failed!", response.getBody());
     }
 
     @Test
@@ -101,7 +95,7 @@ class CourierControllerTest {
 
         when(externalService.getOrderDestination(any(), any())).thenReturn(expectedLocation);
 
-        ResponseEntity<String> response = courierController.getLocationOfDelivery(deliveryId, role);
+        ResponseEntity<String> response = courierService.getLocationOfDelivery(deliveryId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("location: " + expectedLocation, response.getBody());
@@ -111,39 +105,47 @@ class CourierControllerTest {
     public void getLocationOfDeliveryReturnsNotFound() {
         UUID randomId = UUID.randomUUID();
         
-        ResponseEntity<String> response = courierController.getLocationOfDelivery(randomId, role);
+        ResponseEntity<String> response = courierService.getLocationOfDelivery(randomId);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Delivery not found!", response.getBody());
     }
 
     @Test
-    public void getLocationOfDeliveryReturnsUnauthorized() {
-        UUID deliveryId = UUID.randomUUID();
-        String role = "non-courier";
+    public void checkAndHandleReturnsOk() {
+        Supplier<ResponseEntity<String>> operation = () -> new ResponseEntity<>("Success", HttpStatus.OK);
 
-        ResponseEntity<String> response = courierController.getLocationOfDelivery(deliveryId, role);
+        ResponseEntity<String> result = courierService.checkAndHandle(role, operation);
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("Authorization failed!", response.getBody());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("Success", result.getBody());
     }
 
     @Test
-    public void deliveredDeliveryUnauthorized() {
-        UUID deliveryId = UUID.randomUUID();
+    public void checkAndHandleReturnsOk2() {
+        Supplier<ResponseEntity<String>> operation = () -> new ResponseEntity<>("Success", HttpStatus.OK);
+
+        ResponseEntity<String> result = courierService.checkAndHandle("admin", operation);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("Success", result.getBody());
+    }
+
+    @Test
+    public void checkAndHandleReturnsUnauthorized() {
         String role = "non-courier";
+        Supplier<ResponseEntity<String>> operation = () -> new ResponseEntity<>("Success", HttpStatus.OK);
 
-        ResponseEntity<String> response = courierController.deliveredDelivery(deliveryId, role);
+        ResponseEntity<String> result = courierService.checkAndHandle(role, operation);
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("Authorization failed!", response.getBody());
+        assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
     }
 
     @Test
     public void deliveredDeliveryNotFound() {
         UUID deliveryId = UUID.randomUUID();
 
-        ResponseEntity<String> response = courierController.deliveredDelivery(deliveryId, role);
+        ResponseEntity<String> response = courierService.deliveredDelivery(deliveryId);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Delivery not found!", response.getBody());
@@ -151,7 +153,7 @@ class CourierControllerTest {
 
     @Test
     public void deliveredDeliveryOk() {
-        ResponseEntity<String> response = courierController.deliveredDelivery(deliveryId, role);
+        ResponseEntity<String> response = courierService.deliveredDelivery(deliveryId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Delivery marked as delivered!", response.getBody());
@@ -162,7 +164,7 @@ class CourierControllerTest {
     public void setLiveLocationReturnsOk() {
         String location = "123.331.666";
 
-        ResponseEntity<String> response = courierController.setLiveLocation(deliveryId, role, location);
+        ResponseEntity<String> response = courierService.setLiveLocation(deliveryId, location);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("200 OK", response.getBody());
@@ -174,60 +176,39 @@ class CourierControllerTest {
         String location = "123.322.666";
         UUID randomId = UUID.randomUUID();
 
-        ResponseEntity<String> response = courierController.setLiveLocation(randomId, role, location);
+        ResponseEntity<String> response = courierService.setLiveLocation(randomId, location);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("error 404: Delivery not found!", response.getBody());
     }
 
     @Test
-    public void setLiveLocationReturnsUnauthorized() {
-        String role = "vendor";
-        String location = "123.521.666";
-
-        ResponseEntity<String> response = courierController.setLiveLocation(deliveryId, role, location);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("error 403: Authorization failed!", response.getBody());
-    }
-
-    @Test
     public void setLiveLocationReturnsBadRequest() {
-        ResponseEntity<String> response = courierController.setLiveLocation(deliveryId, role, "");
+        ResponseEntity<String> response = courierService.setLiveLocation(deliveryId, "");
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("error 400", response.getBody());
 
-        response = courierController.setLiveLocation(deliveryId, role, null);
+        response = courierService.setLiveLocation(deliveryId, null);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("error 400", response.getBody());
 
-        response = courierController.setLiveLocation(deliveryId, role, "    ");
+        response = courierService.setLiveLocation(deliveryId, "    ");
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("error 400", response.getBody());
     }
 
     @Test
     public void getAvrRatingReturnsAverageRating() {
-        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
+        ResponseEntity<Double> response = courierService.getAvrRating(courierId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1.0, response.getBody());
+        assertEquals(0.7d, response.getBody());
     }
 
     @Test
     public void getAvrRatingReturns0AverageRating() {
         deliveryRepository.deleteAll();
-        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(0.0, response.getBody());
-    }
-
-    @Test
-    public void getAvrRatingReturnsZeroWhenNoRatings() {
-        UUID courierId = UUID.randomUUID();
-
-        ResponseEntity<Double> response = courierController.getAvrRating(courierId);
+        ResponseEntity<Double> response = courierService.getAvrRating(courierId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(0.0, response.getBody());
@@ -251,7 +232,7 @@ class CourierControllerTest {
         deliveryRepository.save(d1);
         deliveryRepository.save(d2);
 
-        ResponseEntity<List<UUID>> response = courierController.getAllDeliveriesCourier(courierId, "courier");
+        ResponseEntity<List<UUID>> response = courierService.getAllDeliveriesCourier(courierId);
         assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         List<UUID> compare = List.of(del1ID, del2ID);
@@ -260,16 +241,16 @@ class CourierControllerTest {
     }
 
     @Test
-    public void testGetAllDeliveriesCourierUnauthorized() {
-        ResponseEntity<List<UUID>> response = courierController.getAllDeliveriesCourier(courierId, "vendor");
-        assertEquals(response.getStatusCode(), HttpStatus.UNAUTHORIZED);
-        assertNull(response.getBody());
+    public void testGetAllDeliveriesCourierEmpty() {
+        ResponseEntity<List<UUID>> response = courierService.getAllDeliveriesCourier(UUID.randomUUID());
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(0, response.getBody().size());
     }
 
     @Test
-    public void testGetAllDeliveriesCourierEmpty() {
-        ResponseEntity<List<UUID>> response = courierController.getAllDeliveriesCourier(UUID.randomUUID(), "courier");
+    public void testGetAvRatingNoCourierId() {
+        ResponseEntity<Double> response = courierService.getAvrRating(UUID.randomUUID());
         assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(0, response.getBody().size());
+        assertEquals(0, response.getBody());
     }
 }

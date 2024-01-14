@@ -27,8 +27,8 @@ public interface IdGenerationService<T> {
      * Given a repository holding objects with existing IDs, generate a new random ID that is not in that list.
      *
      * @param repository Repository holding objects with existing IDs of type T.
-     * @return A new, random, unique ID, or none if generation failed.
      * @param <C> Class of object that the repository holds.
+     * @return A new, random, unique ID, or none if generation failed.
      */
     public <C> Optional<T> generateUniqueId(JpaRepository<C, T> repository);
 }

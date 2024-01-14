@@ -22,6 +22,7 @@ public class AuthorizationFilterConfiguration {
      * Enable registration.
      * @return the authorization filter
      */
+    @lombok.Generated
     @Bean
     public FilterRegistrationBean<AuthorizationFilter> authorizationFilter() {
         AuthorizationFilter authorizationFilter = new AuthorizationFilter(authorizationService);
