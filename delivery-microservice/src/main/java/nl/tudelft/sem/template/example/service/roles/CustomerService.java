@@ -1,12 +1,12 @@
-package nl.tudelft.sem.template.example.controllers;
+package nl.tudelft.sem.template.example.service.roles;
 
 import nl.tudelft.sem.model.Delivery;
-import nl.tudelft.sem.template.example.controllers.interfaces.Controller;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 
 
 /**
- * Sub-controller of delivery controller.
+ * Service that authorizes requests from customers.
  */
-@Component
-public class CustomerController implements Controller {
+@Service
+public class CustomerService implements RoleService {
 
     DeliveryRepository deliveryRepository;
 
@@ -27,7 +27,7 @@ public class CustomerController implements Controller {
      * @param deliveryRepository delivery DB
      */
     @Autowired
-    public CustomerController(DeliveryRepository deliveryRepository) {
+    public CustomerService(DeliveryRepository deliveryRepository) {
         this.deliveryRepository = deliveryRepository;
     }
 

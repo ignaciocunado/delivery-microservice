@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.roles.AdminService;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  * Tests functionality of the Admin Controller method implementations.
  */
 public class AdminControllerTest {
-    private transient AdminController adminController;
+    private transient AdminService adminService;
 
     private transient TestRestaurantRepository restaurantRepository;
 
@@ -33,7 +34,7 @@ public class AdminControllerTest {
         restaurantRepository = new TestRestaurantRepository();
 
         // Set up controllers
-        adminController = new AdminController(restaurantRepository, new UUIDGenerationService());
+        adminService = new AdminService(restaurantRepository, new UUIDGenerationService());
     }
 
     /**
@@ -47,7 +48,7 @@ public class AdminControllerTest {
         );
 
         // Check response status
-        ResponseEntity<Restaurant> response = adminController.createRestaurant(restaurant);
+        ResponseEntity<Restaurant> response = adminService.createRestaurant(restaurant);
         assertEquals(
                 HttpStatus.OK,
                 response.getStatusCode()
@@ -85,8 +86,8 @@ public class AdminControllerTest {
         );
 
         // Check both response statuses
-        ResponseEntity<Restaurant> firstResponse = adminController.createRestaurant(firstRestaurant);
-        ResponseEntity<Restaurant> secondResponse = adminController.createRestaurant(secondRestaurant);
+        ResponseEntity<Restaurant> firstResponse = adminService.createRestaurant(firstRestaurant);
+        ResponseEntity<Restaurant> secondResponse = adminService.createRestaurant(secondRestaurant);
 
         assertEquals(
                 HttpStatus.OK,
@@ -122,7 +123,7 @@ public class AdminControllerTest {
      */
     @Test
     void testCreateRestaurantNull() {
-        ResponseEntity<Restaurant> response = adminController.createRestaurant(null);
+        ResponseEntity<Restaurant> response = adminService.createRestaurant(null);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
@@ -139,7 +140,7 @@ public class AdminControllerTest {
         Supplier<ResponseEntity<Restaurant>> operation = () -> new ResponseEntity<>(HttpStatus.OK);
 
         for (final String roleToTest : rolesToTest) {
-            ResponseEntity<Restaurant> response = adminController.checkAndHandle(roleToTest, operation);
+            ResponseEntity<Restaurant> response = adminService.checkAndHandle(roleToTest, operation);
 
             assertEquals(
                     HttpStatus.UNAUTHORIZED,
@@ -151,7 +152,7 @@ public class AdminControllerTest {
     @Test
     void checkAndHandleCorrectRoles() {
         Supplier<ResponseEntity<Restaurant>> operation = () -> new ResponseEntity<>(HttpStatus.OK);
-        ResponseEntity<Restaurant> response = adminController.checkAndHandle("admin", operation);
+        ResponseEntity<Restaurant> response = adminService.checkAndHandle("admin", operation);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -174,11 +175,11 @@ public class AdminControllerTest {
         final Restaurant restaurantToCreate = new Restaurant();
 
         restaurantToCreate.setVendorID(UUID.randomUUID());
-        AdminController localAdminController = new AdminController(
+        AdminService localAdminService = new AdminService(
                 mockedRestaurantRepository, new UUIDGenerationService()
         );
 
-        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(restaurantToCreate);
+        ResponseEntity<Restaurant> response = localAdminService.createRestaurant(restaurantToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
@@ -193,7 +194,7 @@ public class AdminControllerTest {
     void testCreateRestaurantSavingFailed() {
         // We mock the repositories, so we can fake saving failing.
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
-        AdminController localAdminController = new AdminController(
+        AdminService localAdminService = new AdminService(
                 mockedRestaurantRepository, new UUIDGenerationService()
         );
 
@@ -205,7 +206,7 @@ public class AdminControllerTest {
         final Restaurant restaurantToCreate = new Restaurant();
 
         restaurantToCreate.setVendorID(UUID.randomUUID());
-        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(restaurantToCreate);
+        ResponseEntity<Restaurant> response = localAdminService.createRestaurant(restaurantToCreate);
         assertEquals(
                 HttpStatus.BAD_REQUEST,
                 response.getStatusCode()
@@ -216,7 +217,7 @@ public class AdminControllerTest {
     void testCreateRestaurantSavingFailedBecauseRestaurantIdIsNull() {
         // We mock the repositories, so we can fake saving failing.
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
-        AdminController localAdminController = new AdminController(
+        AdminService localAdminService = new AdminService(
                 mockedRestaurantRepository, new UUIDGenerationService()
         );
 
@@ -226,7 +227,7 @@ public class AdminControllerTest {
         // Ensure a server error occurs
         final Restaurant restaurantToCreate = new Restaurant();
         restaurantToCreate.setVendorID(UUID.randomUUID());
-        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(restaurantToCreate);
+        ResponseEntity<Restaurant> response = localAdminService.createRestaurant(restaurantToCreate);
         assertEquals(
                 HttpStatus.BAD_REQUEST,
                 response.getStatusCode()
@@ -249,12 +250,12 @@ public class AdminControllerTest {
         // Retrieval always fails and returns empty
         Mockito.when(mockedRestaurantRepository.findById(Mockito.any()))
                 .thenReturn(Optional.empty());
-        AdminController localAdminController = new AdminController(
+        AdminService localAdminService = new AdminService(
                 mockedRestaurantRepository, new UUIDGenerationService()
         );
 
         // Ensure a server error occurs
-        ResponseEntity<Restaurant> response = localAdminController.createRestaurant(restaurantToCreate);
+        ResponseEntity<Restaurant> response = localAdminService.createRestaurant(restaurantToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
@@ -267,7 +268,7 @@ public class AdminControllerTest {
         Restaurant restaurantToCreate = new Restaurant();
         restaurantToCreate.setVendorID(null);
 
-        ResponseEntity<Restaurant> response = adminController.createRestaurant(restaurantToCreate);
+        ResponseEntity<Restaurant> response = adminService.createRestaurant(restaurantToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,

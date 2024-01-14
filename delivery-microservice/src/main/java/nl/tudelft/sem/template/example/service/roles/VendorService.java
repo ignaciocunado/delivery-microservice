@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.controllers;
+package nl.tudelft.sem.template.example.service.roles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.controllers.interfaces.Controller;
 
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
@@ -19,11 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 
-@Component
-public class VendorController implements Controller {
+/**
+ * Service that authorizes requests from vendors.
+ */
+@Service
+public class VendorService implements RoleService {
 
     @Getter
     RestaurantRepository restaurantRepository;
@@ -37,8 +40,8 @@ public class VendorController implements Controller {
      * @param uuidGenerationService the service for generating UUIDs
      */
     @Autowired
-    public VendorController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
-                            UUIDGenerationService uuidGenerationService) {
+    public VendorService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
+                         UUIDGenerationService uuidGenerationService) {
         this.restaurantRepository = restaurantRepository;
         this.deliveryRepository = deliveryRepository;
         this.uuidGenerationService = uuidGenerationService;

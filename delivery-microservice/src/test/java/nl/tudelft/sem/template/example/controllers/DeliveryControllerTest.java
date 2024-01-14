@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.template.example.service.roles.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,12 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *       Those tests should be done in individual subcontroller test files.
  */
 class DeliveryControllerTest {
-    private transient CourierController courierController;
-    private transient VendorController vendorController;
+    private transient CourierService courierService;
+    private transient VendorService vendorService;
     private transient DeliveryController deliveryController;
-    private transient GlobalController globalController;
-    private transient VendorOrCourierController vendorOrCourierController;
-    private transient CustomerController customerController;
+    private transient GlobalService globalService;
+    private transient VendorOrCourierService vendorOrCourierService;
+    private transient CustomerService customerService;
 
     private transient UUID deliveryId;
     private transient String role;
@@ -41,130 +42,130 @@ class DeliveryControllerTest {
         role = "courier";
 
         // mock courier controller to verify its methods are called
-        courierController = Mockito.mock(CourierController.class);
-        vendorController = Mockito.mock(VendorController.class);
-        globalController = Mockito.mock(GlobalController.class);
-        vendorOrCourierController = Mockito.mock(VendorOrCourierController.class);
-        customerController = Mockito.mock(CustomerController.class);
-        deliveryController = new DeliveryController(courierController, vendorController,
-                globalController, vendorOrCourierController, customerController);
+        courierService = Mockito.mock(CourierService.class);
+        vendorService = Mockito.mock(VendorService.class);
+        globalService = Mockito.mock(GlobalService.class);
+        vendorOrCourierService = Mockito.mock(VendorOrCourierService.class);
+        customerService = Mockito.mock(CustomerService.class);
+        deliveryController = new DeliveryController(courierService, vendorService,
+                globalService, vendorOrCourierService, customerService);
     }
 
     @Test
     void getPickUpLocation() {
-        Mockito.when(courierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(courierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getPickUpLocation(deliveryId, role);
-        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(courierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void acceptDelivery() {
-        Mockito.when(vendorController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.acceptDelivery(deliveryId, role);
-        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testGetPickUpEstimateDeliveryId() {
-        Mockito.when(vendorController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getPickUpEstimateDeliveryId(deliveryId, role);
-        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void rejectDelivery() {
-        Mockito.when(vendorController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.rejectDelivery(deliveryId, role);
-        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void getCustomerID() {
-        Mockito.when(vendorController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getCustomerByDeliveryId(deliveryId, role);
-        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void deliveryIdDone() {
-        Mockito.when(courierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(courierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.deliveryIdDone(deliveryId, role);
-        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(courierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void getLiveLocation() {
-        Mockito.when(globalController.getLiveLocation(deliveryId))
+        Mockito.when(globalService.getLiveLocation(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getLiveLocation(deliveryId, role);
-        Mockito.verify(globalController).getLiveLocation(deliveryId);
+        Mockito.verify(globalService).getLiveLocation(deliveryId);
         assertNotNull(r);
     }
 
     @Test
     void testEditStatusDelivery() {
-        Mockito.when(vendorController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.editStatusDelivery(deliveryId, role, "preparing");
-        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testSetPickUpTime() {
-        Mockito.when(vendorOrCourierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorOrCourierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.setPickUpTime(deliveryId, role, "preparing");
-        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorOrCourierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testGetDeliveryException() {
-        Mockito.when(globalController.getDeliveryException(deliveryId))
+        Mockito.when(globalService.getDeliveryException(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getDeliveryException(deliveryId, role);
-        Mockito.verify(globalController).getDeliveryException(deliveryId);
+        Mockito.verify(globalService).getDeliveryException(deliveryId);
         assertNotNull(r);
     }
 
     @Test
     void testSetDeliveryDelay() {
-        Mockito.when(vendorOrCourierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorOrCourierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.setDeliveryDelay(deliveryId, role, 4);
-        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorOrCourierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testGetDeliveryDelay() {
-        Mockito.when(vendorOrCourierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorOrCourierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getDeliveryDelay(deliveryId, role);
-        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorOrCourierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void assignOrderToCourierTest() {
         UUID courier = UUID.randomUUID();
-        Mockito.when(vendorOrCourierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorOrCourierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.assignOrderToCourier(courier, deliveryId, role);
-        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorOrCourierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
@@ -172,162 +173,162 @@ class DeliveryControllerTest {
     void testCreateDelivery() {
         // Since only chained method calls are being tested, we don't need to pass data to the new Delivery.
         final Delivery newDelivery = new Delivery();
-        Mockito.when(vendorController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.createDelivery(role, newDelivery);
-        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
 
     @Test
     void testGetDeliveryById() {
-        Mockito.when(globalController.getDeliveryById(deliveryId))
+        Mockito.when(globalService.getDeliveryById(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getDeliveyById(deliveryId, role);
-        Mockito.verify(globalController).getDeliveryById(deliveryId);
+        Mockito.verify(globalService).getDeliveryById(deliveryId);
         assertNotNull(r);
     }
 
     @Test
     void testGetRestaurantIdByDeliveryId() {
-        Mockito.when(globalController.getRestaurantIdByDeliveryId(deliveryId))
+        Mockito.when(globalService.getRestaurantIdByDeliveryId(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getRestIdOfDel(deliveryId, role);
-        Mockito.verify(globalController).getRestaurantIdByDeliveryId(deliveryId);
+        Mockito.verify(globalService).getRestaurantIdByDeliveryId(deliveryId);
         assertNotNull(r);
     }
 
     @Test
     void testGetOrderByDeliveryId() {
-        Mockito.when(globalController.getOrderByDeliveryId(deliveryId))
+        Mockito.when(globalService.getOrderByDeliveryId(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getOrderByDeliveryId(deliveryId, role);
-        Mockito.verify(globalController).getOrderByDeliveryId(deliveryId);
+        Mockito.verify(globalService).getOrderByDeliveryId(deliveryId);
         assertNotNull(r);
     }
 
     @Test
     void testSetLiveLocation() {
-        Mockito.when(courierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(courierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.setLiveLocation(deliveryId, role, "Test");
-        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(courierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testGetAvRateCourier() {
         UUID courierId = UUID.randomUUID();
-        Mockito.when(courierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(courierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getAvRateCourier(courierId, "courier");
-        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(courierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testGetCourierByDeliveryId() {
-        Mockito.when(vendorController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getCourierByDeliveryId(deliveryId, role);
-        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testSetDeliveryException() {
-        Mockito.when(vendorOrCourierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorOrCourierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.setDeliveryException(deliveryId, role, "Fall");
-        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorOrCourierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testGetLocationOfDelivery() {
-        Mockito.when(courierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(courierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getLocationOfDelivery(deliveryId, role);
-        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(courierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testGetDeliveryEstimate() {
-        Mockito.when(vendorOrCourierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorOrCourierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getDeliveryEstimate(deliveryId, role);
-        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorOrCourierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testSetDeliveryEstimate() {
-        Mockito.when(vendorOrCourierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorOrCourierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.setDeliveryEstimate(deliveryId, role,
                 OffsetDateTime.of(2024, 1, 1, 1,
                         1, 1, 1, ZoneOffset.ofHours(0)));
 
-        Mockito.verify(vendorOrCourierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorOrCourierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testGetRatingByDeliveryId() {
-        Mockito.when(globalController.getRatingByDeliveryId(deliveryId))
+        Mockito.when(globalService.getRatingByDeliveryId(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getRateByDeliveryId(deliveryId, role);
-        Mockito.verify(globalController).getRatingByDeliveryId(deliveryId);
+        Mockito.verify(globalService).getRatingByDeliveryId(deliveryId);
         assertNotNull(r);
     }
 
     @Test
     void testGetPickUpTime() {
-        Mockito.when(globalController.getPickUpTime(deliveryId))
+        Mockito.when(globalService.getPickUpTime(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getPickUpTime(deliveryId, role);
-        Mockito.verify(globalController).getPickUpTime(deliveryId);
+        Mockito.verify(globalService).getPickUpTime(deliveryId);
         assertNotNull(r);
     }
 
     @Test
     void testCallGetAllDeliveries() {
         UUID vendorId = UUID.randomUUID();
-        Mockito.when(vendorController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getAllDeliveriesVendor(vendorId, "vendor");
-        Mockito.verify(vendorController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testGetAllDeliveriesCourier() {
         UUID courierID = UUID.randomUUID();
-        Mockito.when(courierController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(courierService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getAllDeliveriesCourier(courierID, "courier");
-        Mockito.verify(courierController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(courierService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testGetAllDeliveriesCustomer() {
         UUID customerID = UUID.randomUUID();
-        Mockito.when(customerController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(customerService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getAllDeliveriesCustomer(customerID, "customer");
-        Mockito.verify(customerController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(customerService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     void testSetRateOfDelivery() {
-        Mockito.when(customerController.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(customerService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>("", null, HttpStatus.OK));
         ResponseEntity<String> r = deliveryController.setRateOfDelivery(deliveryId, role, 1d);
-        Mockito.verify(customerController).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(customerService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
@@ -336,8 +337,8 @@ class DeliveryControllerTest {
         UUID deliveryId = UUID.randomUUID();
         String role = "courier";
 
-        // Mock the behavior of courierController
-        Mockito.when(courierController.checkAndHandle(Mockito.eq(role), Mockito.any()))
+        // Mock the behavior of courierService
+        Mockito.when(courierService.checkAndHandle(Mockito.eq(role), Mockito.any()))
                 .thenAnswer(invocation -> {
                     return ResponseEntity.ok("MockedResponse");
                 });

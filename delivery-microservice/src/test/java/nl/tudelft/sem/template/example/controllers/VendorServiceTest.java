@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.controllers;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.roles.VendorService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,11 +26,11 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
 
-class VendorControllerTest {
+class VendorServiceTest {
     private transient TestRestaurantRepository restaurantRepo;
     private transient TestDeliveryRepository deliveryRepo;
     private transient UUIDGenerationService uuidGenerationService;
-    private transient VendorController sut;
+    private transient VendorService sut;
 
     private transient UUID restaurantId;
     private transient UUID deliveryId;
@@ -95,7 +96,7 @@ class VendorControllerTest {
         deliveryRepo.save(d);
         deliveryRepo.save(d2);
         deliveryRepo.save(d3);
-        sut = new VendorController(restaurantRepo, deliveryRepo, new UUIDGenerationService());
+        sut = new VendorService(restaurantRepo, deliveryRepo, new UUIDGenerationService());
     }
 
     @Test
@@ -195,7 +196,7 @@ class VendorControllerTest {
         dp.save(new Delivery(did, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "pending", null, null, 1.d, null,
                 "", "", 1));
-        VendorController vc = new VendorController(rp, dp, new UUIDGenerationService());
+        VendorService vc = new VendorService(rp, dp, new UUIDGenerationService());
         ResponseEntity<OffsetDateTime> res = vc.getPickUpEstimate(did);
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
@@ -442,7 +443,7 @@ class VendorControllerTest {
         TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
 
-        VendorController localVendorController = new VendorController(
+        VendorService localVendorService = new VendorService(
                 mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
         );
 
@@ -457,7 +458,7 @@ class VendorControllerTest {
         final Delivery deliveryToCreate = new Delivery();
         deliveryToCreate.setRestaurantID(restaurantId);
 
-        ResponseEntity<Delivery> response = localVendorController.createDelivery(deliveryToCreate);
+        ResponseEntity<Delivery> response = localVendorService.createDelivery(deliveryToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
@@ -478,7 +479,7 @@ class VendorControllerTest {
 //        TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
 //        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
 //
-//        VendorController localVendorController = new VendorController(
+//        VendorService localVendorController = new VendorService(
 //                mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
 //        );
 //
@@ -510,7 +511,7 @@ class VendorControllerTest {
         TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
 
-        VendorController localVendorController = new VendorController(
+        VendorService localVendorService = new VendorService(
                 mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
         );
 
@@ -529,7 +530,7 @@ class VendorControllerTest {
                 .thenReturn(true);
 
         // Ensure a server error occurs
-        ResponseEntity<Delivery> response = localVendorController.createDelivery(deliveryToCreate);
+        ResponseEntity<Delivery> response = localVendorService.createDelivery(deliveryToCreate);
 
         assertEquals(
                 HttpStatus.BAD_REQUEST,
