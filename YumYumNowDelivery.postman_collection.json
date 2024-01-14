@@ -730,7 +730,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \r\n}",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1103,47 +1103,6 @@
 							"response": []
 						},
 						{
-							"name": "Set Delivery Rating",
-							"request": {
-								"method": "PATCH",
-								"header": [
-									{
-										"key": "X-User-Id",
-										"value": "{{querying-user-id}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "0.75",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{host}}/delivery/{{path-delivery-id}}/rating/?role={{querying-role}}",
-									"host": [
-										"{{host}}"
-									],
-									"path": [
-										"delivery",
-										"{{path-delivery-id}}",
-										"rating",
-										""
-									],
-									"query": [
-										{
-											"key": "role",
-											"value": "{{querying-role}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "Set Delivery Pickup Time Estimate",
 							"request": {
 								"method": "PATCH",
@@ -1256,6 +1215,47 @@
 										"delivery",
 										"{{path-delivery-id}}",
 										"delay",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set Delivery Rating",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "0.75",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/rating/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"rating",
 										""
 									],
 									"query": [
