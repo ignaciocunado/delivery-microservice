@@ -6,6 +6,7 @@ import java.util.UUID;
 import lombok.Setter;
 import nl.tudelft.sem.api.DeliveryApi;
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.template.example.service.roles.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import java.time.OffsetDateTime;
@@ -20,29 +21,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class DeliveryController implements DeliveryApi {
 
     @Setter
-    private transient CourierController courierController;
-    private final transient VendorController vendorController;
-    private final transient GlobalController globalController;
-    private final transient VendorOrCourierController vendorOrCourierController;
-    private final transient CustomerController customerController;
+    private transient CourierService courierService;
+    private final transient VendorService vendorService;
+    private final transient GlobalService globalService;
+    private final transient VendorOrCourierService vendorOrCourierService;
+    private final transient CustomerService customerService;
 
     /**
      * Autowired constructor for the controller.
-     * @param courierController sub-controller for couriers
-     * @param vendorController sub-controller for vendors
-     * @param globalController sub-controller for global endpoints
-     * @param customerController sub-controller for customers
-     * @param vendorOrCourierController sub-controller for vendors and couriers
+     * @param courierService sub-controller for couriers
+     * @param vendorService sub-controller for vendors
+     * @param globalService sub-controller for global endpoints
+     * @param customerService sub-controller for customers
+     * @param vendorOrCourierService sub-controller for vendors and couriers
      */
     @Autowired
-    public DeliveryController(CourierController courierController, VendorController vendorController,
-                              GlobalController globalController, VendorOrCourierController vendorOrCourierController,
-                              CustomerController customerController) {
-        this.courierController = courierController;
-        this.vendorController = vendorController;
-        this.globalController = globalController;
-        this.vendorOrCourierController = vendorOrCourierController;
-        this.customerController = customerController;
+    public DeliveryController(CourierService courierService, VendorService vendorService,
+                              GlobalService globalService, VendorOrCourierService vendorOrCourierService,
+                              CustomerService customerService) {
+        this.courierService = courierService;
+        this.vendorService = vendorService;
+        this.globalService = globalService;
+        this.vendorOrCourierService = vendorOrCourierService;
+        this.customerService = customerService;
     }
 
     /**
@@ -53,8 +54,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> getPickUpLocation(UUID deliveryId, String role) {
-        return courierController.checkAndHandle(role,
-                () -> courierController.getPickUpLocation(deliveryId));
+        return courierService.checkAndHandle(role,
+                () -> courierService.getPickUpLocation(deliveryId));
     }
 
     /**
@@ -65,8 +66,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> getLocationOfDelivery(UUID deliveryId, String role) {
-        return courierController.checkAndHandle(role,
-                () -> courierController.getLocationOfDelivery(deliveryId));
+        return courierService.checkAndHandle(role,
+                () -> courierService.getLocationOfDelivery(deliveryId));
     }
 
     /**
@@ -78,8 +79,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> setDeliveryException(UUID deliveryId, String role, String body) {
-        return vendorOrCourierController.checkAndHandle(role,
-                () -> vendorOrCourierController.setDeliveryException(deliveryId, body));
+        return vendorOrCourierService.checkAndHandle(role,
+                () -> vendorOrCourierService.setDeliveryException(deliveryId, body));
     }
 
     /**
@@ -90,8 +91,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<UUID> getCourierByDeliveryId(UUID deliveryId, String role) {
-        return vendorController.checkAndHandle(role,
-                () -> vendorController.getCourierIdByDelivery(deliveryId));
+        return vendorService.checkAndHandle(role,
+                () -> vendorService.getCourierIdByDelivery(deliveryId));
     }
 
     /**
@@ -101,8 +102,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<Double> getAvRateCourier(UUID courierId, String role) {
-        return courierController.checkAndHandle(role,
-                () -> courierController.getAvrRating(courierId));
+        return courierService.checkAndHandle(role,
+                () -> courierService.getAvrRating(courierId));
     }
 
     /**
@@ -114,8 +115,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> setLiveLocation(UUID deliveryId, String role, String body) {
-        return courierController.checkAndHandle(role,
-                () -> courierController.setLiveLocation(deliveryId, body));
+        return courierService.checkAndHandle(role,
+                () -> courierService.setLiveLocation(deliveryId, body));
     }
 
     /** Integrates controller with API for the get customer ID endpoint.
@@ -126,8 +127,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<UUID> getCustomerByDeliveryId(UUID deliveryID, String role) {
-        return vendorController.checkAndHandle(role,
-                () -> vendorController.getCustomerByDeliveryId(deliveryID));
+        return vendorService.checkAndHandle(role,
+                () -> vendorService.getCustomerByDeliveryId(deliveryID));
     }
 
     /** Integrates controller with API for accept delivery endpoint.
@@ -138,8 +139,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<Void> acceptDelivery(UUID deliveryId, String role) {
-        return vendorController.checkAndHandle(role,
-                () -> vendorController.acceptDelivery(deliveryId));
+        return vendorService.checkAndHandle(role,
+                () -> vendorService.acceptDelivery(deliveryId));
     }
 
     /**
@@ -153,8 +154,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<OffsetDateTime> getPickUpEstimateDeliveryId(UUID deliveryID, String role) {
-        return vendorController.checkAndHandle(role,
-                () -> vendorController.getPickUpEstimate(deliveryID));
+        return vendorService.checkAndHandle(role,
+                () -> vendorService.getPickUpEstimate(deliveryID));
     }
 
     /**
@@ -165,8 +166,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> setPickUpTime(UUID deliveryID, String role, String body) {
-        return vendorOrCourierController.checkAndHandle(role,
-                () -> vendorOrCourierController.setPickUpEstimate(deliveryID, body));
+        return vendorOrCourierService.checkAndHandle(role,
+                () -> vendorOrCourierService.setPickUpEstimate(deliveryID, body));
     }
 
 
@@ -178,8 +179,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<Void> rejectDelivery(UUID deliveryId, String role) {
-        return vendorController.checkAndHandle(role,
-                () -> vendorController.rejectDelivery(deliveryId));
+        return vendorService.checkAndHandle(role,
+                () -> vendorService.rejectDelivery(deliveryId));
     }
 
     /** Integrates controller with API for the get live location endpoint.
@@ -190,7 +191,7 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> getLiveLocation(UUID deliveryID, String role) {
-        return globalController.getLiveLocation(deliveryID);
+        return globalService.getLiveLocation(deliveryID);
     }
 
     /** Integrates controller with API for get delivery endpoint.
@@ -201,8 +202,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> deliveryIdDone(UUID deliveryId, String role) {
-        return courierController.checkAndHandle(role,
-                () -> courierController.deliveredDelivery(deliveryId));
+        return courierService.checkAndHandle(role,
+                () -> courierService.deliveredDelivery(deliveryId));
     }
 
     /** Integrates controller with API for edit status delivery endpoint.
@@ -214,8 +215,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<Void> editStatusDelivery(UUID deliveryId, String role, String status) {
-        return vendorController.checkAndHandle(role,
-                () -> vendorController.editStatusDelivery(deliveryId, status));
+        return vendorService.checkAndHandle(role,
+                () -> vendorService.editStatusDelivery(deliveryId, status));
     }
 
     /**
@@ -226,7 +227,7 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> getDeliveryException(UUID deliveryID, String role) {
-        return globalController.getDeliveryException(deliveryID);
+        return globalService.getDeliveryException(deliveryID);
     }
 
     /**
@@ -238,8 +239,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<Integer> setDeliveryDelay(UUID deliveryID, String role, Integer body) {
-        return vendorOrCourierController.checkAndHandle(role,
-                () -> vendorOrCourierController.setDeliveryDelay(deliveryID, body));
+        return vendorOrCourierService.checkAndHandle(role,
+                () -> vendorOrCourierService.setDeliveryDelay(deliveryID, body));
     }
 
     /**
@@ -250,8 +251,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<Integer> getDeliveryDelay(UUID deliveryID, String role) {
-        return vendorOrCourierController.checkAndHandle(role,
-                () -> vendorOrCourierController.getDeliveryDelay(deliveryID));
+        return vendorOrCourierService.checkAndHandle(role,
+                () -> vendorOrCourierService.getDeliveryDelay(deliveryID));
     }
 
     /**
@@ -263,20 +264,20 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<UUID> assignOrderToCourier(UUID courierID, UUID deliveryID, String role) {
-        return vendorOrCourierController.checkAndHandle(role,
-                () -> vendorOrCourierController.assignOrderToCourier(courierID, deliveryID));
+        return vendorOrCourierService.checkAndHandle(role,
+                () -> vendorOrCourierService.assignOrderToCourier(courierID, deliveryID));
     }
 
     /**
-     * Calls the implementation of the method in the vendorController.
+     * Calls the implementation of the method in the vendorService.
      * @param vendorId The ID of the vendor to query (required)
      * @param role The role of the user (required)
      * @return the corresponding ResponseEntity
      */
     @Override
     public ResponseEntity<List<UUID>> getAllDeliveriesVendor(UUID vendorId, String role) {
-        return vendorController.checkAndHandle(role,
-                () -> vendorController.getAllDeliveriesVendor(vendorId));
+        return vendorService.checkAndHandle(role,
+                () -> vendorService.getAllDeliveriesVendor(vendorId));
     }
 
     /**
@@ -287,8 +288,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<Delivery> createDelivery(String role, Delivery delivery) {
-        return vendorController.checkAndHandle(role,
-                () -> vendorController.createDelivery(delivery));
+        return vendorService.checkAndHandle(role,
+                () -> vendorService.createDelivery(delivery));
     }
 
     /**
@@ -300,7 +301,7 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<Delivery> getDeliveyById(UUID deliveryId, String role) {
-        return globalController.getDeliveryById(deliveryId);
+        return globalService.getDeliveryById(deliveryId);
     }
 
     /**
@@ -312,7 +313,7 @@ public class DeliveryController implements DeliveryApi {
     @Override
     public ResponseEntity<UUID> getRestIdOfDel(UUID deliveryId, String role) {
         // Note: the implementation method uses a non-abbreviated name to be more consistent with our data model.
-        return globalController.getRestaurantIdByDeliveryId(deliveryId);
+        return globalService.getRestaurantIdByDeliveryId(deliveryId);
     }
 
     /**
@@ -323,7 +324,7 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<UUID> getOrderByDeliveryId(UUID deliveryId, String role) {
-        return globalController.getOrderByDeliveryId(deliveryId);
+        return globalService.getOrderByDeliveryId(deliveryId);
     }
 
 
@@ -335,8 +336,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<OffsetDateTime> getDeliveryEstimate(UUID deliveryID, String role) {
-        return vendorOrCourierController.checkAndHandle(role,
-                () -> vendorOrCourierController.getDeliveryEstimate(deliveryID));
+        return vendorOrCourierService.checkAndHandle(role,
+                () -> vendorOrCourierService.getDeliveryEstimate(deliveryID));
     }
 
     /**
@@ -348,8 +349,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> setDeliveryEstimate(UUID deliveryID, String role, OffsetDateTime body) {
-        return vendorOrCourierController.checkAndHandle(role,
-                () -> vendorOrCourierController.setDeliveryEstimate(deliveryID, body));
+        return vendorOrCourierService.checkAndHandle(role,
+                () -> vendorOrCourierService.setDeliveryEstimate(deliveryID, body));
     }
 
     /**
@@ -362,7 +363,7 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<Double> getRateByDeliveryId(UUID deliveryId, String role) {
         // Note: the implementation function is named "get rating", to be more in line
         // with our model definitions. If necessary, this can be reverted to the original name.
-        return sanityCheck(globalController.getRatingByDeliveryId(deliveryId), deliveryId);
+        return sanityCheck(globalService.getRatingByDeliveryId(deliveryId), deliveryId);
     }
 
     /**
@@ -376,7 +377,7 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<OffsetDateTime> getPickUpTime(UUID deliveryId, String role) {
-        return globalController.getPickUpTime(deliveryId);
+        return globalService.getPickUpTime(deliveryId);
     }
 
     /**
@@ -387,8 +388,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<List<UUID>> getAllDeliveriesCourier(UUID courierID, String role) {
-        return courierController.checkAndHandle(role,
-                () -> courierController.getAllDeliveriesCourier(courierID));
+        return courierService.checkAndHandle(role,
+                () -> courierService.getAllDeliveriesCourier(courierID));
     }
 
     /**
@@ -399,8 +400,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<List<UUID>> getAllDeliveriesCustomer(UUID customerID, String role) {
-        return customerController.checkAndHandle(role,
-                () -> customerController.getAllDeliveriesCustomer(customerID));
+        return customerService.checkAndHandle(role,
+                () -> customerService.getAllDeliveriesCustomer(customerID));
     }
 
     /**
@@ -412,8 +413,8 @@ public class DeliveryController implements DeliveryApi {
      */
     @Override
     public ResponseEntity<String> setRateOfDelivery(UUID deliveryID, String role, Double body) {
-        return customerController.checkAndHandle(role,
-                () -> customerController.setRateOfDelivery(deliveryID, body));
+        return customerService.checkAndHandle(role,
+                () -> customerService.setRateOfDelivery(deliveryID, body));
     }
 
     @lombok.Generated

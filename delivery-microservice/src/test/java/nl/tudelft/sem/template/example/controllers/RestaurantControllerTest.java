@@ -1,6 +1,10 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
+import nl.tudelft.sem.template.example.service.roles.AdminService;
+import nl.tudelft.sem.template.example.service.roles.CourierService;
+import nl.tudelft.sem.template.example.service.roles.GlobalService;
+import nl.tudelft.sem.template.example.service.roles.VendorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -18,22 +22,22 @@ class RestaurantControllerTest {
 
 
     @Mock
-    VendorController vc = Mockito.mock(VendorController.class);
+    VendorService vc = Mockito.mock(VendorService.class);
 
     @Mock
-    CourierController cc = Mockito.mock(CourierController.class);
+    CourierService cc = Mockito.mock(CourierService.class);
 
     @Mock
-    AdminController ac = Mockito.mock(AdminController.class);
+    AdminService ac = Mockito.mock(AdminService.class);
 
     @Mock
-    GlobalController gc = Mockito.mock(GlobalController.class);
+    GlobalService gc = Mockito.mock(GlobalService.class);
 
     RestaurantController sut = new RestaurantController(cc, vc, ac, gc);
 
     @BeforeEach
     public void setup() {
-        sut.setVendorController(vc);
+        sut.setVendorService(vc);
     }
 
     @Test

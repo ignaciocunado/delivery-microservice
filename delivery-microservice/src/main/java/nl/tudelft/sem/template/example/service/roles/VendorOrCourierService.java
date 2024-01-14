@@ -1,13 +1,13 @@
-package nl.tudelft.sem.template.example.controllers;
+package nl.tudelft.sem.template.example.service.roles;
 
 
 import nl.tudelft.sem.model.Delivery;
-import nl.tudelft.sem.template.example.controllers.interfaces.Controller;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
@@ -17,10 +17,10 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 /**
- * Sub-Controller of DeliveryController.
+ * Service that authorizes requests from vendors, or couriers.
  */
-@Component
-public class VendorOrCourierController implements Controller {
+@Service
+public class VendorOrCourierService implements RoleService {
 
     DeliveryRepository deliveryRepository;
 
@@ -29,7 +29,7 @@ public class VendorOrCourierController implements Controller {
      * @param deliveryRepository delivery DB
      */
     @Autowired
-    public VendorOrCourierController(DeliveryRepository deliveryRepository) {
+    public VendorOrCourierService(DeliveryRepository deliveryRepository) {
         this.deliveryRepository = deliveryRepository;
     }
 

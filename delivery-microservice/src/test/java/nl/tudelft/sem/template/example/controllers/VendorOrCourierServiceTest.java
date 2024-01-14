@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
+import nl.tudelft.sem.template.example.service.roles.VendorOrCourierService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 
-class VendorOrCourierControllerTest {
+class VendorOrCourierServiceTest {
 
-    private transient VendorOrCourierController vendorOrCourierController;
+    private transient VendorOrCourierService vendorOrCourierService;
     private transient TestDeliveryRepository deliveryRepository;
 
     private transient UUID deliveryId;
@@ -41,13 +42,13 @@ class VendorOrCourierControllerTest {
                 1.d, sampleOffsetDateTime, "69.655,69.425", "late", 1);
         deliveryRepository.save(d);
 
-        vendorOrCourierController = new VendorOrCourierController(deliveryRepository);
+        vendorOrCourierService = new VendorOrCourierService(deliveryRepository);
     }
 
     @Test
     void setDeliveryDelayOk() {
         assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 1);
-        ResponseEntity<Integer> res = vendorOrCourierController.setDeliveryDelay(deliveryId, 2);
+        ResponseEntity<Integer> res = vendorOrCourierService.setDeliveryDelay(deliveryId, 2);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), 2);
         assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 2);
@@ -56,7 +57,7 @@ class VendorOrCourierControllerTest {
     @Test
     void setDeliveryDelayOk2() {
         assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 1);
-        ResponseEntity<Integer> res = vendorOrCourierController.setDeliveryDelay(deliveryId, 0);
+        ResponseEntity<Integer> res = vendorOrCourierService.setDeliveryDelay(deliveryId, 0);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), 0);
         assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 0);
@@ -65,7 +66,7 @@ class VendorOrCourierControllerTest {
     @Test
     void setDeliveryDelayBadBody() {
         assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 1);
-        ResponseEntity<Integer> res = vendorOrCourierController.setDeliveryDelay(deliveryId, -5);
+        ResponseEntity<Integer> res = vendorOrCourierService.setDeliveryDelay(deliveryId, -5);
         assertEquals(res.getStatusCode(), HttpStatus.BAD_REQUEST);
         assertNull(res.getBody());
         assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 1);
@@ -74,7 +75,7 @@ class VendorOrCourierControllerTest {
     @Test
     void setDeliveryDelayNullBody() {
         assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 1);
-        ResponseEntity<Integer> res = vendorOrCourierController.setDeliveryDelay(deliveryId, null);
+        ResponseEntity<Integer> res = vendorOrCourierService.setDeliveryDelay(deliveryId, null);
         assertEquals(res.getStatusCode(), HttpStatus.BAD_REQUEST);
         assertNull(res.getBody());
         assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 1);
@@ -82,21 +83,21 @@ class VendorOrCourierControllerTest {
 
     @Test
     void setDeliveryDelayNotFound() {
-        ResponseEntity<Integer> res = vendorOrCourierController.setDeliveryDelay(UUID.randomUUID(), 2);
+        ResponseEntity<Integer> res = vendorOrCourierService.setDeliveryDelay(UUID.randomUUID(), 2);
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
 
     @Test
     void getDeliveryDelayOk() {
-        ResponseEntity<Integer> res = vendorOrCourierController.getDeliveryDelay(deliveryId);
+        ResponseEntity<Integer> res = vendorOrCourierService.getDeliveryDelay(deliveryId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), 1);
     }
 
     @Test
     void getDeliveryDelayNotFound() {
-        ResponseEntity<Integer> res = vendorOrCourierController.getDeliveryDelay(UUID.randomUUID());
+        ResponseEntity<Integer> res = vendorOrCourierService.getDeliveryDelay(UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
@@ -105,7 +106,7 @@ class VendorOrCourierControllerTest {
     @Test
     void assignOrderToCourierOK() {
         UUID courier = UUID.randomUUID();
-        ResponseEntity<UUID> res = vendorOrCourierController.assignOrderToCourier(courier, deliveryId);
+        ResponseEntity<UUID> res = vendorOrCourierService.assignOrderToCourier(courier, deliveryId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), deliveryId);
         assertEquals(deliveryRepository.findById(deliveryId).get().getCourierID(), courier);
@@ -114,7 +115,7 @@ class VendorOrCourierControllerTest {
     @Test
     void assignOrderToCourierNotFound() {
         UUID courier = UUID.randomUUID();
-        ResponseEntity<UUID> res = vendorOrCourierController.assignOrderToCourier(courier, UUID.randomUUID());
+        ResponseEntity<UUID> res = vendorOrCourierService.assignOrderToCourier(courier, UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
@@ -123,13 +124,13 @@ class VendorOrCourierControllerTest {
     public void setDeliveryExceptionReturnsOk() {
         String exception = "Test";
 
-        ResponseEntity<String> response = vendorOrCourierController
+        ResponseEntity<String> response = vendorOrCourierService
                 .setDeliveryException(deliveryId, exception);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("200 OK", response.getBody());
         assertEquals(exception, deliveryRepository.findById(deliveryId).get().getUserException());
 
-        response = vendorOrCourierController.setDeliveryException(deliveryId, exception);
+        response = vendorOrCourierService.setDeliveryException(deliveryId, exception);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("200 OK", response.getBody());
         assertEquals(exception, deliveryRepository.findById(deliveryId).get().getUserException());
@@ -141,7 +142,7 @@ class VendorOrCourierControllerTest {
         String exception = "123.321.666";
         UUID randomId = UUID.randomUUID();
 
-        ResponseEntity<String> response = vendorOrCourierController.setDeliveryException(randomId, exception);
+        ResponseEntity<String> response = vendorOrCourierService.setDeliveryException(randomId, exception);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("error 404: Delivery not found!", response.getBody());
@@ -149,22 +150,22 @@ class VendorOrCourierControllerTest {
 
     @Test
     public void setDeliveryExceptionReturnsBadRequest() {
-        ResponseEntity<String> response = vendorOrCourierController.setDeliveryException(deliveryId, "");
+        ResponseEntity<String> response = vendorOrCourierService.setDeliveryException(deliveryId, "");
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("error 400", response.getBody());
 
-        response = vendorOrCourierController.setDeliveryException(deliveryId, null);
+        response = vendorOrCourierService.setDeliveryException(deliveryId, null);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("error 400", response.getBody());
 
-        response = vendorOrCourierController.setDeliveryException(deliveryId, "    ");
+        response = vendorOrCourierService.setDeliveryException(deliveryId, "    ");
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("error 400", response.getBody());
     }
 
     @Test
     void testSetPickUpEstimate() {
-        ResponseEntity<String> res = vendorOrCourierController
+        ResponseEntity<String> res = vendorOrCourierService
                 .setPickUpEstimate(deliveryId, sampleOffsetDateTime.toString());
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertEquals(deliveryRepository.findById(deliveryId).get().getPickupTimeEstimate(), sampleOffsetDateTime);
@@ -172,7 +173,7 @@ class VendorOrCourierControllerTest {
 
     @Test
     void testSetPickUpEstimate2() {
-        ResponseEntity<String> res = vendorOrCourierController
+        ResponseEntity<String> res = vendorOrCourierService
                 .setPickUpEstimate(deliveryId, sampleOffsetDateTime.toString());
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertEquals(deliveryRepository.findById(deliveryId).get().getPickupTimeEstimate(), sampleOffsetDateTime);
@@ -180,27 +181,27 @@ class VendorOrCourierControllerTest {
 
     @Test
     void testSetInvalidPickUpEstimate() {
-        ResponseEntity<String> res = vendorOrCourierController.setPickUpEstimate(deliveryId, "hello");
+        ResponseEntity<String> res = vendorOrCourierService.setPickUpEstimate(deliveryId, "hello");
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
     }
 
     @Test
     void testSetPickUpNotFound() {
-        ResponseEntity<String> res = vendorOrCourierController
+        ResponseEntity<String> res = vendorOrCourierService
                 .setPickUpEstimate(UUID.randomUUID(), sampleOffsetDateTime.toString());
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
     @Test
     void testGetDeliveryEstimate() {
-        ResponseEntity<OffsetDateTime> res = vendorOrCourierController.getDeliveryEstimate(deliveryId);
+        ResponseEntity<OffsetDateTime> res = vendorOrCourierService.getDeliveryEstimate(deliveryId);
         OffsetDateTime resBody = res.getBody();
         assertEquals(sampleOffsetDateTime, resBody);
     }
 
     @Test
     void testGetDeliveryEstimateNotFound() {
-        ResponseEntity<OffsetDateTime> res = vendorOrCourierController.getDeliveryEstimate(UUID.randomUUID());
+        ResponseEntity<OffsetDateTime> res = vendorOrCourierService.getDeliveryEstimate(UUID.randomUUID());
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
@@ -215,34 +216,34 @@ class VendorOrCourierControllerTest {
                 UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "pending", null, null,
                 1.d, null, "", "", 1));
-        VendorOrCourierController vc = new VendorOrCourierController(deliveryRepository);
+        VendorOrCourierService vc = new VendorOrCourierService(deliveryRepository);
         ResponseEntity<OffsetDateTime> res = vc.getDeliveryEstimate(newRandomDeliveryID);
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
     @Test
     void testSetDeliveryEstimate() {
-        ResponseEntity<String> res = vendorOrCourierController.setDeliveryEstimate(deliveryId, sampleOffsetDateTime);
+        ResponseEntity<String> res = vendorOrCourierService.setDeliveryEstimate(deliveryId, sampleOffsetDateTime);
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertEquals(deliveryRepository.findById(deliveryId).get().getDeliveryTimeEstimate(), sampleOffsetDateTime);
     }
 
     @Test
     void testSetDeliveryEstimate2() {
-        ResponseEntity<String> res = vendorOrCourierController.setDeliveryEstimate(deliveryId, sampleOffsetDateTime);
+        ResponseEntity<String> res = vendorOrCourierService.setDeliveryEstimate(deliveryId, sampleOffsetDateTime);
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertEquals(deliveryRepository.findById(deliveryId).get().getDeliveryTimeEstimate(), sampleOffsetDateTime);
     }
 
     @Test
     void testSetInvalidDeliveryEstimate() {
-        ResponseEntity<String> res = vendorOrCourierController.setDeliveryEstimate(deliveryId,null);
+        ResponseEntity<String> res = vendorOrCourierService.setDeliveryEstimate(deliveryId,null);
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
     }
 
     @Test
     void testSetDeliveryNotFound() {
-        ResponseEntity<String> res = vendorOrCourierController.setDeliveryEstimate(UUID.randomUUID(), sampleOffsetDateTime);
+        ResponseEntity<String> res = vendorOrCourierService.setDeliveryEstimate(UUID.randomUUID(), sampleOffsetDateTime);
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
 
@@ -252,7 +253,7 @@ class VendorOrCourierControllerTest {
         Supplier<ResponseEntity<Restaurant>> operation = () -> new ResponseEntity<>(HttpStatus.OK);
 
         for (final String roleToTest : rolesToTest) {
-            ResponseEntity<Restaurant> response = vendorOrCourierController.checkAndHandle(roleToTest, operation);
+            ResponseEntity<Restaurant> response = vendorOrCourierService.checkAndHandle(roleToTest, operation);
             assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         }
     }
@@ -263,7 +264,7 @@ class VendorOrCourierControllerTest {
         Supplier<ResponseEntity<Restaurant>> operation = () -> new ResponseEntity<>(HttpStatus.OK);
 
         for (final String roleToTest : rolesToTest) {
-            ResponseEntity<Restaurant> response = vendorOrCourierController.checkAndHandle(roleToTest, operation);
+            ResponseEntity<Restaurant> response = vendorOrCourierService.checkAndHandle(roleToTest, operation);
             assertEquals(HttpStatus.OK, response.getStatusCode());
         }
     }

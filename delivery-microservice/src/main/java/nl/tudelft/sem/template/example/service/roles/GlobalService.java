@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.controllers;
+package nl.tudelft.sem.template.example.service.roles;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
@@ -8,17 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Sub-controller of DeliveryController.
+ * Service that authorizes requests from any user.
+ * WARNING: this class will be entirely removed in the next step of the refactor.
  */
-@Component
-public class GlobalController {
+@Service
+public class GlobalService {
 
     RestaurantRepository restaurantRepository;
     DeliveryRepository deliveryRepository;
@@ -29,7 +30,7 @@ public class GlobalController {
      * @param deliveryRepository delivery DB
      */
     @Autowired
-    public GlobalController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository) {
+    public GlobalService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository) {
         this.restaurantRepository = restaurantRepository;
         this.deliveryRepository = deliveryRepository;
     }
