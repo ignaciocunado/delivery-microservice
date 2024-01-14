@@ -1,19 +1,12 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.Setter;
 import nl.tudelft.sem.api.RestaurantApi;
 import nl.tudelft.sem.model.Restaurant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,18 +35,31 @@ public class RestaurantController implements RestaurantApi {
         this.globalController = globalController;
     }
 
-
+    /**
+     * Integrates controller with API for the add courier to restaurant endpoint.
+     * @param restaurantId ID of the restaurant to modify. (required)
+     * @param courierId ID of the courier to add. (required)
+     * @param role The role of the user (required)
+     * @return the ResponseEntity returned by the method.
+     */
     @Override
     public ResponseEntity<Void> addCourierToRest(UUID restaurantId, UUID courierId, String role) {
-        return vendorController.addCourierToRest(restaurantId, courierId, role);
+        return vendorController.checkAndHandle(role,
+                () -> vendorController.addCourierToRest(courierId, restaurantId));
     }
 
+    /**
+     * Integrates controller with API for the remove courier from restaurant endpoint.
+     * @param restaurantId ID of the restaurant to modify. (required)
+     * @param courierId ID of the courier to remove. (required)
+     * @param role The role of the user (required)
+     * @return the ResponseEntity returned by the method.
+     */
     @Override
     public ResponseEntity<Void> removeCourierRest(UUID restaurantId, UUID courierId, String role) {
-        return vendorController.removeCourierRest(restaurantId, courierId, role);
+        return vendorController.checkAndHandle(role,
+                () -> vendorController.removeCourierRest(courierId, restaurantId));
     }
-
-
 
     /**
      * Integrates controller with API for the create restaurant endpoint.
@@ -63,7 +69,8 @@ public class RestaurantController implements RestaurantApi {
      */
     @Override
     public ResponseEntity<Restaurant> createRestaurant(String role, Restaurant restaurant) {
-        return adminController.createRestaurant(role, restaurant);
+        return adminController.checkAndHandle(role,
+                () -> adminController.createRestaurant(restaurant));
     }
 
     /**
@@ -74,7 +81,7 @@ public class RestaurantController implements RestaurantApi {
      */
     @Override
     public ResponseEntity<Double> getMaxDeliveryZone(UUID deliveryID, String role) {
-        return globalController.getMaxDeliveryZone(deliveryID, role);
+        return globalController.getMaxDeliveryZone(deliveryID);
     }
 
     /**
@@ -85,7 +92,8 @@ public class RestaurantController implements RestaurantApi {
      */
     @Override
     public ResponseEntity<String> getRest(UUID restaurantId, String role) {
-        return vendorController.getRest(restaurantId, role);
+        return vendorController.checkAndHandle(role,
+                () -> vendorController.getRest(restaurantId));
     }
 
     /**
@@ -97,7 +105,7 @@ public class RestaurantController implements RestaurantApi {
      */
     @Override
     public ResponseEntity<Void> setMaxDeliveryZone(UUID restaurantId, String role, Double body) {
-        return globalController.setMaxDeliveryZone(restaurantId, role, body);
+        return globalController.setMaxDeliveryZone(restaurantId, body);
     }
 
     /**
@@ -108,6 +116,7 @@ public class RestaurantController implements RestaurantApi {
      */
     @Override
     public ResponseEntity<List<UUID>> getVendorRest(UUID vendorId, String role) {
-        return vendorController.getVendorRest(vendorId, role);
+        return vendorController.checkAndHandle(role,
+                () -> vendorController.getVendorRest(vendorId));
     }
 }

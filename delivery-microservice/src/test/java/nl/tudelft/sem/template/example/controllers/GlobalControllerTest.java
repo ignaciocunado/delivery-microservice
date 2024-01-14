@@ -16,12 +16,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class GlobalControllerTest {
 
@@ -43,6 +42,8 @@ public class GlobalControllerTest {
      */
     private transient UUIDGenerationService uuidGenerationService;
 
+    private transient OffsetDateTime pickupTimeEstimate;
+
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
@@ -54,7 +55,7 @@ public class GlobalControllerTest {
 
         orderId = UUID.randomUUID();
 
-        OffsetDateTime pickupTimeEstimate = OffsetDateTime.of(
+        pickupTimeEstimate = OffsetDateTime.of(
                 2024, 1, 4, 18, 23, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
@@ -83,43 +84,29 @@ public class GlobalControllerTest {
 
     @Test
     void getLiveLocation() {
-        ResponseEntity<String> res = globalController.getLiveLocation(deliveryId, "vendor");
+        ResponseEntity<String> res = globalController.getLiveLocation(deliveryId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "69.655,69.425");
     }
 
     @Test
     void getLiveLocationNotFound() {
-        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID(), "vendor");
+        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
 
     @Test
-    void getLiveLocationUnauthorized() {
-        ResponseEntity<String> res = globalController.getLiveLocation(UUID.randomUUID(), "norole");
-        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
-        assertNull(res.getBody());
-    }
-
-    @Test
     void getUserException() {
-        ResponseEntity<String> res = globalController.getDeliveryException(deliveryId, "vendor");
+        ResponseEntity<String> res = globalController.getDeliveryException(deliveryId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "late");
     }
 
     @Test
     void getUserExceptionNotFound() {
-        ResponseEntity<String> res = globalController.getDeliveryException(UUID.randomUUID(), "vendor");
+        ResponseEntity<String> res = globalController.getDeliveryException(UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
-        assertNull(res.getBody());
-    }
-
-    @Test
-    void getUserExceptionUnauthorized() {
-        ResponseEntity<String> res = globalController.getDeliveryException(deliveryId, "norole");
-        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
         assertNull(res.getBody());
     }
 
@@ -136,7 +123,7 @@ public class GlobalControllerTest {
                 "69.655,69.425", "", 1);
 
         deliveryRepository.save(save);
-        ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
+        ResponseEntity<String> res = globalController.getDeliveryException(id);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "");
     }
@@ -151,29 +138,23 @@ public class GlobalControllerTest {
         UUID id = UUID.randomUUID();
         Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
-                "69.655,69.425", "", 1);
+                "69.655,69.425", null, 1);
         deliveryRepository.save(save);
-        ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
+        ResponseEntity<String> res = globalController.getDeliveryException(id);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "");
     }
 
     @Test
-    void testDeliveryZoneUnauthorized() {
-        ResponseEntity<Double> res = globalController.getMaxDeliveryZone(restaurantId, "nothing");
-        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
-    }
-
-    @Test
     void testDeliveryZoneNotFound() {
-        ResponseEntity<Double> res = globalController.getMaxDeliveryZone(UUID.randomUUID(), "vendor");
+        ResponseEntity<Double> res = globalController.getMaxDeliveryZone(UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
     void testDeliveryZoneOk() {
 
-        ResponseEntity<Double> res = globalController.getMaxDeliveryZone(restaurantId, "vendor");
+        ResponseEntity<Double> res = globalController.getMaxDeliveryZone(restaurantId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), 10.2d);
     }
@@ -184,7 +165,7 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetDeliveryByIdGoodWeather() {
-        ResponseEntity<Delivery> response = globalController.getDeliveryById(deliveryId, "courier");
+        ResponseEntity<Delivery> response = globalController.getDeliveryById(deliveryId);
 
         assertEquals(
                 HttpStatus.OK,
@@ -204,60 +185,9 @@ public class GlobalControllerTest {
         Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
         assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<Delivery> response = globalController.getDeliveryById(invalidDeliveryId.get(), "courier");
+        ResponseEntity<Delivery> response = globalController.getDeliveryById(invalidDeliveryId.get());
         assertEquals(
                 HttpStatus.NOT_FOUND,
-                response.getStatusCode()
-        );
-    }
-
-    /**
-     * Ensures that every role can get a delivery.
-     */
-    @Test
-    void testGetDeliveryByIdAllRoles() {
-        List<String> rolesToTest = List.of("courier", "vendor", "admin", "customer");
-
-        for (String roleToTest : rolesToTest) {
-            ResponseEntity<Delivery> response = globalController.getDeliveryById(deliveryId, roleToTest);
-
-            assertEquals(
-                    HttpStatus.OK,
-                    response.getStatusCode()
-            );
-            assertEquals(
-                    delivery,
-                    response.getBody()
-            );
-        }
-    }
-
-    /**
-     * Ensures that a valid role is required to get a delivery.
-     */
-    @Test
-    void testGetDeliveryByIdUnauthorized() {
-        ResponseEntity<Delivery> response = globalController.getDeliveryById(deliveryId, "ve");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
-        );
-
-        response = globalController.getDeliveryById(deliveryId, "unauthorizedRole");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
-        );
-    }
-
-    /**
-     * Ensures that a role is required at all to get a delivery.
-     */
-    @Test
-    void testGetDeliveryByIdNoAuthorization() {
-        ResponseEntity<Delivery> response = globalController.getDeliveryById(deliveryId, "");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
                 response.getStatusCode()
         );
     }
@@ -267,7 +197,7 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetRestaurantIdByDeliveryIdGoodWeather() {
-        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(deliveryId, "courier");
+        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(deliveryId);
 
         assertEquals(
                 HttpStatus.OK,
@@ -287,61 +217,10 @@ public class GlobalControllerTest {
         Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
         assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(invalidDeliveryId.get(), "courier");
+        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(invalidDeliveryId.get());
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
-        );
-    }
-
-    /**
-     * Ensures that every role can get a delivery's restaurant.
-     */
-    @Test
-    void testGetRestaurantIdByDeliveryIdAllRoles() {
-        List<String> rolesToTest = List.of("courier", "vendor", "admin", "customer");
-
-        for (String roleToTest : rolesToTest) {
-            ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(deliveryId, roleToTest);
-
-            assertEquals(
-                    HttpStatus.OK,
-                    response.getStatusCode()
-            );
-            assertEquals(
-                    delivery.getRestaurantID(),
-                    response.getBody()
-            );
-        }
-    }
-
-    /**
-     * Ensures that a valid role is required to access a delivery's restaurant.
-     */
-    @Test
-    void testGetRestaurantIdByDeliveryIdUnauthorized() {
-        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(deliveryId, "co");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
-        );
-
-        response = globalController.getRestaurantIdByDeliveryId(deliveryId, "unauthorizedRole");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
-        );
-    }
-
-    /**
-     * Ensures that a role is required at all to access a delivery's restaurant.
-     */
-    @Test
-    void testGetRestaurantIdByDeliveryIdNoAuthorization() {
-        ResponseEntity<UUID> response = globalController.getRestaurantIdByDeliveryId(deliveryId, "");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
         );
     }
 
@@ -351,7 +230,7 @@ public class GlobalControllerTest {
     @Test
     void testGetOrderByDeliveryIdGoodWeather() {
         ResponseEntity<UUID> response = globalController
-                .getOrderByDeliveryId(deliveryId, "courier");
+                .getOrderByDeliveryId(deliveryId);
 
         assertEquals(
                 HttpStatus.OK,
@@ -371,55 +250,10 @@ public class GlobalControllerTest {
         Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
         assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<UUID> response = globalController.getOrderByDeliveryId(invalidDeliveryId.get(), "courier");
+        ResponseEntity<UUID> response = globalController.getOrderByDeliveryId(invalidDeliveryId.get());
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
-        );
-    }
-
-    /**
-     * Ensures that every role can get a delivery's order.
-     */
-    @Test
-    void testGetOrderByDeliveryIdAllRoles() {
-
-        List<String> rolesToTest = List.of("courier", "vendor", "admin", "customer");
-
-        for (String roleToTest : rolesToTest) {
-            ResponseEntity<UUID> response = globalController.getOrderByDeliveryId(deliveryId, roleToTest);
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals(orderId, response.getBody());
-        }
-    }
-
-    /**
-     * Ensures that a valid role is required to access a delivery's order.
-     */
-    @Test
-    void testGetOrderByDeliveryIdUnauthorized() {
-        ResponseEntity<UUID> response = globalController.getOrderByDeliveryId(deliveryId, "co");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
-        );
-
-        response = globalController.getOrderByDeliveryId(deliveryId, "unauthorizedRole");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
-        );
-    }
-
-    /**
-     * Ensures that a role is required at all to access a delivery's order.
-     */
-    @Test
-    void testGetOrderByDeliveryIdNoAuthorization() {
-        ResponseEntity<UUID> response = globalController.getOrderByDeliveryId(deliveryId, "");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
         );
     }
 
@@ -428,7 +262,7 @@ public class GlobalControllerTest {
      */
     @Test
     void testGetRatingByDeliveryIdGoodWeather() {
-        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(deliveryId, "courier");
+        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(deliveryId);
 
         assertEquals(
                 HttpStatus.OK,
@@ -448,78 +282,11 @@ public class GlobalControllerTest {
         Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
         assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(invalidDeliveryId.get(), "courier");
+        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(invalidDeliveryId.get());
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
         );
-    }
-
-    /**
-     * Ensures that every role can get a delivery's rating.
-     */
-    @Test
-    void testGetRatingByDeliveryIdAllRoles() {
-        List<String> rolesToTest = List.of("courier", "vendor", "admin", "customer");
-
-        for (String roleToTest : rolesToTest) {
-            ResponseEntity<Double> response = globalController.getRatingByDeliveryId(deliveryId, roleToTest);
-            assertEquals(
-                    HttpStatus.OK,
-                    response.getStatusCode()
-            );
-            assertEquals(
-                    delivery.getCustomerRating(),
-                    response.getBody()
-            );
-        }
-    }
-
-    /**
-     * Ensures that a valid role is required to access a delivery's rating.
-     */
-    @Test
-    void testGetRatingByDeliveryIdUnauthorized() {
-        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(deliveryId, "co");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
-        );
-
-        response = globalController.getRatingByDeliveryId(deliveryId, "unauthorizedRole");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
-        );
-    }
-
-    /**
-     * Ensures that a role is required at all to access a delivery's rating.
-     */
-    @Test
-    void testGetRatingByDeliveryIdNoAuthorization() {
-        ResponseEntity<Double> response = globalController.getRatingByDeliveryId(deliveryId, "");
-        assertEquals(
-                HttpStatus.UNAUTHORIZED,
-                response.getStatusCode()
-        );
-
-        UUID id = UUID.randomUUID();
-        Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                "pending", delivery.getPickupTimeEstimate(), delivery.getDeliveryTimeEstimate(), 1.d,
-                delivery.getPickedUpTime(), "69.655,69.425", null, 1);
-        deliveryRepository.save(save);
-
-        ResponseEntity<String> res = globalController.getDeliveryException(id, "vendor");
-        assertEquals(res.getStatusCode(), HttpStatus.OK);
-        assertEquals(res.getBody(), "");
-    }
-
-    @Test
-    void testSetMaxZoneUnauthorized() {
-        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(UUID.randomUUID(), "a", 20.0d);
-
-        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }
 
     @Test
@@ -529,14 +296,14 @@ public class GlobalControllerTest {
             id = UUID.randomUUID();
         }
 
-        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(id, "vendor", 25.0);
+        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(id, 25.0);
 
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
     void testSetMaxZoneOk() {
-        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(restaurantId, "vendor", 25.1d);
+        ResponseEntity<Void> res = globalController.setMaxDeliveryZone(restaurantId, 25.1d);
 
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
@@ -546,32 +313,11 @@ public class GlobalControllerTest {
     }
 
     /**
-     * Ensure that each authorized role can access a delivery's estimated pick-up time.
-     */
-    @Test
-    void testGetPickupTimeEstimateValidRoles() {
-        final List<String> rolesToTest = List.of("customer", "courier", "vendor", "admin");
-
-        for (final String roleToTest : rolesToTest) {
-            ResponseEntity<OffsetDateTime> response = globalController.getPickUpTime(deliveryId, roleToTest);
-
-            assertEquals(
-                    HttpStatus.OK,
-                    response.getStatusCode()
-            );
-            assertEquals(
-                    delivery.getPickupTimeEstimate(),
-                    response.getBody()
-            );
-        }
-    }
-
-    /**
      * Ensure that an invalid delivery returns 404, when getting its pick-up time estimate.
      */
     @Test
     void testGetPickupTimeEstimateInvalidDelivery() {
-        final List<String> rolesToTest = List.of("customer", "courier", "vendor", "admin");
+        final List<String> rolesToTest = List.of("customer");
         for (final String roleToTest : rolesToTest) {
             // Generate a delivery ID that is sure to be invalid (it doesn't point to a DB object)
             Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepository);
@@ -579,7 +325,7 @@ public class GlobalControllerTest {
 
             // Try to fetch that delivery
             ResponseEntity<OffsetDateTime> response = globalController.getPickUpTime(
-                    invalidDeliveryId.get(), roleToTest);
+                    invalidDeliveryId.get());
             assertEquals(
                     HttpStatus.NOT_FOUND,
                     response.getStatusCode()
@@ -587,20 +333,10 @@ public class GlobalControllerTest {
         }
     }
 
-    /**
-     * Ensure that a valid role is required to get a delivery's pick-up time estimate.
-     */
     @Test
-    void testGetPickupTimeEstimateUnauthorized() {
-        final List<String> rolesToTest = List.of("", "a", "aaa", "custom", "superuser", "sudo", "hi");
-
-        for (final String roleToTest : rolesToTest) {
-            ResponseEntity<OffsetDateTime> response = globalController.getPickUpTime(deliveryId, roleToTest);
-
-            assertEquals(
-                    HttpStatus.UNAUTHORIZED,
-                    response.getStatusCode()
-            );
-        }
+    public void testGetPickUpTime(){
+        ResponseEntity<OffsetDateTime> response = globalController.getPickUpTime(deliveryId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(pickupTimeEstimate, response.getBody());
     }
 }

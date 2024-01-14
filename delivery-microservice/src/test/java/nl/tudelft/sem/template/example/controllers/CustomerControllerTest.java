@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.example.controllers;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
-import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -11,12 +10,13 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class CustomerControllerTest {
     private transient CustomerController customerController;
@@ -75,34 +75,76 @@ public class CustomerControllerTest {
         deliveryRepository.save(del1);
         deliveryRepository.save(del2);
 
-        ResponseEntity<List<UUID>> res = customerController.getAllDeliveriesCustomer(customerId, "customer");
+        ResponseEntity<List<UUID>> res = customerController.getAllDeliveriesCustomer(customerId);
 
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), List.of(del1.getDeliveryID(), del2.getDeliveryID()));
     }
 
     @Test
-    void getAllDeliveriesCustomerUnauthorised() {
-        ResponseEntity<List<UUID>> res = customerController.getAllDeliveriesCustomer(customerId, "vendor");
-        assertEquals(res.getStatusCode(), HttpStatus.UNAUTHORIZED);
-        assertNull(res.getBody());
+    void checkAndHandleWrongRoles() {
+        final List<String> rolesToTest = List.of("vendor", "courier", "sudo", "admi", "v", "c", "a", "");
+        Supplier<ResponseEntity<Restaurant>> operation = () -> new ResponseEntity<>(HttpStatus.OK);
+
+        for (final String roleToTest : rolesToTest) {
+            ResponseEntity<Restaurant> response = customerController.checkAndHandle(roleToTest, operation);
+            assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        }
     }
 
     @Test
     void getAllDeliveriesEmpty() {
-        ResponseEntity<List<UUID>> res = customerController.getAllDeliveriesCustomer(customerId, "customer");
+        ResponseEntity<List<UUID>> res = customerController.getAllDeliveriesCustomer(customerId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), Collections.emptyList());
     }
 
     @Test
-    void checkRoleOk() {
-        assertTrue(customerController.checkCustomer("customer"));
+    void setRateOfDeliveryNotFound() {
+        ResponseEntity<String> response = customerController.setRateOfDelivery(UUID.randomUUID(), 0.5d);
+        assertEquals(404, response.getStatusCodeValue());
     }
 
     @Test
-    void checkRoleFalse() {
-        assertFalse(customerController.checkCustomer("vendor"));
+    void setRateOfDeliveryBadRequest() {
+        ResponseEntity<String> response = customerController.setRateOfDelivery(deliveryId, 1.5d);
+        assertEquals(400, response.getStatusCodeValue());
     }
 
+    @Test
+    void setRateOfDeliveryBadRequest2() {
+        ResponseEntity<String> response = customerController.setRateOfDelivery(deliveryId, -15d);
+        assertEquals(400, response.getStatusCodeValue());
+    }
+
+    @Test
+    void setRateOfDeliveryGoodRequest() {
+        ResponseEntity<String> response = customerController.setRateOfDelivery(deliveryId, 0d);
+        assertEquals(200, response.getStatusCodeValue());
+
+        response = customerController.setRateOfDelivery(deliveryId, 1d);
+        assertEquals(200, response.getStatusCodeValue());
+    }
+
+    @Test
+    void setRateOfDeliveryOk() {
+        ResponseEntity<String> response = customerController.setRateOfDelivery(deliveryId, 0.5d);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(0.5d, deliveryRepository.findById(deliveryId).get().getCustomerRating());
+    }
+
+    @Test
+    public void testCheckAndHandle_ReturnsNull() {
+        String role = "customer";
+        Supplier<ResponseEntity<String>> operation = () -> null;
+        ResponseEntity<String> result = customerController.checkAndHandle(role, operation);
+        assertNull(result);
+    }
+
+    @Test
+    void checkCorrectRole() {
+        Supplier<ResponseEntity<Restaurant>> operation = () -> new ResponseEntity<>(HttpStatus.OK);
+        ResponseEntity<Restaurant> response = customerController.checkAndHandle("customer", operation);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 }
