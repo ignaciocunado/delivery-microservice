@@ -245,4 +245,11 @@ class CourierControllerTest {
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertEquals(0, response.getBody().size());
     }
+
+    @Test
+    public void testGetAvRatingNoCourierId() {
+        ResponseEntity<Double> response = courierController.getAvrRating(UUID.randomUUID());
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(0, response.getBody());
+    }
 }

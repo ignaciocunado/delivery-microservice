@@ -42,6 +42,8 @@ public class GlobalControllerTest {
      */
     private transient UUIDGenerationService uuidGenerationService;
 
+    private transient OffsetDateTime pickupTimeEstimate;
+
     @BeforeEach
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
@@ -53,7 +55,7 @@ public class GlobalControllerTest {
 
         orderId = UUID.randomUUID();
 
-        OffsetDateTime pickupTimeEstimate = OffsetDateTime.of(
+        pickupTimeEstimate = OffsetDateTime.of(
                 2024, 1, 4, 18, 23, 0, 0,
                 ZoneOffset.ofHoursMinutes(5, 30)
         );
@@ -329,5 +331,12 @@ public class GlobalControllerTest {
                     response.getStatusCode()
             );
         }
+    }
+
+    @Test
+    public void testGetPickUpTime(){
+        ResponseEntity<OffsetDateTime> response = globalController.getPickUpTime(deliveryId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(pickupTimeEstimate, response.getBody());
     }
 }

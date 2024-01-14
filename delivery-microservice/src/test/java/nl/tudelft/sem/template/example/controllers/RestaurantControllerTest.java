@@ -5,9 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 
 class RestaurantControllerTest {
@@ -71,4 +74,80 @@ class RestaurantControllerTest {
         sut.getRest(id, s);
         verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
     }
+
+    @Test
+    public void testAddCourierToRest(){
+        UUID customerID = UUID.randomUUID();
+        UUID restaurantId = UUID.randomUUID();
+        Mockito.when(vc.checkAndHandle(Mockito.any(), Mockito.any()))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        ResponseEntity<?> r = sut.addCourierToRest(restaurantId, customerID, "customer");
+        Mockito.verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
+        assertNotNull(r);
+    }
+
+    @Test
+    public void testRemoveCourierRest(){
+        UUID customerID = UUID.randomUUID();
+        UUID restaurantId = UUID.randomUUID();
+        Mockito.when(vc.checkAndHandle(Mockito.any(), Mockito.any()))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        ResponseEntity<?> r = sut.removeCourierRest(restaurantId, customerID, "customer");
+        Mockito.verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
+        assertNotNull(r);
+    }
+
+    @Test
+    public void testCreateRest(){
+        String role = "admin";
+        Restaurant restaurant = new Restaurant();
+        Mockito.when(ac.createRestaurant(restaurant))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        ResponseEntity<?> r = sut.createRestaurant(role, restaurant);
+        Mockito.verify(ac).createRestaurant(restaurant);
+        assertNotNull(r);
+    }
+
+    @Test
+    public void testGetMaxDeliveryZone(){
+        String role = "admin";
+        UUID deliveryId = UUID.randomUUID();
+        Mockito.when(gc.getMaxDeliveryZone(deliveryId))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        ResponseEntity<?> r = sut.getMaxDeliveryZone(deliveryId, role);
+        Mockito.verify(gc).getMaxDeliveryZone(deliveryId);
+        assertNotNull(r);
+    }
+
+    @Test
+    public void testSetMaxDeliveryZone(){
+        String role = "admin";
+        UUID restaurantId = UUID.randomUUID();
+        Mockito.when(gc.setMaxDeliveryZone(restaurantId, 1d))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        ResponseEntity<?> r = sut.setMaxDeliveryZone(restaurantId, role, 1d);
+        Mockito.verify(gc).setMaxDeliveryZone(restaurantId, 1d);
+        assertNotNull(r);
+    }
+
+    @Test
+    public void testGetRest(){
+        UUID restaurantId = UUID.randomUUID();
+        Mockito.when(vc.checkAndHandle(Mockito.any(), Mockito.any()))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        ResponseEntity<?> r = sut.getRest(restaurantId, "customer");
+        Mockito.verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
+        assertNotNull(r);
+    }
+
+    @Test
+    public void testGetVendorRest(){
+        UUID vendorId = UUID.randomUUID();
+        Mockito.when(vc.checkAndHandle(Mockito.any(), Mockito.any()))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        ResponseEntity<?> r = sut.getVendorRest(vendorId, "customer");
+        Mockito.verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
+        assertNotNull(r);
+    }
+
 }

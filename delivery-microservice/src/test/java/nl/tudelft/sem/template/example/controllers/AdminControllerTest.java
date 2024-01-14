@@ -148,7 +148,12 @@ public class AdminControllerTest {
         }
     }
 
-
+    @Test
+    void checkAndHandleCorrectRoles() {
+        Supplier<ResponseEntity<Restaurant>> operation = () -> new ResponseEntity<>(HttpStatus.OK);
+        ResponseEntity<Restaurant> response = adminController.checkAndHandle("admin", operation);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 
     /**
      * Tests the case where no more UUIDs are available.

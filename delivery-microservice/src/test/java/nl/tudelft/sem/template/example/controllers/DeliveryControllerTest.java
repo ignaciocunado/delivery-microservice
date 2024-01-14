@@ -12,6 +12,7 @@ import java.time.ZoneOffset;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
@@ -328,5 +329,21 @@ class DeliveryControllerTest {
         ResponseEntity<String> r = deliveryController.setRateOfDelivery(deliveryId, role, 1d);
         Mockito.verify(customerController).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
+    }
+
+    @Test
+    void getPickUpLocation2() {
+        UUID deliveryId = UUID.randomUUID();
+        String role = "courier";
+
+        // Mock the behavior of courierController
+        Mockito.when(courierController.checkAndHandle(Mockito.eq(role), Mockito.any()))
+                .thenAnswer(invocation -> {
+                    return ResponseEntity.ok("MockedResponse");
+                });
+
+        ResponseEntity<String> response = deliveryController.getPickUpLocation(deliveryId, role);
+
+        assertEquals("MockedResponse", response.getBody());
     }
 }

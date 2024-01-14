@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class CustomerControllerTest {
     private transient CustomerController customerController;
@@ -117,9 +118,26 @@ public class CustomerControllerTest {
     }
 
     @Test
+    void setRateOfDeliveryGoodRequest() {
+        ResponseEntity<String> response = customerController.setRateOfDelivery(deliveryId, 0d);
+        assertEquals(200, response.getStatusCodeValue());
+
+        response = customerController.setRateOfDelivery(deliveryId, 1d);
+        assertEquals(200, response.getStatusCodeValue());
+    }
+
+    @Test
     void setRateOfDeliveryOk() {
         ResponseEntity<String> response = customerController.setRateOfDelivery(deliveryId, 0.5d);
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(0.5d, deliveryRepository.findById(deliveryId).get().getCustomerRating());
+    }
+
+    @Test
+    public void testCheckAndHandle_ReturnsNull() {
+        String role = "customer";
+        Supplier<ResponseEntity<String>> operation = () -> null;
+        ResponseEntity<String> result = customerController.checkAndHandle(role, operation);
+        assertNull(result);
     }
 }
