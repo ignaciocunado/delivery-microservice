@@ -87,7 +87,7 @@ public class VendorController implements Controller {
     /**
      * Gets the pick-up time for a delivery.
      * @param deliveryID UUID of the delivery object
-     * @return OffsetDateTime of the estimated time of pick-up
+     * @return OffsetDateTime of the picked-up time
      */
     public ResponseEntity<OffsetDateTime> getPickUpEstimate(UUID deliveryID) {
         Optional<Delivery> estimate = deliveryRepository.findById(deliveryID);

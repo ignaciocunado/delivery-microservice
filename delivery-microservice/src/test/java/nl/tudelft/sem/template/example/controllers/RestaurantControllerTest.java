@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 
@@ -56,7 +57,7 @@ class RestaurantControllerTest {
         Restaurant restaurant = new Restaurant();
         sut.createRestaurant("admin", restaurant);
 
-        verify(ac).createRestaurant(restaurant);
+        verify(ac).checkAndHandle(Mockito.eq("admin"), Mockito.any());
     }
 
     @Test
@@ -101,11 +102,12 @@ class RestaurantControllerTest {
     public void testCreateRest(){
         String role = "admin";
         Restaurant restaurant = new Restaurant();
-        Mockito.when(ac.createRestaurant(restaurant))
+        Mockito.when(ac.checkAndHandle(Mockito.eq(role), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = sut.createRestaurant(role, restaurant);
-        Mockito.verify(ac).createRestaurant(restaurant);
+        Mockito.verify(ac).checkAndHandle(Mockito.eq(role), Mockito.any());
         assertNotNull(r);
+        assertEquals(HttpStatus.OK, r.getStatusCode());
     }
 
     @Test
