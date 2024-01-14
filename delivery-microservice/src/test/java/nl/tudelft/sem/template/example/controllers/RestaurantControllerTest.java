@@ -1,8 +1,8 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
+import nl.tudelft.sem.template.example.service.implementation.RestaurantManagerService;
 import nl.tudelft.sem.template.example.service.roles.AdminService;
-import nl.tudelft.sem.template.example.service.roles.CourierService;
 import nl.tudelft.sem.template.example.service.roles.GlobalService;
 import nl.tudelft.sem.template.example.service.roles.VendorService;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,22 +22,22 @@ class RestaurantControllerTest {
 
 
     @Mock
-    VendorService vc = Mockito.mock(VendorService.class);
+    VendorService vendorService = Mockito.mock(VendorService.class);
 
     @Mock
-    CourierService cc = Mockito.mock(CourierService.class);
+    AdminService adminService = Mockito.mock(AdminService.class);
 
     @Mock
-    AdminService ac = Mockito.mock(AdminService.class);
+    GlobalService globalService = Mockito.mock(GlobalService.class);
 
     @Mock
-    GlobalService gc = Mockito.mock(GlobalService.class);
+    RestaurantManagerService restaurantManagerService = Mockito.mock(RestaurantManagerService.class);
 
-    RestaurantController sut = new RestaurantController(cc, vc, ac, gc);
+    private transient RestaurantController sut;
 
     @BeforeEach
     public void setup() {
-        sut.setVendorService(vc);
+        sut = new RestaurantController(vendorService, adminService, globalService, restaurantManagerService);
     }
 
     @Test
@@ -45,7 +45,7 @@ class RestaurantControllerTest {
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         sut.addCourierToRest(id1, id2, "a");
-        verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
+        verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -53,7 +53,7 @@ class RestaurantControllerTest {
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         sut.removeCourierRest(id1, id2, "a");
-        verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
+        verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -61,14 +61,14 @@ class RestaurantControllerTest {
         Restaurant restaurant = new Restaurant();
         sut.createRestaurant("admin", restaurant);
 
-        verify(ac).checkAndHandle(Mockito.eq("admin"), Mockito.any());
+        verify(adminService).checkAndHandle(Mockito.eq("admin"), Mockito.any());
     }
 
     @Test
     public void testCallMaxZone() {
         UUID id = UUID.randomUUID();
         sut.getMaxDeliveryZone(id, "a");
-        verify(gc).getMaxDeliveryZone(id);
+        verify(globalService).getMaxDeliveryZone(id);
     }
 
     @Test
@@ -77,17 +77,17 @@ class RestaurantControllerTest {
         String s = "";
 
         sut.getRest(id, s);
-        verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
+        verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
     }
 
     @Test
     public void testAddCourierToRest(){
         UUID customerID = UUID.randomUUID();
         UUID restaurantId = UUID.randomUUID();
-        Mockito.when(vc.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = sut.addCourierToRest(restaurantId, customerID, "customer");
-        Mockito.verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
@@ -95,10 +95,10 @@ class RestaurantControllerTest {
     public void testRemoveCourierRest(){
         UUID customerID = UUID.randomUUID();
         UUID restaurantId = UUID.randomUUID();
-        Mockito.when(vc.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = sut.removeCourierRest(restaurantId, customerID, "customer");
-        Mockito.verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
@@ -106,10 +106,10 @@ class RestaurantControllerTest {
     public void testCreateRest(){
         String role = "admin";
         Restaurant restaurant = new Restaurant();
-        Mockito.when(ac.checkAndHandle(Mockito.eq(role), Mockito.any()))
+        Mockito.when(adminService.checkAndHandle(Mockito.eq(role), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = sut.createRestaurant(role, restaurant);
-        Mockito.verify(ac).checkAndHandle(Mockito.eq(role), Mockito.any());
+        Mockito.verify(adminService).checkAndHandle(Mockito.eq(role), Mockito.any());
         assertNotNull(r);
         assertEquals(HttpStatus.OK, r.getStatusCode());
     }
@@ -118,10 +118,10 @@ class RestaurantControllerTest {
     public void testGetMaxDeliveryZone(){
         String role = "admin";
         UUID deliveryId = UUID.randomUUID();
-        Mockito.when(gc.getMaxDeliveryZone(deliveryId))
+        Mockito.when(globalService.getMaxDeliveryZone(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = sut.getMaxDeliveryZone(deliveryId, role);
-        Mockito.verify(gc).getMaxDeliveryZone(deliveryId);
+        Mockito.verify(globalService).getMaxDeliveryZone(deliveryId);
         assertNotNull(r);
     }
 
@@ -129,30 +129,30 @@ class RestaurantControllerTest {
     public void testSetMaxDeliveryZone(){
         String role = "admin";
         UUID restaurantId = UUID.randomUUID();
-        Mockito.when(gc.setMaxDeliveryZone(restaurantId, 1d))
+        Mockito.when(globalService.setMaxDeliveryZone(restaurantId, 1d))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = sut.setMaxDeliveryZone(restaurantId, role, 1d);
-        Mockito.verify(gc).setMaxDeliveryZone(restaurantId, 1d);
+        Mockito.verify(globalService).setMaxDeliveryZone(restaurantId, 1d);
         assertNotNull(r);
     }
 
     @Test
     public void testGetRest(){
         UUID restaurantId = UUID.randomUUID();
-        Mockito.when(vc.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = sut.getRest(restaurantId, "customer");
-        Mockito.verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
     @Test
     public void testGetVendorRest(){
         UUID vendorId = UUID.randomUUID();
-        Mockito.when(vc.checkAndHandle(Mockito.any(), Mockito.any()))
+        Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = sut.getVendorRest(vendorId, "customer");
-        Mockito.verify(vc).checkAndHandle(Mockito.any(), Mockito.any());
+        Mockito.verify(vendorService).checkAndHandle(Mockito.any(), Mockito.any());
         assertNotNull(r);
     }
 
