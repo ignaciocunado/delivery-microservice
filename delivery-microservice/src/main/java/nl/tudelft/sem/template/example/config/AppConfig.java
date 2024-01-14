@@ -6,6 +6,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class AppConfig {
+    @lombok.Generated
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();

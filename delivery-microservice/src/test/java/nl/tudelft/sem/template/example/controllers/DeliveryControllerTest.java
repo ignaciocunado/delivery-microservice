@@ -225,7 +225,8 @@ class DeliveryControllerTest {
 
     @Test
     void testGetLocationOfDelivery() {
-        Mockito.when(courierController.getLocationOfDelivery(deliveryId, role)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        Mockito.when(courierController.getLocationOfDelivery(deliveryId, role))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getLocationOfDelivery(deliveryId, role);
         Mockito.verify(courierController).getLocationOfDelivery(deliveryId, role);
         assertNotNull(r);
