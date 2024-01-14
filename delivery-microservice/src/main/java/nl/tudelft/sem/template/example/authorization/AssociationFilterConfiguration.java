@@ -22,6 +22,7 @@ public class AssociationFilterConfiguration {
      * Enable registration.
      * @return the authorization filter
      */
+    @lombok.Generated
     @Bean
     public FilterRegistrationBean<AssociationFilter> associationFilter() {
         AssociationFilter associationFilter = new AssociationFilter(associationService);

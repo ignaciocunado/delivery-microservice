@@ -169,7 +169,7 @@ pitest {
 					 'nl.tudelft.sem.template.example.controllers.*',
 					 'nl.tudelft.sem.template.example.service.*',
 	]  //by default "${project.group}.*"
-//	excludedMethods = ['setCourierController']
+	excludedMethods = ['sanityCheck', '@Setter', 'authorizationFilter', 'authorize', 'doFilter']
 	pitestVersion = '1.5.1' //not needed when a default PIT version should be used
 	threads = 8
 	outputFormats = ['XML', 'HTML']
