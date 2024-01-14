@@ -125,12 +125,6 @@ public class VendorController implements Controller {
      * @return void response entity with HTTP codes
      */
     public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId) {
-        Optional<Restaurant> rest = restaurantRepository.findById(restaurantId);
-
-        if (rest.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
         Optional<Restaurant> fetched = restaurantRepository.findById(restaurantId);
         if (fetched.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

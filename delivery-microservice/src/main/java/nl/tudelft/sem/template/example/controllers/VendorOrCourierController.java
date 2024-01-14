@@ -123,7 +123,7 @@ public class VendorOrCourierController implements Controller {
             Delivery delivery = deliveryRepository.findById(deliveryID).get();
             delivery.setDeliveryTimeEstimate(body);
             deliveryRepository.save(delivery);
-            return new ResponseEntity<>(body.toString(), HttpStatus.OK);
+            return new ResponseEntity<>(delivery.getDeliveryTimeEstimate().toString(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -163,7 +163,7 @@ public class VendorOrCourierController implements Controller {
             delivery.setPickupTimeEstimate(time);
             deliveryRepository.save(delivery);
 
-            return new ResponseEntity<>(time.toString(), HttpStatus.OK);
+            return new ResponseEntity<>(delivery.getPickupTimeEstimate().toString(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

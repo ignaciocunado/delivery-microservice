@@ -138,7 +138,7 @@ public class GlobalControllerTest {
         UUID id = UUID.randomUUID();
         Delivery save = new  Delivery(id, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
-                "69.655,69.425", "", 1);
+                "69.655,69.425", null, 1);
         deliveryRepository.save(save);
         ResponseEntity<String> res = globalController.getDeliveryException(id);
         assertEquals(res.getStatusCode(), HttpStatus.OK);

@@ -140,4 +140,11 @@ public class CustomerControllerTest {
         ResponseEntity<String> result = customerController.checkAndHandle(role, operation);
         assertNull(result);
     }
+
+    @Test
+    void checkCorrectRole() {
+        Supplier<ResponseEntity<Restaurant>> operation = () -> new ResponseEntity<>(HttpStatus.OK);
+        ResponseEntity<Restaurant> response = customerController.checkAndHandle("customer", operation);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 }
