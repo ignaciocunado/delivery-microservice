@@ -18,7 +18,7 @@ Looking at the PiTest reports for why the tests failed, we identified the follow
 ## 4.3 After
 #### 4.3.1 Mutation testing report
 ![img_6.png](img_6.png)
-Figure 3: Project mutation testing report at commit `aa11abf7f916acc2f3c7e5b1ba5a13a2cfaff50d` (Relevant MRs: [!53 (mostly)](https://gitlab.ewi.tudelft.nl/cse2115/2023-2024/group-14/team-14b/-/merge_requests/53), [!54](https://gitlab.ewi.tudelft.nl/cse2115/2023-2024/group-14/team-14b/-/merge_requests/54))
+Figure 3: Project mutation testing report at HEAD (Relevant MRs: [!53 (mostly)](https://gitlab.ewi.tudelft.nl/cse2115/2023-2024/group-14/team-14b/-/merge_requests/53), [!57](https://gitlab.ewi.tudelft.nl/cse2115/2023-2024/group-14/team-14b/-/merge_requests/57))
 #### 4.3.2 Changes
 1. By asserting that the Controller was actually returning some output, we eliminated the case that the controller's return value was replaced with null.
     ![img_3.png](img_3.png)
