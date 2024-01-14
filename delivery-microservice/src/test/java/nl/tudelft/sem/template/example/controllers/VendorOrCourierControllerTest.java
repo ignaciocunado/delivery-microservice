@@ -49,8 +49,8 @@ class VendorOrCourierControllerTest {
         assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 1);
         ResponseEntity<Integer> res = vendorOrCourierController.setDeliveryDelay(deliveryId, 2);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
-        assertEquals(res.getBody(), 0);
-        assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 0);
+        assertEquals(res.getBody(), 2);
+        assertEquals(deliveryRepository.findById(deliveryId).get().getDelay(), 2);
     }
 
     @Test
