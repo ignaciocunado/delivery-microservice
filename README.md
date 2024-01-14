@@ -23,6 +23,8 @@ Two things are required to successfully make a request to the microservice:
 
 >An example request URL would be `host:port/delivery/?role=courier`.
 
+In addition, if you are having trouble with `BAD REQUEST`s, ensure that any database object IDs you are referencing via [collection variables](#collection-variables) or otherwise are valid.
+
 ### Collection Variables
 
 The Postman request collection contains **collection variables** which specify various request values. They are found under _Variables_ when inspecting the collection itself.
