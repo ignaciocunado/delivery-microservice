@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,16 +30,21 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void getRestaurantLocation() {
-        Mockito.when(restTemplate.getForObject(Mockito.anyString(), Mockito.any())).thenReturn("PickUp in format xxx.xxx");
+        UUID vendorID = UUID.randomUUID();
+        Mockito.when(restTemplate.getForObject("a/vendor/" + vendorID + "/location", String.class)).thenReturn("PickUp in format xxx.xxx");
 
-        assert(externalService.getRestaurantLocation(UUID.randomUUID()).equals("PickUp in format xxx.xxx"));
+        assertEquals("PickUp in format xxx.xxx", externalService.getRestaurantLocation(vendorID));
     }
 
     @Test
     void getOrderDestination() {
-        Mockito.when(restTemplate.getForObject(Mockito.anyString(), Mockito.any())).thenReturn("Destination in format xxx.xxx");
+        UUID customerId = UUID.randomUUID();
+        UUID orderID = UUID.randomUUID();
+        Mockito.when(restTemplate.getForObject("a/delivery/" + customerId + "/order/" + orderID + "/destination", String.class)).thenReturn("Destination in format xxx.xxx");
 
-        assert(externalService.getOrderDestination(UUID.randomUUID(), UUID.randomUUID()).equals("Destination in format xxx.xxx"));
+        System.out.println("\033[95:40m rest response: \033[30:105m " + restTemplate.getForObject("a/delivery/" + customerId + "/order/" + orderID + "/destination", String.class) + " \033[0m");
+        System.out.println("\033[95:40m externalService response: \033[30:105m " + externalService.getOrderDestination(customerId, orderID) + " \033[0m");
+        assertEquals("Destination in format xxx.xxx", externalService.getOrderDestination(customerId, orderID));
     }
 
     @Test
@@ -65,7 +71,8 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void verifyAdminRole() {
-        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any())).thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
+        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+                .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
         boolean result = externalService.verify("123", "admin");
 
         assertTrue(result);
@@ -73,10 +80,19 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void verifyValidRoleNon200ErrorCode() {
-        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any())).thenReturn(new ResponseEntity<>(null, null, HttpStatus.UNAUTHORIZED));
-        boolean result = externalService.verify("123", "admin");
+        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+                .thenThrow(new RestClientException(""));
+        boolean result = externalService.verify("123", "customer");
 
         assertFalse(result);
     }
 
+    @Test
+    void verifyClientExceptionThrown() {
+        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+                .thenThrow(new RestClientException(":)"));
+        boolean result = externalService.verify("123", "admin");
+
+        assertFalse(result);
+    }
 }

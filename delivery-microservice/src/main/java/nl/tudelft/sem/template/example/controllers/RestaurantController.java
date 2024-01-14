@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.Setter;
 import nl.tudelft.sem.api.RestaurantApi;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.model.GetVendorRest200ResponseInner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,14 +44,16 @@ public class RestaurantController implements RestaurantApi {
 
 
     @Override
-    public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId, String role) {
-        return vendorController.addCourierToRest(courierId, restaurantId, role);
+    public ResponseEntity<Void> addCourierToRest(UUID restaurantId, UUID courierId, String role) {
+        return vendorController.addCourierToRest(restaurantId, courierId, role);
     }
 
     @Override
-    public ResponseEntity<Void> removeCourierRest(UUID courierId, UUID restaurantId, String role) {
-        return vendorController.removeCourierRest(courierId, restaurantId, role);
+    public ResponseEntity<Void> removeCourierRest(UUID restaurantId, UUID courierId, String role) {
+        return vendorController.removeCourierRest(restaurantId, courierId, role);
     }
+
+
 
     /**
      * Integrates controller with API for the create restaurant endpoint.
@@ -85,5 +86,28 @@ public class RestaurantController implements RestaurantApi {
     @Override
     public ResponseEntity<String> getRest(UUID restaurantId, String role) {
         return vendorController.getRest(restaurantId, role);
+    }
+
+    /**
+     * Calls the corresponding method in the globalController.
+     * @param restaurantId ID of the restaurant to modify. (required)
+     * @param role The role of the user (required)
+     * @param body Leave the delivery zone blank to reset to the default value instead. (optional)
+     * @return the ResponseEntity returned by the method.
+     */
+    @Override
+    public ResponseEntity<Void> setMaxDeliveryZone(UUID restaurantId, String role, Double body) {
+        return globalController.setMaxDeliveryZone(restaurantId, role, body);
+    }
+
+    /**
+     * Calls the method implemented in the vendorController for retrieving a list of restaurants.
+     * @param vendorId ID of the vendor to query. (required)
+     * @param role The role of the user (required)
+     * @return the list of restaurants
+     */
+    @Override
+    public ResponseEntity<List<UUID>> getVendorRest(UUID vendorId, String role) {
+        return vendorController.getVendorRest(vendorId, role);
     }
 }

@@ -98,8 +98,8 @@ public class DeliveryController implements DeliveryApi {
      * @return the average rating
      */
     @Override
-    public ResponseEntity<Double> getAvRateCourier(UUID courierID) {
-        return courierController.getAvrRating(courierID);
+    public ResponseEntity<Double> getAvRateCourier(UUID courierID, String role) {
+        return courierController.getAvrRating(courierID, role);
     }
 
     /**
@@ -395,5 +395,10 @@ public class DeliveryController implements DeliveryApi {
                     + " \033[91;40m was NULL ** \033[0m");
         }
         return r;
+    }
+
+    @Override
+    public ResponseEntity<String> setRateOfDelivery(UUID deliveryID, String role, Double body) {
+        return vendorController.setRateOfDelivery(deliveryID, role, body);
     }
 }
