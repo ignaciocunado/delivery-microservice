@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.controllers;
+package nl.tudelft.sem.template.example.service.roles;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
@@ -8,17 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Sub-controller of DeliveryController.
+ * Service that authorizes requests from any user.
+ * WARNING: this class will be entirely removed in the next step of the refactor.
  */
-@Component
-public class GlobalController {
+@Service
+public class GlobalService {
 
     RestaurantRepository restaurantRepository;
     DeliveryRepository deliveryRepository;
@@ -29,35 +30,18 @@ public class GlobalController {
      * @param deliveryRepository delivery DB
      */
     @Autowired
-    public GlobalController(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository) {
+    public GlobalService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository) {
         this.restaurantRepository = restaurantRepository;
         this.deliveryRepository = deliveryRepository;
-    }
-
-    /**
-     * Checks whether the role provided is valid.
-     *
-     * @param role role
-     * @return true iff the role is valid
-     */
-    public boolean checkGeneral(String role) {
-        // While this does re-instantiate the list when called, I believe this is cleaner than
-        // introducing another member variable (and performance of code vs requests is negligible)
-        final List<String> allowedRoles = List.of("courier", "vendor", "admin", "customer");
-        return allowedRoles.contains(role);
     }
 
     /**
      * Implementation for get live location endpoint.
      *
      * @param deliveryID id of the delivery to query
-     * @param role       role of the user
      * @return string representing coordinates
      */
-    public ResponseEntity<String> getLiveLocation(UUID deliveryID, String role) {
-        if (!checkGeneral(role)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<String> getLiveLocation(UUID deliveryID) {
         final Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
         if (!fetched.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -68,13 +52,9 @@ public class GlobalController {
     /**
      * Implementation for get delivery exception endpoint.
      * @param deliveryID id of the delivery to query
-     * @param role role of the user
      * @return string representing the exception if there is one
      */
-    public ResponseEntity<String> getDeliveryException(UUID deliveryID, String role) {
-        if (!checkGeneral(role)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<String> getDeliveryException(UUID deliveryID) {
         final Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
         if (!fetched.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -86,14 +66,9 @@ public class GlobalController {
     /**
      * Queries the Max Delivery Zone for a given restaurant and provides adequate error codes.
      * @param restaurantId id of the restaurant to be queried
-     * @param role the role of the user
      * @return the delivery zone, should it exist
      */
-    public ResponseEntity<Double> getMaxDeliveryZone(UUID restaurantId, String role) {
-        if(!checkGeneral(role)) {
-            return new ResponseEntity<Double>(HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<Double> getMaxDeliveryZone(UUID restaurantId) {
         Optional<Restaurant> r = restaurantRepository.findById(restaurantId);
 
         if(r.isEmpty()) {
@@ -107,15 +82,9 @@ public class GlobalController {
      * Implementation for the get delivery by ID endpoint. This fetches the full Delivery object from the database,
      * returning every piece of data relating to it.
      * @param deliveryId ID of the delivery to get.
-     * @param role Role of the querying user.
      * @return The delivery object, if found.
      */
-    public ResponseEntity<Delivery> getDeliveryById(UUID deliveryId, String role) {
-        // Authorize the user
-        if (!checkGeneral(role)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<Delivery> getDeliveryById(UUID deliveryId) {
         // Attempt to fetch the delivery from the DB
         final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
         if (deliveryFromDB.isEmpty()) {
@@ -129,15 +98,9 @@ public class GlobalController {
     /**
      * Implementation for the get restaurant ID by delivery ID endpoint. This points to a 'Restaurant' entity in the DB.
      * @param deliveryId ID of the delivery to query.
-     * @param role Role of the querying user.
      * @return The delivery's restaurant ID.
      */
-    public ResponseEntity<UUID> getRestaurantIdByDeliveryId(UUID deliveryId, String role) {
-        // Authorize the user
-        if (!checkGeneral(role)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<UUID> getRestaurantIdByDeliveryId(UUID deliveryId) {
         // Attempt to fetch the delivery from the DB
         final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
         if (deliveryFromDB.isEmpty()) {
@@ -156,15 +119,9 @@ public class GlobalController {
      * the database. Note that this order object DNE in this microservice - instead, the ID points to an object from
      * a different database.
      * @param deliveryId ID of the delivery to query.
-     * @param role Role of the querying user.
      * @return The delivery's order ID.
      */
-    public ResponseEntity<UUID> getOrderByDeliveryId(UUID deliveryId, String role) {
-        // Authorize the user
-        if (!checkGeneral(role)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<UUID> getOrderByDeliveryId(UUID deliveryId) {
         // Attempt to fetch the delivery from the DB
         final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
         if (deliveryFromDB.isEmpty()) {
@@ -183,15 +140,9 @@ public class GlobalController {
      * Note that this returns the pickup time ESTIMATE, as specified in the OpenAPI spec.
      *
      * @param deliveryId ID of the delivery to query.
-     * @param role Role of the querying user.
      * @return The estimated pickup time.
      */
-    public ResponseEntity<OffsetDateTime> getPickUpTime(UUID deliveryId, String role) {
-        // Authorize the user
-        if (!checkGeneral(role)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<OffsetDateTime> getPickUpTime(UUID deliveryId) {
         // Attempt to fetch the delivery from the DB
         final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
         if (deliveryFromDB.isEmpty()) {
@@ -208,15 +159,9 @@ public class GlobalController {
     /**
      * Fetches the 'rating' property of a delivery. This property reflects a customer-specified rating.
      * @param deliveryId Delivery to query.
-     * @param role Role of the querying user.
      * @return The delivery's customer rating.
      */
-    public ResponseEntity<Double> getRatingByDeliveryId(UUID deliveryId, String role) {
-        // Authorize the user
-        if (!checkGeneral(role)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<Double> getRatingByDeliveryId(UUID deliveryId) {
         // Attempt to fetch the delivery from the DB
         final Optional<Delivery> deliveryFromDB = deliveryRepository.findById(deliveryId);
         if (deliveryFromDB.isEmpty()) {
@@ -233,24 +178,19 @@ public class GlobalController {
     /**
      * Sets the maxDeliveryZone of a given restaurant.
      * @param restaurantId the id of the restaurant
-     * @param role the role of the caller
      * @param body the value to be set
      * @return Corresponding responseEntity
      */
-    public ResponseEntity<Void> setMaxDeliveryZone(UUID restaurantId, String role, Double body) {
-        if(!checkGeneral(role)) {
-            return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<Void> setMaxDeliveryZone(UUID restaurantId, Double body) {
         Optional<Restaurant> res = restaurantRepository.findById(restaurantId);
         if(res.isEmpty()) {
-            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Restaurant r = res.get();
         r.setMaxDeliveryZone(body);
         restaurantRepository.save(r);
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
