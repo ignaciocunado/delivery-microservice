@@ -127,15 +127,15 @@ class VendorServiceTest {
     }
 
     @Test
-    public void testNotFound() {
+    public void testAddCourierToRestNotFound() {
         ResponseEntity<Void> res = courierToRestaurantService.addCourierToRest(UUID.randomUUID(), UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
-    public void testOkNoDuplicate() {
+    public void testAddCourierToRestOkNoDuplicate() {
         UUID courierId = UUID.randomUUID();
-        ResponseEntity<Void> res = courierToRestaurantService.addCourierToRest(courierId, restaurantId);
+        ResponseEntity<Void> res = courierToRestaurantService.addCourierToRest(restaurantId, courierId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
         Restaurant newRes = courierToRestaurantService.getRestaurantRepository().findById(restaurantId).get();
@@ -144,6 +144,23 @@ class VendorServiceTest {
                         .filter(x -> x.equals(courierId))
                         .collect(Collectors.toList()).isEmpty()
         );
+    }
+
+    @Test
+    public void testAddCourierToRestDuplicate() {
+        UUID courierId = UUID.randomUUID();
+        ResponseEntity<Void> res = courierToRestaurantService.addCourierToRest(restaurantId, courierId);
+
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        Restaurant newRes = courierToRestaurantService.getRestaurantRepository().findById(restaurantId).get();
+        assertTrue(newRes.getCourierIDs().contains(courierId));
+
+        ResponseEntity<Void> res2 = courierToRestaurantService.addCourierToRest(restaurantId, courierId);
+        assertEquals(res2.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertNull(res2.getBody());
+        Restaurant newRes2 = courierToRestaurantService.getRestaurantRepository().findById(restaurantId).get();
+        assertEquals(newRes.getCourierIDs().stream().filter(c -> c.equals(courierId)).collect(Collectors.toList()).size(), 1);
+
     }
 
     @Test
