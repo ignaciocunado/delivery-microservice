@@ -37,6 +37,7 @@ class DeliveryControllerTest {
     private transient DeliveryIdGetterGlobalService deliveryIdGetterGlobalService;
 
     private transient MaxDeliveryZoneService maxDeliveryZoneService;
+    private transient AdminService adminService;
 
     private transient UUID deliveryId;
     private transient String role;
@@ -57,6 +58,7 @@ class DeliveryControllerTest {
         attributeGetterGlobalService = Mockito.mock(AttributeGetterGlobalService.class);
         deliveryIdGetterGlobalService = Mockito.mock(DeliveryIdGetterGlobalService.class);
         maxDeliveryZoneService = Mockito.mock(MaxDeliveryZoneService.class);
+        adminService = Mockito.mock(AdminService.class);
 
         globalService = Mockito.mock(GlobalService.class);
 
@@ -67,7 +69,7 @@ class DeliveryControllerTest {
         vendorOrCourierService = Mockito.mock(VendorOrCourierService.class);
         customerService = Mockito.mock(CustomerService.class);
         deliveryController = new DeliveryController(courierService, vendorService,
-                globalService, vendorOrCourierService, customerService);
+                globalService, vendorOrCourierService, customerService, adminService);
     }
 
     @Test

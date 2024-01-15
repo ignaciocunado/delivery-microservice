@@ -26,6 +26,7 @@ public class DeliveryController implements DeliveryApi {
     private final transient GlobalService globalService;
     private final transient VendorOrCourierService vendorOrCourierService;
     private final transient CustomerService customerService;
+    private final transient AdminService adminService;
 
     /**
      * Autowired constructor for the controller.
@@ -34,16 +35,18 @@ public class DeliveryController implements DeliveryApi {
      * @param globalService sub-controller for global endpoints
      * @param customerService sub-controller for customers
      * @param vendorOrCourierService sub-controller for vendors and couriers
+     * @param adminService sub-controller for admins
      */
     @Autowired
     public DeliveryController(CourierService courierService, VendorService vendorService,
                               GlobalService globalService, VendorOrCourierService vendorOrCourierService,
-                              CustomerService customerService) {
+                              CustomerService customerService, AdminService adminService) {
         this.courierService = courierService;
         this.vendorService = vendorService;
         this.globalService = globalService;
         this.vendorOrCourierService = vendorOrCourierService;
         this.customerService = customerService;
+        this.adminService = adminService;
     }
 
     /**
@@ -415,6 +418,12 @@ public class DeliveryController implements DeliveryApi {
     public ResponseEntity<String> setRateOfDelivery(UUID deliveryID, String role, Double body) {
         return customerService.checkAndHandle(role,
                 () -> customerService.setRateOfDelivery(deliveryID, body));
+    }
+
+    @Override
+    public ResponseEntity<UUID> setRestIdOfDelivery(UUID deliveryID, String role, UUID body) {
+        return adminService.checkAndHandle(role,
+                () -> )
     }
 
     @lombok.Generated
