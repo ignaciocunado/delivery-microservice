@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-
 @Service
 public class CourierToRestaurantService {
     @Getter
@@ -23,6 +22,12 @@ public class CourierToRestaurantService {
     DeliveryRepository deliveryRepository;
     UUIDGenerationService uuidGenerationService;
 
+    /**
+     * Constructor for CourierToRestaurantService.
+     * @param restaurantRepository restaurant DB
+     * @param deliveryRepository delivery DB
+     * @param uuidGenerationService service which generates unique IDs
+     */
     @Autowired
     public CourierToRestaurantService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
                                       UUIDGenerationService uuidGenerationService) {
@@ -37,28 +42,28 @@ public class CourierToRestaurantService {
      * @param restaurantId ID of the restaurant to add the courier to. (required)
      * @return Whether the request was successful or not
      */
-    public ResponseEntity<Void> addCourierToRest(UUID courierId, UUID restaurantId) {
+    public ResponseEntity<Void> addCourierToRest(UUID restaurantId, UUID courierId) {
 
-        Restaurant r;
-
-        if (restaurantRepository.findById(restaurantId).isPresent()) {
-            r = restaurantRepository.findById(restaurantId).get();
-        } else {
+        Optional<Restaurant> fetched = restaurantRepository.findById(restaurantId);
+        if (!fetched.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return executeAddCourierToRest(courierId, fetched.get());
         }
-        return executeAddCourierToRest(courierId, r);
 
     }
 
     /**
-     * private method for executing logic of AddCourierToRest
+     * private method for executing logic of AddCourierToRest.
      * used to lower LOC
      * @param courierId id of courier to query
      * @return corresponding response entity
      */
     private ResponseEntity<Void> executeAddCourierToRest(UUID courierId, Restaurant r) {
         List<UUID> newCouriers = new ArrayList<>(r.getCourierIDs());
-        newCouriers.add(courierId);
+        if(!newCouriers.contains(courierId)) {
+            newCouriers.add(courierId);
+        }
         r.setCourierIDs(newCouriers);
         restaurantRepository.save(r);
 

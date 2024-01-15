@@ -56,6 +56,7 @@ public class DeliveryGettersCourierService {
         List<Delivery> deliveries = deliveryRepository.findAll();
 
         return deliveries.stream()
+                .filter(d -> d.getCourierID() != null)
                 .filter(d -> d.getCourierID().equals(courierId))
                 .map(Delivery::getCustomerRating)
                 .collect(Collectors.toList());
@@ -69,6 +70,7 @@ public class DeliveryGettersCourierService {
     public ResponseEntity<List<UUID>> getAllDeliveriesCourier(UUID courierID) {
         List<Delivery> fetched = deliveryRepository.findAll();
         List<UUID> deliveries = fetched.stream()
+                .filter(delivery -> delivery.getCourierID() != null)
                 .filter(delivery -> delivery.getCourierID().equals(courierID))
                 .map(Delivery::getDeliveryID)
                 .collect(Collectors.toList());

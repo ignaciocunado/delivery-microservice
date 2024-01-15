@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.service.vendorFunctionalities;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
@@ -44,10 +45,21 @@ public class RestaurantGetterService {
      * @return the ResponseEntity containing the status of the request
      */
     public ResponseEntity<String> getRest(UUID restaurantId) {
-        Optional<Restaurant> r = restaurantRepository.findById(restaurantId);
-        return r.map(restaurant -> new ResponseEntity<>(restaurant.toString(), HttpStatus.OK)).orElseGet(() ->
-                new ResponseEntity<>("NOT FOUND \n No restaurant with the given id has been found",
-                        HttpStatus.NOT_FOUND));
+        Optional<Restaurant> fetched = restaurantRepository.findById(restaurantId);
+        if(!fetched.isPresent()) {
+            return new ResponseEntity<>("NOT FOUND \n No restaurant with the given id has been found",
+                    HttpStatus.NOT_FOUND);
+        }
+        Restaurant r = fetched.get();
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String jsonString = objectMapper.writeValueAsString(r);
+            return new ResponseEntity<>(jsonString, HttpStatus.OK);
+        }
+        catch(Exception e) {
+            return new ResponseEntity<>("Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     /**

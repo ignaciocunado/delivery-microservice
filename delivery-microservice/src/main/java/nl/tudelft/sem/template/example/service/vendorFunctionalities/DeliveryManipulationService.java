@@ -25,6 +25,12 @@ public class DeliveryManipulationService {
     DeliveryRepository deliveryRepository;
     UUIDGenerationService uuidGenerationService;
 
+    /**
+     * Constructor for DeliveryManipulationService.
+     * @param restaurantRepository restaurant DB
+     * @param deliveryRepository delivery DB
+     * @param uuidGenerationService service to generate unique IDs
+     */
     @Autowired
     public DeliveryManipulationService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
                             UUIDGenerationService uuidGenerationService) {

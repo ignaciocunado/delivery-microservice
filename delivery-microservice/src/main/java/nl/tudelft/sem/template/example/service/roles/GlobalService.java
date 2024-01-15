@@ -26,6 +26,12 @@ public class GlobalService {
     @Getter
     private final MaxDeliveryZoneService maxDeliveryZoneService;
 
+    /**
+     * Constructor for GlobalService.
+     * @param attributeGetterGlobalService sub-service
+     * @param deliveryIdGetterGlobalService sub-service
+     * @param maxDeliveryZoneService sub-service
+     */
     public GlobalService(AttributeGetterGlobalService attributeGetterGlobalService,
                                       DeliveryIdGetterGlobalService deliveryIdGetterGlobalService,
                                       MaxDeliveryZoneService maxDeliveryZoneService) {
@@ -35,7 +41,7 @@ public class GlobalService {
     }
 
     /**
-     * Check the role and handle it further
+     * Check the role and handle it further.
      * @param role the role of the user
      * @param operation the method that should be called
      * @param <T> the passed param
