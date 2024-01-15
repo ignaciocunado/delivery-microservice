@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
@@ -127,15 +129,15 @@ class VendorServiceTest {
     }
 
     @Test
-    public void testNotFound() {
+    public void testAddCourierToRestNotFound() {
         ResponseEntity<Void> res = courierToRestaurantService.addCourierToRest(UUID.randomUUID(), UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
-    public void testOkNoDuplicate() {
+    public void testAddCourierToRestOkNoDuplicate() {
         UUID courierId = UUID.randomUUID();
-        ResponseEntity<Void> res = courierToRestaurantService.addCourierToRest(courierId, restaurantId);
+        ResponseEntity<Void> res = courierToRestaurantService.addCourierToRest(restaurantId, courierId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
         Restaurant newRes = courierToRestaurantService.getRestaurantRepository().findById(restaurantId).get();
@@ -144,6 +146,23 @@ class VendorServiceTest {
                         .filter(x -> x.equals(courierId))
                         .collect(Collectors.toList()).isEmpty()
         );
+    }
+
+    @Test
+    public void testAddCourierToRestDuplicate() {
+        UUID courierId = UUID.randomUUID();
+        ResponseEntity<Void> res = courierToRestaurantService.addCourierToRest(restaurantId, courierId);
+
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        Restaurant newRes = courierToRestaurantService.getRestaurantRepository().findById(restaurantId).get();
+        assertTrue(newRes.getCourierIDs().contains(courierId));
+
+        ResponseEntity<Void> res2 = courierToRestaurantService.addCourierToRest(restaurantId, courierId);
+        assertEquals(res2.getStatusCode(), HttpStatus.OK);
+        assertNull(res2.getBody());
+        Restaurant newRes2 = courierToRestaurantService.getRestaurantRepository().findById(restaurantId).get();
+        assertEquals(newRes.getCourierIDs().stream().filter(c -> c.equals(courierId)).collect(Collectors.toList()).size(), 1);
+
     }
 
     @Test
@@ -256,6 +275,13 @@ class VendorServiceTest {
     }
 
     @Test
+    void testEditStatusDeliveryOkQuotes() {
+        ResponseEntity<Void> res = deliveryStatusService.editStatusDelivery(deliveryId, "\"preparing\"");
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "preparing");
+    }
+
+    @Test
     void testEditStatusDeliveryInvalidStatus() {
         ResponseEntity<Void> res = deliveryStatusService.editStatusDelivery(deliveryId, "invalid");
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
@@ -277,10 +303,11 @@ class VendorServiceTest {
     }
 
     @Test
-    void testGetRestaurantOk() {
+    void testGetRestaurantOk() throws JsonProcessingException {
         ResponseEntity<String> res = restaurantGetterService.getRest(restaurantId);
-
-        assertEquals(res.getBody(), restaurantRepo.findById(restaurantId).get().toString());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(restaurantRepo.findById(restaurantId).get());
+        assertEquals(res.getBody(), jsonString);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
     }
 

@@ -21,6 +21,12 @@ public class DeliveryStatusService {
     DeliveryRepository deliveryRepository;
     UUIDGenerationService uuidGenerationService;
 
+    /**
+     * Constructor for DeliveryStatusService.
+     * @param restaurantRepository restaurant DB
+     * @param deliveryRepository delivery DB
+     * @param uuidGenerationService service to generate unique IDs
+     */
     @Autowired
     public DeliveryStatusService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
                             UUIDGenerationService uuidGenerationService) {
@@ -69,6 +75,7 @@ public class DeliveryStatusService {
     public ResponseEntity<Void> editStatusDelivery(UUID deliveryId, String status) {
         Optional<Delivery> d = deliveryRepository.findById(deliveryId);
         if (d.isPresent()) {
+            status = status.replace("\"", "");
             if (!status.equals("preparing") && !status.equals("given to courier")) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }

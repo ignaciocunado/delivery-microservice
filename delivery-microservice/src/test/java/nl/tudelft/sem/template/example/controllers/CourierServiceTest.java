@@ -61,8 +61,12 @@ class CourierServiceTest {
         Delivery d2 = new  Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), courierId,
                 restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 0.4d,
                 sampleOffsetDateTime, "", "", 1);
+        Delivery d3 = new  Delivery(UUID.randomUUID(), null, null, null,
+                restaurantId, "pending", sampleOffsetDateTime, sampleOffsetDateTime, 0.4d,
+                sampleOffsetDateTime, "", "", 1);
         deliveryRepository.save(d);
         deliveryRepository.save(d2);
+        deliveryRepository.save(d3);
 
         courierService = new CourierService(deliveryRepository, restaurantRepository, externalService);
     }

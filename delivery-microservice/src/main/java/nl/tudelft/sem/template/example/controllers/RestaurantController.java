@@ -49,7 +49,7 @@ public class RestaurantController implements RestaurantApi {
     @Override
     public ResponseEntity<Void> addCourierToRest(UUID restaurantId, UUID courierId, String role) {
         return vendorService.checkAndHandle(role,
-                () -> vendorService.getCourierToRestaurantService().addCourierToRest(courierId, restaurantId));
+                () -> vendorService.getCourierToRestaurantService().addCourierToRest(restaurantId, courierId));
     }
 
     /**
