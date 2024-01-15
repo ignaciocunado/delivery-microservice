@@ -7,6 +7,7 @@ import nl.tudelft.sem.template.example.service.globalFunctionalities.MaxDelivery
 import nl.tudelft.sem.template.example.service.roles.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -368,5 +369,19 @@ class DeliveryControllerTest {
         ResponseEntity<String> response = deliveryController.getPickUpLocation(deliveryId, role);
 
         assertEquals("MockedResponse", response.getBody());
+    }
+
+    @Test
+    void setRestaurantID() {
+        UUID del = UUID.randomUUID();
+        UUID res = UUID.randomUUID();
+        String role = "admin";
+
+        Mockito.when(adminService.checkAndHandle(Mockito.eq(role), Mockito.any()))
+                .thenReturn(new ResponseEntity<>(res, HttpStatus.OK));
+        ResponseEntity<UUID> response = deliveryController.setRestIdOfDelivery(del, role, res);
+        Mockito.verify(adminService).checkAndHandle(Mockito.any(), Mockito.any());
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(response.getBody(), res);
     }
 }
