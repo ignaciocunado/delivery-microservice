@@ -87,13 +87,9 @@ public class ExternalServiceActual implements ExternalService {
      */
     private boolean verifyWithProof(String userId, String role) {
         // Create URL to contact user microservice
-        String url = userServiceUrl + role + "s/" + userId + "/proof";
+        String url = userServiceUrl + "/" + role + "s/" + userId + "/proof";
 
-        final int statusCode = performProofRequest(url, userId);
-
-        // Print debug info
-        System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
-        System.out.println("\033[96;40m response status code: \033[30;106m " + statusCode + " \033[0m");
+        final int statusCode = performRequest(url, userId, HttpMethod.POST);
 
         return statusCode == 200;
     }
@@ -109,23 +105,21 @@ public class ExternalServiceActual implements ExternalService {
         // Create URL to contact user microservice
         String url = userServiceUrl + "/" + role + "s/" + userId;
 
-        final int statusCode = performGetRequest(url, userId);
-
-        // Print debug info
-        System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
-        System.out.println("\033[96;40m response status code: \033[30;106m " + statusCode + " \033[0m");
+        final int statusCode = performRequest(url, userId, HttpMethod.GET);
 
         return statusCode == 200;
     }
 
 
     /**
-     * Perform a proof request (PATCH with body) to the given URL, with the given user ID.
+     * Performs request to the given URL with given method.
      *
      * @param url URL to query.
+     * @param userId User ID to query.
      * @return Response status code.
      */
-    private int performProofRequest(final String url, final String userId) {
+    private int performRequest(final String url, final String userId, final HttpMethod method) {
+        System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-User-ID", userId);
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -135,37 +129,15 @@ public class ExternalServiceActual implements ExternalService {
         try {
             ResponseEntity<String> response = restTemplate.exchange(
                     url,
-                    HttpMethod.PATCH,
+                    method,
                     requestEntity,
                     String.class
             );
-
+            System.out.println("\033[96;40m authorized \033[0m");
             return response.getStatusCodeValue();
         } catch (RestClientException e) {
+            System.out.println("\033[96;40m unauthorized \033[0m");
             return 401; // You may want to handle specific exceptions based on your use case
-        }
-    }
-
-    /**
-     * Given a URL, perform a GET request and return the response status code.
-     *
-     * @param url   URL to query
-     * @param userId User ID to query
-     * @return Response status code
-     */
-    private int performGetRequest(final String url, final String userId) {
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-User-Id", userId);
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
-
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
-
-            return response.getStatusCodeValue();
-        } catch (RestClientException e) {
-            return 401;
         }
     }
 }
