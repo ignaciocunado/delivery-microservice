@@ -2,23 +2,16 @@ package nl.tudelft.sem.template.example.service.roles;
 
 
 import lombok.Getter;
-import nl.tudelft.sem.model.Delivery;
-import nl.tudelft.sem.template.example.database.DeliveryRepository;
-import nl.tudelft.sem.template.example.service.VendorOrCourierFunctionalities.DeliveryEstimateService;
-import nl.tudelft.sem.template.example.service.VendorOrCourierFunctionalities.DeliveryEventService;
-import nl.tudelft.sem.template.example.service.VendorOrCourierFunctionalities.OrderToCourierService;
-import nl.tudelft.sem.template.example.service.VendorOrCourierFunctionalities.PickUpEstimateVendorCourierService;
+import nl.tudelft.sem.template.example.service.vendorOrCourierFunctionalities.DeliveryEstimateService;
+import nl.tudelft.sem.template.example.service.vendorOrCourierFunctionalities.DeliveryEventService;
+import nl.tudelft.sem.template.example.service.vendorOrCourierFunctionalities.OrderToCourierService;
+import nl.tudelft.sem.template.example.service.vendorOrCourierFunctionalities.PickUpEstimateVendorCourierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 /**

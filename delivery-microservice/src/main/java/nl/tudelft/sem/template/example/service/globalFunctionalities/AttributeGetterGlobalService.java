@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service.GlobalFunctionalities;
+package nl.tudelft.sem.template.example.service.globalFunctionalities;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;

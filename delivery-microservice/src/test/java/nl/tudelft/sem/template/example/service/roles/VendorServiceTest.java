@@ -1,12 +1,11 @@
-package nl.tudelft.sem.template.example.controllers;
+package nl.tudelft.sem.template.example.service.roles;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
-import nl.tudelft.sem.template.example.service.VendorFunctionalities.*;
-import nl.tudelft.sem.template.example.service.roles.VendorService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.*;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;

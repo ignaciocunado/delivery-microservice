@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service.VendorFunctionalities;
+package nl.tudelft.sem.template.example.service.vendorFunctionalities;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;

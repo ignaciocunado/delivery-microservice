@@ -1,10 +1,8 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import lombok.Setter;
 import nl.tudelft.sem.api.RestaurantApi;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.service.roles.AdminService;
-import nl.tudelft.sem.template.example.service.roles.CourierService;
 import nl.tudelft.sem.template.example.service.roles.GlobalService;
 import nl.tudelft.sem.template.example.service.roles.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +15,20 @@ import java.util.UUID;
 @RestController
 public class RestaurantController implements RestaurantApi {
 
-    private transient CourierService courierService;
-    @Setter
-    private transient VendorService vendorService;
+    private final transient VendorService vendorService;
+
     private final transient AdminService adminService;
+
     private final transient GlobalService globalService;
 
     /**
      * Constructor for the RestaurantController.
-     * @param courierService the courier controller
      * @param vendorService the vendor controller
      * @param adminService the admin controller
      * @param globalService the generic global controller
      */
     @Autowired
-    public RestaurantController(CourierService courierService, VendorService vendorService,
-                                AdminService adminService, GlobalService globalService) {
-        this.courierService = courierService;
+    public RestaurantController(VendorService vendorService, AdminService adminService, GlobalService globalService) {
         this.vendorService = vendorService;
         this.adminService = adminService;
         this.globalService = globalService;
@@ -74,7 +69,7 @@ public class RestaurantController implements RestaurantApi {
     @Override
     public ResponseEntity<Restaurant> createRestaurant(String role, Restaurant restaurant) {
         return adminService.checkAndHandle(role,
-                () -> adminService.createRestaurant(restaurant));
+                () -> adminService.getRestaurantManagerAdminService().createRestaurant(restaurant));
     }
 
     /**

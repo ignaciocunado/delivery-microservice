@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service.VendorFunctionalities;
+package nl.tudelft.sem.template.example.service.vendorFunctionalities;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
