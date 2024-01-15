@@ -40,6 +40,13 @@ public class VendorOrCourierService implements RoleService {
     private final OrderToCourierService orderToCourierService;
 
 
+    /**
+     * Constructor for the VendorOrCourierService.
+     * @param deliveryEstimateService sub-service
+     * @param deliveryEventService sub-service
+     * @param pickUpEstimateVendorCourierService sub-service
+     * @param orderToCourierService sub-service
+     */
     @Autowired
     public VendorOrCourierService(DeliveryEstimateService deliveryEstimateService,
                                                DeliveryEventService deliveryEventService,

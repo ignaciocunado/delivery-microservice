@@ -23,6 +23,12 @@ public class PickUpEstimateService {
     DeliveryRepository deliveryRepository;
     UUIDGenerationService uuidGenerationService;
 
+    /**
+     * Constructor for the PickUpEstimateService.
+     * @param restaurantRepository restaurant DB
+     * @param deliveryRepository delivery DB
+     * @param uuidGenerationService service to generate unique IDs
+     */
     @Autowired
     public PickUpEstimateService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
                             UUIDGenerationService uuidGenerationService) {

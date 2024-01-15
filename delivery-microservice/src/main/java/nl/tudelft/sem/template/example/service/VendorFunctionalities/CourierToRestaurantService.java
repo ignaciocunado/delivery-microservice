@@ -25,6 +25,12 @@ public class CourierToRestaurantService {
     DeliveryRepository deliveryRepository;
     UUIDGenerationService uuidGenerationService;
 
+    /**
+     * Constructor for CourierToRestaurantService.
+     * @param restaurantRepository restaurant DB
+     * @param deliveryRepository delivery DB
+     * @param uuidGenerationService service which generates unique IDs
+     */
     @Autowired
     public CourierToRestaurantService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
                                       UUIDGenerationService uuidGenerationService) {
@@ -51,7 +57,7 @@ public class CourierToRestaurantService {
     }
 
     /**
-     * private method for executing logic of AddCourierToRest
+     * private method for executing logic of AddCourierToRest.
      * used to lower LOC
      * @param courierId id of courier to query
      * @return corresponding response entity
