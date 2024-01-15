@@ -1,9 +1,15 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.template.example.service.GlobalFunctionalities.AttributeGetterGlobalService;
+import nl.tudelft.sem.template.example.service.GlobalFunctionalities.DeliveryIdGetterGlobalService;
+import nl.tudelft.sem.template.example.service.GlobalFunctionalities.MaxDeliveryZoneService;
 import nl.tudelft.sem.template.example.service.roles.*;
+import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
+import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +20,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
 
 
 /**
@@ -28,6 +35,12 @@ class DeliveryControllerTest {
     private transient GlobalService globalService;
     private transient VendorOrCourierService vendorOrCourierService;
     private transient CustomerService customerService;
+
+    private transient AttributeGetterGlobalService attributeGetterGlobalService;
+
+    private transient DeliveryIdGetterGlobalService deliveryIdGetterGlobalService;
+
+    private transient MaxDeliveryZoneService maxDeliveryZoneService;
 
     private transient UUID deliveryId;
     private transient String role;
@@ -44,7 +57,17 @@ class DeliveryControllerTest {
         // mock courier controller to verify its methods are called
         courierService = Mockito.mock(CourierService.class);
         vendorService = Mockito.mock(VendorService.class);
+
+        attributeGetterGlobalService = Mockito.mock(AttributeGetterGlobalService.class);
+        deliveryIdGetterGlobalService = Mockito.mock(DeliveryIdGetterGlobalService.class);
+        maxDeliveryZoneService = Mockito.mock(MaxDeliveryZoneService.class);
+
         globalService = Mockito.mock(GlobalService.class);
+
+        Mockito.when(globalService.getAttributeGetterGlobalService()).thenReturn(attributeGetterGlobalService);
+        Mockito.when(globalService.getMaxDeliveryZoneService()).thenReturn(maxDeliveryZoneService);
+        Mockito.when(globalService.getDeliveryIdGetterGlobalService()).thenReturn(deliveryIdGetterGlobalService);
+
         vendorOrCourierService = Mockito.mock(VendorOrCourierService.class);
         customerService = Mockito.mock(CustomerService.class);
         deliveryController = new DeliveryController(courierService, vendorService,
@@ -107,10 +130,12 @@ class DeliveryControllerTest {
 
     @Test
     void getLiveLocation() {
-        Mockito.when(globalService.getLiveLocation(deliveryId))
+        Mockito.when(globalService.getAttributeGetterGlobalService().getLiveLocation(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getLiveLocation(deliveryId, role);
-        Mockito.verify(globalService).getLiveLocation(deliveryId);
+
+
+        Mockito.verify(attributeGetterGlobalService).getLiveLocation(deliveryId);
         assertNotNull(r);
     }
 
@@ -134,10 +159,9 @@ class DeliveryControllerTest {
 
     @Test
     void testGetDeliveryException() {
-        Mockito.when(globalService.getDeliveryException(deliveryId))
-                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        Mockito.when(attributeGetterGlobalService.getDeliveryException(deliveryId)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getDeliveryException(deliveryId, role);
-        Mockito.verify(globalService).getDeliveryException(deliveryId);
+        Mockito.verify(attributeGetterGlobalService).getDeliveryException(deliveryId);
         assertNotNull(r);
     }
 
@@ -183,28 +207,28 @@ class DeliveryControllerTest {
 
     @Test
     void testGetDeliveryById() {
-        Mockito.when(globalService.getDeliveryById(deliveryId))
+        Mockito.when(globalService.getDeliveryIdGetterGlobalService().getDeliveryById(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getDeliveyById(deliveryId, role);
-        Mockito.verify(globalService).getDeliveryById(deliveryId);
+        Mockito.verify(deliveryIdGetterGlobalService).getDeliveryById(deliveryId);
         assertNotNull(r);
     }
 
     @Test
     void testGetRestaurantIdByDeliveryId() {
-        Mockito.when(globalService.getRestaurantIdByDeliveryId(deliveryId))
+        Mockito.when(globalService.getDeliveryIdGetterGlobalService().getRestaurantIdByDeliveryId(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getRestIdOfDel(deliveryId, role);
-        Mockito.verify(globalService).getRestaurantIdByDeliveryId(deliveryId);
+        Mockito.verify(deliveryIdGetterGlobalService).getRestaurantIdByDeliveryId(deliveryId);
         assertNotNull(r);
     }
 
     @Test
     void testGetOrderByDeliveryId() {
-        Mockito.when(globalService.getOrderByDeliveryId(deliveryId))
+        Mockito.when(globalService.getDeliveryIdGetterGlobalService().getOrderByDeliveryId(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getOrderByDeliveryId(deliveryId, role);
-        Mockito.verify(globalService).getOrderByDeliveryId(deliveryId);
+        Mockito.verify(deliveryIdGetterGlobalService).getOrderByDeliveryId(deliveryId);
         assertNotNull(r);
     }
 
@@ -277,19 +301,19 @@ class DeliveryControllerTest {
 
     @Test
     void testGetRatingByDeliveryId() {
-        Mockito.when(globalService.getRatingByDeliveryId(deliveryId))
+        Mockito.when(globalService.getDeliveryIdGetterGlobalService().getRatingByDeliveryId(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getRateByDeliveryId(deliveryId, role);
-        Mockito.verify(globalService).getRatingByDeliveryId(deliveryId);
+        Mockito.verify(deliveryIdGetterGlobalService).getRatingByDeliveryId(deliveryId);
         assertNotNull(r);
     }
 
     @Test
     void testGetPickUpTime() {
-        Mockito.when(globalService.getPickUpTime(deliveryId))
+        Mockito.when(globalService.getAttributeGetterGlobalService().getPickUpTime(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getPickUpTime(deliveryId, role);
-        Mockito.verify(globalService).getPickUpTime(deliveryId);
+        Mockito.verify(attributeGetterGlobalService).getPickUpTime(deliveryId);
         assertNotNull(r);
     }
 

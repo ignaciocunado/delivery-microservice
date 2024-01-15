@@ -49,7 +49,7 @@ public class RestaurantController implements RestaurantApi {
     @Override
     public ResponseEntity<Void> addCourierToRest(UUID restaurantId, UUID courierId, String role) {
         return vendorService.checkAndHandle(role,
-                () -> vendorService.addCourierToRest(courierId, restaurantId));
+                () -> vendorService.getCourierToRestaurantService().addCourierToRest(courierId, restaurantId));
     }
 
     /**
@@ -62,7 +62,7 @@ public class RestaurantController implements RestaurantApi {
     @Override
     public ResponseEntity<Void> removeCourierRest(UUID restaurantId, UUID courierId, String role) {
         return vendorService.checkAndHandle(role,
-                () -> vendorService.removeCourierRest(courierId, restaurantId));
+                () -> vendorService.getCourierToRestaurantService().removeCourierRest(courierId, restaurantId));
     }
 
     /**
@@ -85,7 +85,7 @@ public class RestaurantController implements RestaurantApi {
      */
     @Override
     public ResponseEntity<Double> getMaxDeliveryZone(UUID deliveryID, String role) {
-        return globalService.getMaxDeliveryZone(deliveryID);
+        return globalService.getMaxDeliveryZoneService().getMaxDeliveryZone(deliveryID);
     }
 
     /**
@@ -97,7 +97,7 @@ public class RestaurantController implements RestaurantApi {
     @Override
     public ResponseEntity<String> getRest(UUID restaurantId, String role) {
         return vendorService.checkAndHandle(role,
-                () -> vendorService.getRest(restaurantId));
+                () -> vendorService.getRestaurantGetterService().getRest(restaurantId));
     }
 
     /**
@@ -109,7 +109,7 @@ public class RestaurantController implements RestaurantApi {
      */
     @Override
     public ResponseEntity<Void> setMaxDeliveryZone(UUID restaurantId, String role, Double body) {
-        return globalService.setMaxDeliveryZone(restaurantId, body);
+        return globalService.getMaxDeliveryZoneService().setMaxDeliveryZone(restaurantId, body);
     }
 
     /**
@@ -121,6 +121,6 @@ public class RestaurantController implements RestaurantApi {
     @Override
     public ResponseEntity<List<UUID>> getVendorRest(UUID vendorId, String role) {
         return vendorService.checkAndHandle(role,
-                () -> vendorService.getVendorRest(vendorId));
+                () -> vendorService.getRestaurantGetterService().getVendorRest(vendorId));
     }
 }
