@@ -423,7 +423,7 @@ public class DeliveryController implements DeliveryApi {
     @Override
     public ResponseEntity<UUID> setRestIdOfDelivery(UUID deliveryID, String role, UUID body) {
         return adminService.checkAndHandle(role,
-                () -> )
+                () -> adminService.getDeliveryManagerAdminService().setRestIdOfDelivery(deliveryID, body));
     }
 
     @lombok.Generated
