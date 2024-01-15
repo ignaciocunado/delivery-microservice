@@ -156,7 +156,7 @@ class VendorServiceTest {
         assertTrue(newRes.getCourierIDs().contains(courierId));
 
         ResponseEntity<Void> res2 = courierToRestaurantService.addCourierToRest(restaurantId, courierId);
-        assertEquals(res2.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertEquals(res2.getStatusCode(), HttpStatus.OK);
         assertNull(res2.getBody());
         Restaurant newRes2 = courierToRestaurantService.getRestaurantRepository().findById(restaurantId).get();
         assertEquals(newRes.getCourierIDs().stream().filter(c -> c.equals(courierId)).collect(Collectors.toList()).size(), 1);

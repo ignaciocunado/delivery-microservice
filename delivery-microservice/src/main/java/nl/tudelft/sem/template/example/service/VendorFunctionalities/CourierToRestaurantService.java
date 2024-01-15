@@ -67,9 +67,6 @@ public class CourierToRestaurantService {
         if(!newCouriers.contains(courierId)) {
             newCouriers.add(courierId);
         }
-        else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
         r.setCourierIDs(newCouriers);
         restaurantRepository.save(r);
 
