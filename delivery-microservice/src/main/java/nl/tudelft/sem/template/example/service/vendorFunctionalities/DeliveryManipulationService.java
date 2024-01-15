@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service.VendorFunctionalities;
+package nl.tudelft.sem.template.example.service.vendorFunctionalities;
 
 import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;

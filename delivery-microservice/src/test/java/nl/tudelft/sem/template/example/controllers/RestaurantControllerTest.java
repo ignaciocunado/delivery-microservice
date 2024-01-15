@@ -2,9 +2,9 @@ package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.service.adminFunctionalities.RestaurantManagerAdminService;
-import nl.tudelft.sem.template.example.service.GlobalFunctionalities.AttributeGetterGlobalService;
-import nl.tudelft.sem.template.example.service.GlobalFunctionalities.DeliveryIdGetterGlobalService;
-import nl.tudelft.sem.template.example.service.GlobalFunctionalities.MaxDeliveryZoneService;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.AttributeGetterGlobalService;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.DeliveryIdGetterGlobalService;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.MaxDeliveryZoneService;
 import nl.tudelft.sem.template.example.service.roles.AdminService;
 import nl.tudelft.sem.template.example.service.roles.GlobalService;
 import nl.tudelft.sem.template.example.service.roles.VendorService;

@@ -1,23 +1,14 @@
 package nl.tudelft.sem.template.example.service.roles;
 
 import lombok.Getter;
-import lombok.Setter;
-import nl.tudelft.sem.model.Delivery;
-import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.database.DeliveryRepository;
-import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.GlobalFunctionalities.AttributeGetterGlobalService;
-import nl.tudelft.sem.template.example.service.GlobalFunctionalities.DeliveryIdGetterGlobalService;
-import nl.tudelft.sem.template.example.service.GlobalFunctionalities.MaxDeliveryZoneService;
-import org.springframework.beans.factory.annotation.Autowired;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.AttributeGetterGlobalService;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.DeliveryIdGetterGlobalService;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.MaxDeliveryZoneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
-import java.time.OffsetDateTime;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 /**

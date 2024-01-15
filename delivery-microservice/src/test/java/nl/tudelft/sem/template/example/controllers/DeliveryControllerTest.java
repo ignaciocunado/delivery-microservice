@@ -1,15 +1,12 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Delivery;
-import nl.tudelft.sem.template.example.service.GlobalFunctionalities.AttributeGetterGlobalService;
-import nl.tudelft.sem.template.example.service.GlobalFunctionalities.DeliveryIdGetterGlobalService;
-import nl.tudelft.sem.template.example.service.GlobalFunctionalities.MaxDeliveryZoneService;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.AttributeGetterGlobalService;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.DeliveryIdGetterGlobalService;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.MaxDeliveryZoneService;
 import nl.tudelft.sem.template.example.service.roles.*;
-import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
-import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +17,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
 
 
 /**

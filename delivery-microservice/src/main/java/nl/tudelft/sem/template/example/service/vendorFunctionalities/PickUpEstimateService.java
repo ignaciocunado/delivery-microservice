@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service.VendorFunctionalities;
+package nl.tudelft.sem.template.example.service.vendorFunctionalities;
 
 import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.UUID;
 

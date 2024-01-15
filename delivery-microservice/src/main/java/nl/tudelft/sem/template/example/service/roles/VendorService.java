@@ -1,27 +1,15 @@
 package nl.tudelft.sem.template.example.service.roles;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import lombok.Getter;
-import nl.tudelft.sem.model.Delivery;
-import nl.tudelft.sem.model.Restaurant;
 
-import nl.tudelft.sem.template.example.database.DeliveryRepository;
-import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.UUIDGenerationService;
-import nl.tudelft.sem.template.example.service.VendorFunctionalities.*;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
-import java.time.OffsetDateTime;
 
 /**
  * Service that authorizes requests from vendors.

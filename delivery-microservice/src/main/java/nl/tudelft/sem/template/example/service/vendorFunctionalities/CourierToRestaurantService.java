@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service.VendorFunctionalities;
+package nl.tudelft.sem.template.example.service.vendorFunctionalities;
 
 import lombok.Getter;
 import nl.tudelft.sem.model.Restaurant;
@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 
 @Service
