@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -92,6 +93,9 @@ public class GlobalServiceTest {
         deliveryIdGetterGlobalService = new DeliveryIdGetterGlobalService(restaurantRepository, deliveryRepository);
 
         maxDeliveryZoneService = new MaxDeliveryZoneService(restaurantRepository, deliveryRepository);
+
+        globalService = new GlobalService(attributeGetterGlobalService,
+                deliveryIdGetterGlobalService, maxDeliveryZoneService);
     }
 
     @Test
@@ -350,5 +354,20 @@ public class GlobalServiceTest {
         ResponseEntity<OffsetDateTime> response = attributeGetterGlobalService.getPickUpTime(deliveryId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(pickupTimeEstimate, response.getBody());
+    }
+
+    @Test
+    void testCheckAndHandleGoodWeather() {
+        List<String> allowedRoles = List.of("admin", "customer", "vendor", "courier");
+        Supplier<ResponseEntity<Restaurant>> operation = () -> new ResponseEntity<>(HttpStatus.OK);
+
+        for (final String roleToTest : allowedRoles) {
+            ResponseEntity<Restaurant> response = globalService.checkAndHandle(roleToTest, operation);
+
+            assertEquals(
+                    HttpStatus.OK,
+                    response.getStatusCode()
+            );
+        }
     }
 }
