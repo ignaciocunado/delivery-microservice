@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.service.implementation.RestaurantManagerService;
+import nl.tudelft.sem.template.example.service.adminFunctionalities.RestaurantManagerAdminService;
 import nl.tudelft.sem.template.example.service.GlobalFunctionalities.AttributeGetterGlobalService;
 import nl.tudelft.sem.template.example.service.GlobalFunctionalities.DeliveryIdGetterGlobalService;
 import nl.tudelft.sem.template.example.service.GlobalFunctionalities.MaxDeliveryZoneService;
@@ -34,7 +34,7 @@ class RestaurantControllerTest {
     GlobalService globalService = Mockito.mock(GlobalService.class);
 
     @Mock
-    RestaurantManagerService restaurantManagerService = Mockito.mock(RestaurantManagerService.class);
+    RestaurantManagerAdminService restaurantManagerAdminService = Mockito.mock(RestaurantManagerAdminService.class);
 
     @Mock
     AttributeGetterGlobalService attributeGetterGlobalService= Mockito.mock(AttributeGetterGlobalService.class);

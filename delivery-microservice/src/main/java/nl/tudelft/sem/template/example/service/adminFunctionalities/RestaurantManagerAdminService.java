@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service.implementation;
+package nl.tudelft.sem.template.example.service.adminFunctionalities;
 
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
@@ -16,7 +16,7 @@ import java.util.UUID;
  * Handles implementations of restaurant management endpoints, such as construction.
  */
 @Service
-public class RestaurantManagerService {
+public class RestaurantManagerAdminService {
 
     /**
      * Holds restaurant database objects.
@@ -30,12 +30,12 @@ public class RestaurantManagerService {
     UUIDGenerationService uuidGenerationService;
 
     /**
-     * Construct a new RestaurantManagerService.
+     * Construct a new RestaurantManagerAdminService.
      * @param restaurantRepository Injected repository
      * @param uuidGenerationService Injected UUID generation service
      */
     @Autowired
-    public RestaurantManagerService(RestaurantRepository restaurantRepository, UUIDGenerationService uuidGenerationService) {
+    public RestaurantManagerAdminService(RestaurantRepository restaurantRepository, UUIDGenerationService uuidGenerationService) {
         this.restaurantRepository = restaurantRepository;
         this.uuidGenerationService = uuidGenerationService;
     }

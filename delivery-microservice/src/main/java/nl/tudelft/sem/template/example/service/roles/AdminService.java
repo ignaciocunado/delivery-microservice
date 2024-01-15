@@ -1,16 +1,12 @@
 package nl.tudelft.sem.template.example.service.roles;
 
-import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.UUIDGenerationService;
+import lombok.Getter;
+import nl.tudelft.sem.template.example.service.adminFunctionalities.RestaurantManagerAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 /**
@@ -18,6 +14,18 @@ import java.util.function.Supplier;
  */
 @Service
 public class AdminService implements RoleService {
+
+    @Getter
+    private final transient RestaurantManagerAdminService restaurantManagerAdminService;
+
+    /**
+     * Construct a new Admin Service.
+     * @param restaurantManagerAdminService Restaurant manager.
+     */
+    @Autowired
+    public AdminService(RestaurantManagerAdminService restaurantManagerAdminService) {
+        this.restaurantManagerAdminService = restaurantManagerAdminService;
+    }
 
     /**
      * Check the role and handle it further.

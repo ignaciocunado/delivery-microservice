@@ -1,8 +1,7 @@
 package nl.tudelft.sem.template.example.service.roles;
 
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.service.UUIDGenerationService;
-import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
+import nl.tudelft.sem.template.example.service.adminFunctionalities.RestaurantManagerAdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -10,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +27,8 @@ public class AdminServiceTest {
 
     @BeforeEach
     void setUp() {
-        sut = new AdminService();
+        RestaurantManagerAdminService restaurantManagerAdminService = Mockito.mock(RestaurantManagerAdminService.class);
+        sut = new AdminService(restaurantManagerAdminService);
     }
 
     @Test

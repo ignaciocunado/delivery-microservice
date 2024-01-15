@@ -2,7 +2,6 @@ package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.api.RestaurantApi;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.service.implementation.RestaurantManagerService;
 import nl.tudelft.sem.template.example.service.roles.AdminService;
 import nl.tudelft.sem.template.example.service.roles.GlobalService;
 import nl.tudelft.sem.template.example.service.roles.VendorService;
@@ -22,22 +21,17 @@ public class RestaurantController implements RestaurantApi {
 
     private final transient GlobalService globalService;
 
-    private final transient RestaurantManagerService restaurantManagerService;
-
     /**
      * Constructor for the RestaurantController.
      * @param vendorService the vendor controller
      * @param adminService the admin controller
      * @param globalService the generic global controller
-     * @param restaurantManagerService handles restaurant DB interactions
      */
     @Autowired
-    public RestaurantController(VendorService vendorService, AdminService adminService, GlobalService globalService,
-                                RestaurantManagerService restaurantManagerService) {
+    public RestaurantController(VendorService vendorService, AdminService adminService, GlobalService globalService) {
         this.vendorService = vendorService;
         this.adminService = adminService;
         this.globalService = globalService;
-        this.restaurantManagerService = restaurantManagerService;
     }
 
     /**
@@ -75,7 +69,7 @@ public class RestaurantController implements RestaurantApi {
     @Override
     public ResponseEntity<Restaurant> createRestaurant(String role, Restaurant restaurant) {
         return adminService.checkAndHandle(role,
-                () -> restaurantManagerService.createRestaurant(restaurant));
+                () -> adminService.getRestaurantManagerAdminService().createRestaurant(restaurant));
     }
 
     /**
