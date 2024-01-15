@@ -78,6 +78,13 @@ public class ExternalServiceActual implements ExternalService {
     }
 
 
+    /**
+     * Verifies using User microservice's proof endpoint.
+     *
+     * @param userId User ID to query.
+     * @param role Role to query.
+     * @return Whether the user was authorized.
+     */
     private boolean verifyWithProof(String userId, String role) {
         // Create URL to contact user microservice
         String url = userServiceUrl + role + "s/" + userId + "/proof";
@@ -91,6 +98,13 @@ public class ExternalServiceActual implements ExternalService {
         return statusCode == 200;
     }
 
+    /**
+     * Verifies using User microservice's getter endpoint.
+     *
+     * @param userId User ID to query.
+     * @param role  Role to query.
+     * @return Whether the user was authorized.
+     */
     private boolean verifyWithGetter(String userId, String role) {
         // Create URL to contact user microservice
         String url = userServiceUrl + "/" + role + "s/" + userId;
