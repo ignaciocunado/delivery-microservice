@@ -72,15 +72,14 @@ public class DeliveryLocationCourierService {
      * @return The delivery's destination.
      */
     public ResponseEntity<String> getLocationOfDelivery(UUID deliveryId) {
-        Optional<Delivery> delivery = deliveryRepository.findById(deliveryId);
-        if(delivery.isEmpty()) {
+        Optional<Delivery> fetchedDelivery = deliveryRepository.findById(deliveryId);
+        if(fetchedDelivery.isEmpty()) {
             return new ResponseEntity<>("Delivery not found!", HttpStatus.NOT_FOUND);
         }
 
-        UUID customerId = delivery.get().getCustomerID();
-        UUID orderId = delivery.get().getOrderID();
+        final Delivery delivery = fetchedDelivery.get();
+        String location = externalService.getOrderDestination(delivery.getCustomerID(), delivery.getOrderID());
 
-        String location = externalService.getOrderDestination(customerId, orderId);
         return new ResponseEntity<>("location: " + location, HttpStatus.OK);
     }
 
@@ -88,15 +87,11 @@ public class DeliveryLocationCourierService {
      * Sets the live location of the courier.
      * @param deliveryId the ID of the delivery.
      * @param body (optional)
-     * @return 200 + message, 403, or 404
+     * @return Response status
      */
     public ResponseEntity<String> setLiveLocation(UUID deliveryId, String body) {
-        if(body == null || body.isBlank()) {
-            return new ResponseEntity<>("error 400", HttpStatus.BAD_REQUEST);
-        }
-
         Optional<Delivery> fetchedDelivery = deliveryRepository.findById(deliveryId);
-        if(fetchedDelivery.isEmpty()) {
+        if(fetchedDelivery.isEmpty() || !validateLocation(body)) {
             return new ResponseEntity<>("error 404: Delivery not found!", HttpStatus.NOT_FOUND);
         }
 
@@ -104,5 +99,14 @@ public class DeliveryLocationCourierService {
         delivery.setLiveLocation(body);
         deliveryRepository.save(delivery);
         return new ResponseEntity<>("200 OK", HttpStatus.OK);
+    }
+
+    /**
+     * Check whether a given location is valid.
+     * @param body Location representation.
+     * @return Whether valid.
+     */
+    private boolean validateLocation(final String body) {
+        return body != null && !body.isBlank();
     }
 }

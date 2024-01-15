@@ -34,29 +34,31 @@ public class DeliveryGettersCourierService {
 
     /**
      * Get the average rating of courier deliveries.
-     * @param courierID The ID of the courier to query (required)
+     * @param courierId The ID of the courier to query (required)
      * @return the average rating
      */
-    public ResponseEntity<Double> getAvrRating(UUID courierID) {
-        List<Delivery> deliveries = deliveryRepository.findAll();
-        if (deliveries.isEmpty()) {
-            return new ResponseEntity<>(0.0, HttpStatus.OK);
-        }
-
-        List<Double> ratingsList = deliveries
-                .stream()
-                .filter(d -> d.getCourierID().equals(courierID))
-                .map(Delivery::getCustomerRating)
-                .collect(Collectors.toList());
-
+    public ResponseEntity<Double> getAvrRating(UUID courierId) {
+        final List<Double> ratingsList = getAllRatingsForCourier(courierId);
         if (ratingsList.isEmpty()) {
             return new ResponseEntity<>(0.0, HttpStatus.OK);
         }
 
         double sumOfRatings = ratingsList.stream().mapToDouble(Double::doubleValue).sum();
-        long cnt = ratingsList.size();
+        return new ResponseEntity<>(sumOfRatings / ratingsList.size(), HttpStatus.OK);
+    }
 
-        return new ResponseEntity<>(sumOfRatings / cnt, HttpStatus.OK);
+    /**
+     * Get the entire list of delivery ratings, for one courier
+     * @param courierId ID of courier to query.
+     * @return Ratings of all their deliveries.
+     */
+    private List<Double> getAllRatingsForCourier(final UUID courierId) {
+        List<Delivery> deliveries = deliveryRepository.findAll();
+
+        return deliveries.stream()
+                .filter(d -> d.getCourierID().equals(courierId))
+                .map(Delivery::getCustomerRating)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -70,6 +72,7 @@ public class DeliveryGettersCourierService {
                 .filter(delivery -> delivery.getCourierID().equals(courierID))
                 .map(Delivery::getDeliveryID)
                 .collect(Collectors.toList());
+
         return new ResponseEntity<>(deliveries, HttpStatus.OK);
     }
 }
