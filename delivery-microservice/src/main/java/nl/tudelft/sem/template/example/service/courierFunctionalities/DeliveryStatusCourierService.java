@@ -5,6 +5,7 @@ import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.UUID;
 /**
  * Handles courier-accessible methods that involve manipulating the status of a delivery.
  */
+@Service
 public class DeliveryStatusCourierService {
 
     /**
