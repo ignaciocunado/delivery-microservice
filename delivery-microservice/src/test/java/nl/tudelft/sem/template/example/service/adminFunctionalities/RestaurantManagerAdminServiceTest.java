@@ -212,7 +212,7 @@ public class RestaurantManagerAdminServiceTest {
     }
 
     /**
-     * The vendor ID must be valid for restaurant creation!
+     * The vendor ID must be valid for restaurant creation.
      */
     @Test
     void testCreateRestaurantInvalidVendorId() {

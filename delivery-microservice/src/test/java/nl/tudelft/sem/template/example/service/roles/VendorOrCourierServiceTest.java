@@ -66,7 +66,8 @@ class VendorOrCourierServiceTest {
 
         orderToCourierService = new OrderToCourierService(deliveryRepository);
 
-        vendorOrCourierService = new VendorOrCourierService(deliveryEstimateService, deliveryEventService, pickUpEstimateVendorCourierService, orderToCourierService);
+        vendorOrCourierService = new VendorOrCourierService(deliveryEstimateService, deliveryEventService,
+                pickUpEstimateVendorCourierService, orderToCourierService);
     }
 
     @Test

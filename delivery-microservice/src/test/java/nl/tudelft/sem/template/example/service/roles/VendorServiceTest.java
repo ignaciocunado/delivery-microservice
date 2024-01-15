@@ -23,7 +23,11 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
@@ -71,12 +75,12 @@ class VendorServiceTest {
 
         // generate random UUID
         restaurantId = UUID.randomUUID();
-        UUID restaurantId2 = UUID.randomUUID();
         deliveryId = UUID.randomUUID();
         courierId = UUID.randomUUID();
         vendorId = UUID.randomUUID();
         vendorId2 = UUID.randomUUID();
         deliveryId2 = UUID.randomUUID();
+        UUID restaurantId2 = UUID.randomUUID();
 
         // setup test repository with some sample objects
         if ("true".equals(System.getProperty("isRunningPiTest"))) {
@@ -112,19 +116,27 @@ class VendorServiceTest {
         deliveryRepo.save(d2);
         deliveryRepo.save(d3);
 
-        courierToRestaurantService = new CourierToRestaurantService(restaurantRepo, deliveryRepo, new UUIDGenerationService());
+        courierToRestaurantService = new CourierToRestaurantService(
+                restaurantRepo, deliveryRepo, new UUIDGenerationService());
 
-        deliveryIdGetterService = new DeliveryIdGetterService(restaurantRepo, deliveryRepo, new UUIDGenerationService());
+        deliveryIdGetterService = new DeliveryIdGetterService(
+                restaurantRepo, deliveryRepo, new UUIDGenerationService());
 
-        deliveryManipulationService = new DeliveryManipulationService(restaurantRepo, deliveryRepo, new UUIDGenerationService());
+        deliveryManipulationService = new DeliveryManipulationService(
+                restaurantRepo, deliveryRepo, new UUIDGenerationService());
 
-        deliveryStatusService = new DeliveryStatusService(restaurantRepo, deliveryRepo, new UUIDGenerationService());
+        deliveryStatusService = new DeliveryStatusService(
+                restaurantRepo, deliveryRepo, new UUIDGenerationService());
 
-        pickUpEstimateService = new PickUpEstimateService(restaurantRepo, deliveryRepo, new UUIDGenerationService());
+        pickUpEstimateService = new PickUpEstimateService(
+                restaurantRepo, deliveryRepo, new UUIDGenerationService());
 
-        restaurantGetterService = new RestaurantGetterService(restaurantRepo, deliveryRepo, new UUIDGenerationService());
+        restaurantGetterService = new RestaurantGetterService(
+                restaurantRepo, deliveryRepo, new UUIDGenerationService());
 
-        sut = new VendorService(courierToRestaurantService, deliveryIdGetterService, deliveryManipulationService, deliveryStatusService, pickUpEstimateService, restaurantGetterService);
+        sut = new VendorService(courierToRestaurantService, deliveryIdGetterService,
+                deliveryManipulationService, deliveryStatusService,
+                pickUpEstimateService, restaurantGetterService);
     }
 
     @Test
@@ -160,7 +172,8 @@ class VendorServiceTest {
         assertEquals(res2.getStatusCode(), HttpStatus.OK);
         assertNull(res2.getBody());
         Restaurant newRes2 = courierToRestaurantService.getRestaurantRepository().findById(restaurantId).get();
-        assertEquals(newRes.getCourierIDs().stream().filter(c -> c.equals(courierId)).collect(Collectors.toList()).size(), 1);
+        assertEquals(newRes.getCourierIDs().stream().filter(c -> c.equals(courierId))
+                .collect(Collectors.toList()).size(), 1);
 
     }
 
@@ -486,7 +499,6 @@ class VendorServiceTest {
         }
     }
 
-
     /**
      * Tests the case where no more UUIDs are available.
      */
@@ -518,42 +530,6 @@ class VendorServiceTest {
                 response.getStatusCode()
         );
     }
-
-
-    // Reason for removing this test:
-    // it is actually testing the JPA repository .save() method, not the controller.
-    // furthermore, the mocked output is something the actual repository can legally never return.
-//    /**
-//     * Saving to the database fails, and returns null. Error must be handled!
-//     */
-//    @Test
-//    void testCreateDeliverySavingFailed() {
-//        // We mock the repositories, so we can fake saving failing.
-//        TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
-//        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
-//
-//        VendorService localVendorController = new VendorService(
-//                mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
-//        );
-//
-//        // Saving always fails and returns null
-//        Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
-//                .thenReturn(null);
-//
-//        // Restaurants always exist
-//        Mockito.when(mockedRestaurantRepository.existsById(Mockito.any()))
-//                .thenReturn(true);
-//
-//        // Ensure a server error occurs
-//        final Delivery deliveryToCreate = new Delivery();
-//        deliveryToCreate.setRestaurantID(restaurantId);
-//        ResponseEntity<Delivery> response = localVendorController.createDelivery("vendor", deliveryToCreate);
-//
-//        assertEquals(
-//                HttpStatus.BAD_REQUEST,
-//                response.getStatusCode()
-//        );
-//    }
 
     /**
      * Retrieving the created delivery from the database fails! Ensure error occurs.

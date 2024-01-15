@@ -350,7 +350,7 @@ public class GlobalServiceTest {
     }
 
     @Test
-    public void testGetPickUpTime(){
+    public void testGetPickUpTime() {
         ResponseEntity<OffsetDateTime> response = attributeGetterGlobalService.getPickUpTime(deliveryId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(pickupTimeEstimate, response.getBody());

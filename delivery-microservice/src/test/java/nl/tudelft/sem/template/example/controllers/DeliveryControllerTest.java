@@ -155,7 +155,8 @@ class DeliveryControllerTest {
 
     @Test
     void testGetDeliveryException() {
-        Mockito.when(attributeGetterGlobalService.getDeliveryException(deliveryId)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        Mockito.when(attributeGetterGlobalService.getDeliveryException(deliveryId))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getDeliveryException(deliveryId, role);
         Mockito.verify(attributeGetterGlobalService).getDeliveryException(deliveryId);
         assertNotNull(r);
