@@ -86,11 +86,12 @@ public class DeliveryStatusService {
     public ResponseEntity<Void> editStatusDelivery(UUID deliveryId, String status) {
         Optional<Delivery> d = deliveryRepository.findById(deliveryId);
         if (d.isPresent()) {
+            Delivery delivery = d.get();
             status = status.replace("\"", "");
-            if (!status.equals("preparing") && !status.equals("given to courier")) {
+            if (!status.equals("preparing") && !status.equals("given to courier") &&
+                    !delivery.getStatus().equals("accepted") && !delivery.getStatus().equals("preparing")) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            Delivery delivery = d.get();
             delivery.setStatus(status);
             deliveryRepository.save(delivery);
 
