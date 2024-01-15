@@ -39,17 +39,18 @@ public class PickUpEstimateVendorCourierService {
         if (del.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-            Delivery delivery = del.get();
-            OffsetDateTime time;
-            try {
-                time = OffsetDateTime.parse(body);
-            } catch (DateTimeParseException e) {
-                return new ResponseEntity<>("Invalid body. " + e.getMessage(), HttpStatus.BAD_REQUEST);
-            }
-            delivery.setPickupTimeEstimate(time);
-            deliveryRepository.save(delivery);
+        body = body.replace("\"", "");
+        Delivery delivery = del.get();
+        OffsetDateTime time;
+        try {
+            time = OffsetDateTime.parse(body);
+        } catch (DateTimeParseException e) {
+            return new ResponseEntity<>("Invalid body. " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        delivery.setPickupTimeEstimate(time);
+        deliveryRepository.save(delivery);
 
-            return new ResponseEntity<>(delivery.getPickupTimeEstimate().toString(), HttpStatus.OK);
+        return new ResponseEntity<>(delivery.getPickupTimeEstimate().toString(), HttpStatus.OK);
 
     }
 }

@@ -197,6 +197,14 @@ class VendorOrCourierServiceTest {
     }
 
     @Test
+    void testSetPickUpEstimateWithExtraQuotes() {
+        ResponseEntity<String> res = pickUpEstimateVendorCourierService
+                .setPickUpEstimate(deliveryId, "\"" + sampleOffsetDateTime.toString() + "\"");
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepository.findById(deliveryId).get().getPickupTimeEstimate(), sampleOffsetDateTime);
+    }
+
+    @Test
     void testSetPickUpEstimate2() {
         ResponseEntity<String> res = pickUpEstimateVendorCourierService
                 .setPickUpEstimate(deliveryId, sampleOffsetDateTime.toString());
