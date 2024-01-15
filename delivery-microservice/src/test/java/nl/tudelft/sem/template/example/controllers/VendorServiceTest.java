@@ -102,7 +102,7 @@ class VendorServiceTest {
                 1.d, sampleOffsetDateTime, "", "", 1);
 
         Delivery d2 = new Delivery(deliveryId2, UUID.randomUUID(), UUID.randomUUID(),
-                UUID.randomUUID(), restaurantId, "pending", sampleOffsetDateTime,
+                UUID.randomUUID(), restaurantId, "preparing", sampleOffsetDateTime,
                 sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
                 "", 1);
         Delivery d3 = new Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
@@ -176,6 +176,13 @@ class VendorServiceTest {
         ResponseEntity<Void> res = deliveryStatusService.acceptDelivery(deliveryId);
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "accepted");
+    }
+
+    @Test
+    void testAcceptWrongStatus() {
+        ResponseEntity<Void> res = deliveryStatusService.acceptDelivery(deliveryId2);
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId2).get().getStatus(), "preparing");
     }
 
     @Test
