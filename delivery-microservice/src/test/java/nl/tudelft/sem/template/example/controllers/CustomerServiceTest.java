@@ -128,6 +128,8 @@ public class CustomerServiceTest {
 
         response = customerService.setRateOfDelivery(deliveryId, 1d);
         assertEquals(200, response.getStatusCodeValue());
+        assertEquals("200 OK", response.getBody());
+
     }
 
     @Test
@@ -135,6 +137,8 @@ public class CustomerServiceTest {
         ResponseEntity<String> response = customerService.setRateOfDelivery(deliveryId, 0.5d);
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(0.5d, deliveryRepository.findById(deliveryId).get().getCustomerRating());
+        assertEquals("200 OK", response.getBody());
+
     }
 
     @Test
