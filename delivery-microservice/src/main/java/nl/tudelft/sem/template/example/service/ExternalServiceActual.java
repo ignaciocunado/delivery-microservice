@@ -71,16 +71,16 @@ public class ExternalServiceActual implements ExternalService {
     @Override
     public boolean verify(String userId, String role) {
         return switch (role) {
-            case "vendor", "courier" -> verifyBasic(userId, role);
-//            case "admin" -> verifyAdmin(userId);
-//            case "customer" -> verifyCustomer(userId);
+            case "vendor", "courier" -> verifyWithProof(userId, role);
+            case "admin", "customer" -> verifyWithGetter(userId, role);
             default -> false;
         };
     }
 
-    private boolean verifyBasic(String userId, String role) {
+
+    private boolean verifyWithProof(String userId, String role) {
         // Create URL to contact user microservice
-        String url = userServiceUrl + "/user/" + userId + "/role/" + role;
+        String url = userServiceUrl + role + "s/" + userId + "/proof";
 
         final int statusCode = performProofRequest(url, userId);
 
@@ -91,20 +91,63 @@ public class ExternalServiceActual implements ExternalService {
         return statusCode == 200;
     }
 
+    private boolean verifyWithGetter(String userId, String role) {
+        // Create URL to contact user microservice
+        String url = userServiceUrl + "/" + role + "s/" + userId;
+
+        final int statusCode = performGetRequest(url, userId);
+
+        // Print debug info
+        System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
+        System.out.println("\033[96;40m response status code: \033[30;106m " + statusCode + " \033[0m");
+
+        return statusCode == 200;
+    }
+
+
     /**
-     * Given a URL, perform a GET request and return the response status code (regardless of success).
+     * Perform a proof request (PATCH with body) to the given URL, with the given user ID.
+     *
      * @param url URL to query.
      * @return Response status code.
      */
     private int performProofRequest(final String url, final String userId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-User-ID", userId);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.PATCH,
+                    requestEntity,
+                    String.class
+            );
+
+            return response.getStatusCodeValue();
+        } catch (RestClientException e) {
+            return 401; // You may want to handle specific exceptions based on your use case
+        }
+    }
+
+    /**
+     * Given a URL, perform a GET request and return the response status code.
+     *
+     * @param url   URL to query
+     * @param userId User ID to query
+     * @return Response status code
+     */
+    private int performGetRequest(final String url, final String userId) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-User-Id", userId);
-            headers.setContentType(MediaType.APPLICATION_JSON);  // Assuming JSON content, adjust as needed
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
 
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, requestEntity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
 
             return response.getStatusCodeValue();
         } catch (RestClientException e) {
