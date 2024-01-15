@@ -204,6 +204,13 @@ class VendorServiceTest {
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
+    @Test
+    void testRejecttWrongStatus() {
+        ResponseEntity<Void> res = deliveryStatusService.rejectDelivery(deliveryId2);
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId2).get().getStatus(), "preparing");
+    }
+
 
     @Test
     void testRemoveCourierNotFound() {
