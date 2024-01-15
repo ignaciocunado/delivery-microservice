@@ -48,9 +48,12 @@ public class CustomerServiceTest {
         delivery = new Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
                 sampleOffsetDateTime, "69.655,69.425", "late", 1);
+        Delivery delivery2 = new Delivery(UUID.randomUUID(), null, null, null,
+                null, null, null, null, 1.d,
+                null, "69.655,69.425", "late", 1);
         deliveryRepository.save(delivery);
 
-        deliveryRepository.save(delivery);
+        deliveryRepository.save(delivery2);
 
         customerService = new CustomerService(deliveryRepository);
     }
