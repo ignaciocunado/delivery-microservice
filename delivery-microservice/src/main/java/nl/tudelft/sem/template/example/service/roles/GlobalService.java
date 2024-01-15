@@ -13,7 +13,6 @@ import java.util.function.Supplier;
 
 /**
  * Service that authorizes requests from any user.
- * WARNING: this class will be entirely removed in the next step of the refactor.
  */
 @Service
 public class GlobalService {
