@@ -1,13 +1,10 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
-<<<<<<< HEAD
 import nl.tudelft.sem.template.example.service.implementation.RestaurantManagerService;
-=======
 import nl.tudelft.sem.template.example.service.GlobalFunctionalities.AttributeGetterGlobalService;
 import nl.tudelft.sem.template.example.service.GlobalFunctionalities.DeliveryIdGetterGlobalService;
 import nl.tudelft.sem.template.example.service.GlobalFunctionalities.MaxDeliveryZoneService;
->>>>>>> main
 import nl.tudelft.sem.template.example.service.roles.AdminService;
 import nl.tudelft.sem.template.example.service.roles.GlobalService;
 import nl.tudelft.sem.template.example.service.roles.VendorService;
