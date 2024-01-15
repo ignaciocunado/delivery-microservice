@@ -3,7 +3,7 @@ package nl.tudelft.sem.template.example.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -70,38 +70,25 @@ public class ExternalServiceActual implements ExternalService {
      */
     @Override
     public boolean verify(String userId, String role) {
-        // Create URL to contact user microservice
-        final Optional<String> url = buildUserAuthorizationQueryURL(userId, role);
-        if (url.isEmpty()) {
-            return false;
-        }
+        return switch (role) {
+            case "vendor", "courier" -> verifyBasic(userId, role);
+//            case "admin" -> verifyAdmin(userId);
+//            case "customer" -> verifyCustomer(userId);
+            default -> false;
+        };
+    }
 
-        final int statusCode = performGetRequestToURL(url.get());
+    private boolean verifyBasic(String userId, String role) {
+        // Create URL to contact user microservice
+        String url = userServiceUrl + "/user/" + userId + "/role/" + role;
+
+        final int statusCode = performProofRequest(url, userId);
 
         // Print debug info
         System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
-
         System.out.println("\033[96;40m response status code: \033[30;106m " + statusCode + " \033[0m");
 
         return statusCode == 200;
-    }
-
-    /**
-     * Creates a URL that can be used to query the 'user' microservice for authorization.
-     * @param userId User ID to query.
-     * @param role Role to query.
-     * @return URL formatted like 'userServiceUrl/role/userUUID/proof'.
-     */
-    private Optional<String> buildUserAuthorizationQueryURL(final String userId, final String role) {
-        // Ensure the given role actually exists - otherwise the URL would be invalid!
-        final List<String> validRoles = List.of("vendor", "courier", "admin", "customer");
-        if (!validRoles.contains(role)) {
-            return Optional.empty();
-        }
-
-        // Construct the URL
-        String url = userServiceUrl + "/" + role + "/" + userId + "/proof";
-        return Optional.of(url);
     }
 
     /**
@@ -109,9 +96,16 @@ public class ExternalServiceActual implements ExternalService {
      * @param url URL to query.
      * @return Response status code.
      */
-    private int performGetRequestToURL(final String url) {
+    private int performProofRequest(final String url, final String userId) {
         try {
-            ResponseEntity<String> response = restTemplate.getForEntity(url.toString(), String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-User-Id", userId);
+            headers.setContentType(MediaType.APPLICATION_JSON);  // Assuming JSON content, adjust as needed
+
+            HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, requestEntity, String.class);
+
             return response.getStatusCodeValue();
         } catch (RestClientException e) {
             return 401;
