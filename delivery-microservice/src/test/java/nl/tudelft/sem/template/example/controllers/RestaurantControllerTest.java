@@ -1,7 +1,13 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.model.Restaurant;
+<<<<<<< HEAD
 import nl.tudelft.sem.template.example.service.implementation.RestaurantManagerService;
+=======
+import nl.tudelft.sem.template.example.service.GlobalFunctionalities.AttributeGetterGlobalService;
+import nl.tudelft.sem.template.example.service.GlobalFunctionalities.DeliveryIdGetterGlobalService;
+import nl.tudelft.sem.template.example.service.GlobalFunctionalities.MaxDeliveryZoneService;
+>>>>>>> main
 import nl.tudelft.sem.template.example.service.roles.AdminService;
 import nl.tudelft.sem.template.example.service.roles.GlobalService;
 import nl.tudelft.sem.template.example.service.roles.VendorService;
@@ -17,9 +23,9 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class RestaurantControllerTest {
-
 
     @Mock
     VendorService vendorService = Mockito.mock(VendorService.class);
@@ -33,11 +39,24 @@ class RestaurantControllerTest {
     @Mock
     RestaurantManagerService restaurantManagerService = Mockito.mock(RestaurantManagerService.class);
 
-    private transient RestaurantController sut;
+    @Mock
+    AttributeGetterGlobalService attributeGetterGlobalService= Mockito.mock(AttributeGetterGlobalService.class);
+
+    @Mock
+    DeliveryIdGetterGlobalService deliveryIdGetterGlobalService = Mockito.mock(DeliveryIdGetterGlobalService.class);
+
+    @Mock
+    MaxDeliveryZoneService maxDeliveryZoneService = Mockito.mock(MaxDeliveryZoneService.class);
+
+    RestaurantController sut;
 
     @BeforeEach
     public void setup() {
-        sut = new RestaurantController(vendorService, adminService, globalService, restaurantManagerService);
+        sut = new RestaurantController(vendorService, adminService, globalService);
+
+        when(globalService.getMaxDeliveryZoneService()).thenReturn(maxDeliveryZoneService);
+        when(globalService.getAttributeGetterGlobalService()).thenReturn(attributeGetterGlobalService);
+        when(globalService.getDeliveryIdGetterGlobalService()).thenReturn(deliveryIdGetterGlobalService);
     }
 
     @Test
@@ -68,7 +87,8 @@ class RestaurantControllerTest {
     public void testCallMaxZone() {
         UUID id = UUID.randomUUID();
         sut.getMaxDeliveryZone(id, "a");
-        verify(globalService).getMaxDeliveryZone(id);
+
+        verify(maxDeliveryZoneService).getMaxDeliveryZone(id);
     }
 
     @Test
@@ -118,10 +138,12 @@ class RestaurantControllerTest {
     public void testGetMaxDeliveryZone(){
         String role = "admin";
         UUID deliveryId = UUID.randomUUID();
-        Mockito.when(globalService.getMaxDeliveryZone(deliveryId))
+
+        Mockito.when(globalService.getMaxDeliveryZoneService().getMaxDeliveryZone(deliveryId))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = sut.getMaxDeliveryZone(deliveryId, role);
-        Mockito.verify(globalService).getMaxDeliveryZone(deliveryId);
+        Mockito.verify(maxDeliveryZoneService).getMaxDeliveryZone(deliveryId);
+
         assertNotNull(r);
     }
 
@@ -129,10 +151,12 @@ class RestaurantControllerTest {
     public void testSetMaxDeliveryZone(){
         String role = "admin";
         UUID restaurantId = UUID.randomUUID();
-        Mockito.when(globalService.setMaxDeliveryZone(restaurantId, 1d))
+
+        Mockito.when(globalService.getMaxDeliveryZoneService().setMaxDeliveryZone(restaurantId, 1d))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = sut.setMaxDeliveryZone(restaurantId, role, 1d);
-        Mockito.verify(globalService).setMaxDeliveryZone(restaurantId, 1d);
+        Mockito.verify(maxDeliveryZoneService).setMaxDeliveryZone(restaurantId, 1d);
+
         assertNotNull(r);
     }
 
