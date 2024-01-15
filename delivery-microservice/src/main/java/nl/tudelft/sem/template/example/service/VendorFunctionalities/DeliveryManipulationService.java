@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.controllers.VendorFunctionalities;
+package nl.tudelft.sem.template.example.service.VendorFunctionalities;
 
 import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
@@ -9,6 +9,7 @@ import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Service
 public class DeliveryManipulationService {
 
     @Getter
@@ -31,61 +33,44 @@ public class DeliveryManipulationService {
         this.uuidGenerationService = uuidGenerationService;
     }
 
-    public boolean checkVendor(String role) {
-        return role.equals("vendor");
-    }
-
-    public boolean checkCourier(String role) {
-        return role.equals("courier");
-    }
-
     /**
      * Create a new Delivery object in the database. The Delivery is given a new, fully unique ID.
-     * @param role Requesting user's role.
      * @param delivery Data of delivery to create. ID is ignored.
      * @return The newly created Delivery object.
      */
-    public ResponseEntity<Delivery> createDelivery(String role, Delivery delivery) {
-        if (!checkVendor(role)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<Delivery> createDelivery(Delivery delivery) {
+        // Ensure delivery validity
         if (delivery == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        final Optional<UUID> newId = uuidGenerationService.generateUniqueId(deliveryRepository);
-        if (newId.isEmpty()) {
+        // Generate a new ID for the delivery
+        final Optional<UUID> newDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepository);
+        if (newDeliveryId.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        delivery.setDeliveryID(newId.get());
+        // If the given restaurant does not exist, fail.
+        if (delivery.getRestaurantID() == null || !restaurantRepository.existsById(delivery.getRestaurantID())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // Once we have the new ID - save delivery to the DB.
+        delivery.setDeliveryID(newDeliveryId.get());
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
-        if (savedDelivery == null || savedDelivery.getDeliveryID() == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDelivery.getDeliveryID());
-        if (databaseDelivery.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity<>(databaseDelivery.get(), HttpStatus.OK);
+        return databaseDelivery.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
 
     /**
      * Return all deliveries for a given vendor.
      * @param vendorId the id of the vendor to be queried
-     * @param role the role of the user calling the endpoint
      * @return all deliveries for the vendor
      */
-    public ResponseEntity<List<UUID>> getAllDeliveriesVendor(UUID vendorId, String role) {
-        if(!checkVendor(role)) {
-            return new ResponseEntity<List<UUID>>(HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<List<UUID>> getAllDeliveriesVendor(UUID vendorId) {
         List<Restaurant> restaurants = restaurantRepository.findAll();
 
         List<UUID> filteredRestaurants = restaurants.stream().filter(x -> x.getVendorID().equals(vendorId))
@@ -99,10 +84,10 @@ public class DeliveryManipulationService {
                 .contains(x.getRestaurantID())).map(x -> x.getDeliveryID()).collect(Collectors.toList());
 
         if(filteredDeliveries.isEmpty()) {
-            return new ResponseEntity<List<UUID>>(new ArrayList<UUID>(), HttpStatus.OK);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         }
 
-        return new ResponseEntity<List<UUID>>(filteredDeliveries, HttpStatus.OK);
+        return new ResponseEntity<>(filteredDeliveries, HttpStatus.OK);
     }
 
 }

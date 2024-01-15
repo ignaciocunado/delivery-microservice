@@ -1,25 +1,23 @@
-package nl.tudelft.sem.template.example.controllers;
+package nl.tudelft.sem.template.example.service.roles;
 
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.controllers.interfaces.Controller;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
 /**
- * Sub controller that handles requests from admins.
- * Note: Remember to define method implementations here,
- * and call them in view methods such as in RestaurantController.
+ * Service that authorizes requests from admins.
  */
-@Component
-public class AdminController implements Controller {
+@Service
+public class AdminService implements RoleService {
 
     /**
      * Holds restaurant database objects.
@@ -37,7 +35,7 @@ public class AdminController implements Controller {
      * @param restaurantRepository Restaurant repository.
      */
     @Autowired
-    public AdminController(RestaurantRepository restaurantRepository, UUIDGenerationService uuidGenerationService) {
+    public AdminService(RestaurantRepository restaurantRepository, UUIDGenerationService uuidGenerationService) {
         this.restaurantRepository = restaurantRepository;
         this.uuidGenerationService = uuidGenerationService;
     }
@@ -50,6 +48,11 @@ public class AdminController implements Controller {
     public ResponseEntity<Restaurant> createRestaurant(Restaurant restaurant) {
         // Ensure restaurant validity
         if (restaurant == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // The vendor ID MUST be valid!
+        if (restaurant.getVendorID() == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -80,7 +83,7 @@ public class AdminController implements Controller {
     }
 
     /**
-     * Check the role and handle it further
+     * Check the role and handle it further.
      * @param role the role of the user
      * @param operation the method that should be called
      * @param <T> the passed param

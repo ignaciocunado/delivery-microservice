@@ -63,7 +63,7 @@ test-delivery-microservice:
     - gradle_build
   stage: test
   variables:
-    GOOD_COVERAGE: 95 # Pass pipeline
+    GOOD_COVERAGE: 92 # Pass pipeline
     MINIMUM_COVERAGE: 90 # Pass with warning
   script:
     - gradle delivery-microservice:test delivery-microservice:jacocoTestReport

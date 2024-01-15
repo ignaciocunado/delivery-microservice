@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.controllers;
+package nl.tudelft.sem.template.example.service.roles;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,21 +8,19 @@ import java.util.stream.Collectors;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.controllers.interfaces.Controller;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import nl.tudelft.sem.template.example.service.ExternalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
- * Sub controller of DeliveryController. Handles requests from couriers.
- * Note: Remember to define methods here and add them in DeliveryController.
+ * Service that authorizes requests from couriers.
  */
-@Component
-public class CourierController implements Controller {
+@Service
+public class CourierService implements RoleService {
 
     DeliveryRepository deliveryRepository;
     RestaurantRepository restaurantRepository;
@@ -35,8 +33,8 @@ public class CourierController implements Controller {
      * @param externalService external communication
      */
     @Autowired
-    public CourierController(DeliveryRepository deliveryRepository, RestaurantRepository restaurantRepository,
-                             ExternalService externalService) {
+    public CourierService(DeliveryRepository deliveryRepository, RestaurantRepository restaurantRepository,
+                          ExternalService externalService) {
         this.deliveryRepository = deliveryRepository;
         this.restaurantRepository = restaurantRepository;
         this.externalService = externalService;
@@ -125,7 +123,6 @@ public class CourierController implements Controller {
      */
     public ResponseEntity<Double> getAvrRating(UUID courierID) {
         List<Delivery> deliveries = deliveryRepository.findAll();
-
         if (deliveries.isEmpty()) {
             return new ResponseEntity<>(0.0, HttpStatus.OK);
         }
@@ -161,7 +158,7 @@ public class CourierController implements Controller {
     }
 
     /**
-     * Check the role and handle it further
+     * Check the role and handle it further.
      * @param role the role of the user
      * @param operation the method that should be called
      * @param <T> the passed param
@@ -169,9 +166,10 @@ public class CourierController implements Controller {
      */
     @Override
     public <T> ResponseEntity<T> checkAndHandle(String role, Supplier<ResponseEntity<T>> operation) {
-        if(!role.equals("courier")) {
-            return new ResponseEntity<T>(HttpStatus.UNAUTHORIZED);
+        final List<String> allowedRoles = List.of("admin", "courier");
+        if(allowedRoles.contains(role)) {
+            return operation.get();
         }
-        return operation.get();
+        return new ResponseEntity<T>(HttpStatus.UNAUTHORIZED);
     }
 }

@@ -26,9 +26,9 @@ public class UUIDGenerationServiceTest {
 
     @Test
     void testListGoodWeather() {
-        Optional<UUID> Id = sut.generateUniqueId(List.of());
+        Optional<UUID> id = sut.generateUniqueId(List.of());
 
-        assertTrue(Id.isPresent());
+        assertTrue(id.isPresent());
     }
 
     /**
@@ -58,7 +58,7 @@ public class UUIDGenerationServiceTest {
                 .thenReturn(true);
 
         // Ensure ID generation failed
-        Optional<UUID> Id = sut.generateUniqueId(existingIds);
-        assertTrue(Id.isEmpty());
+        Optional<UUID> id = sut.generateUniqueId(existingIds);
+        assertTrue(id.isEmpty());
     }
 }
