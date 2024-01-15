@@ -63,14 +63,19 @@ public class DeliveryStatusService {
      * @return Whether the request was successful or not
      */
     public ResponseEntity<Void> rejectDelivery(UUID deliveryId) {
-        if (deliveryRepository.findById(deliveryId).isPresent()) {
-            Delivery delivery = deliveryRepository.findById(deliveryId).get();
-            delivery.setStatus("rejected");
-            deliveryRepository.save(delivery);
-
-            return new ResponseEntity<>(HttpStatus.OK);
+        Optional<Delivery> fetched = deliveryRepository.findById(deliveryId);
+        if (!fetched.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        Delivery delivery = fetched.get();
+        if(!delivery.getStatus().equalsIgnoreCase("pending")) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        delivery.setStatus("rejected");
+        deliveryRepository.save(delivery);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /** Gets the list of deliveries for a restaurant.
