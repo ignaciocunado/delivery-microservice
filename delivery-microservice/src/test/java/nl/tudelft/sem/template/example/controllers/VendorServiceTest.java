@@ -273,6 +273,13 @@ class VendorServiceTest {
     }
 
     @Test
+    void testEditStatusDeliveryOkQuotes() {
+        ResponseEntity<Void> res = deliveryStatusService.editStatusDelivery(deliveryId, "\"preparing\"");
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "preparing");
+    }
+
+    @Test
     void testEditStatusDeliveryInvalidStatus() {
         ResponseEntity<Void> res = deliveryStatusService.editStatusDelivery(deliveryId, "invalid");
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());

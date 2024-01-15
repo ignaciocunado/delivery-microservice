@@ -69,6 +69,7 @@ public class DeliveryStatusService {
     public ResponseEntity<Void> editStatusDelivery(UUID deliveryId, String status) {
         Optional<Delivery> d = deliveryRepository.findById(deliveryId);
         if (d.isPresent()) {
+            status = status.replace("\"", "");
             if (!status.equals("preparing") && !status.equals("given to courier")) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
