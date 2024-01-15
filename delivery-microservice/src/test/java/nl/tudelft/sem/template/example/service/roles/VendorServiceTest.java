@@ -101,7 +101,7 @@ class VendorServiceTest {
                 1.d, sampleOffsetDateTime, "", "", 1);
 
         Delivery d2 = new Delivery(deliveryId2, UUID.randomUUID(), UUID.randomUUID(),
-                UUID.randomUUID(), restaurantId, "pending", sampleOffsetDateTime,
+                UUID.randomUUID(), restaurantId, "preparing", sampleOffsetDateTime,
                 sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
                 "", 1);
         Delivery d3 = new Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
@@ -178,6 +178,13 @@ class VendorServiceTest {
     }
 
     @Test
+    void testAcceptWrongStatus() {
+        ResponseEntity<Void> res = deliveryStatusService.acceptDelivery(deliveryId2);
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId2).get().getStatus(), "preparing");
+    }
+
+    @Test
     void testRejectNotFound() {
         ResponseEntity<Void> res = deliveryStatusService.rejectDelivery(UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
@@ -194,6 +201,13 @@ class VendorServiceTest {
     void testRemoveRestaurantNotFound() {
         ResponseEntity<Void> res = courierToRestaurantService.removeCourierRest(UUID.randomUUID(), UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testRejecttWrongStatus() {
+        ResponseEntity<Void> res = deliveryStatusService.rejectDelivery(deliveryId2);
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+        assertEquals(deliveryRepo.findById(deliveryId2).get().getStatus(), "preparing");
     }
 
 
