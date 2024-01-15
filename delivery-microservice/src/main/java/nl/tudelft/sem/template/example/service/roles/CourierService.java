@@ -129,6 +129,7 @@ public class CourierService implements RoleService {
 
         List<Double> ratingsList = deliveries
                 .stream()
+                .filter(d -> d.getCourierID() != null)
                 .filter(d -> d.getCourierID().equals(courierID))
                 .map(Delivery::getCustomerRating)
                 .collect(Collectors.toList());
@@ -151,6 +152,7 @@ public class CourierService implements RoleService {
     public ResponseEntity<List<UUID>> getAllDeliveriesCourier(UUID courierID) {
         List<Delivery> fetched = deliveryRepository.findAll();
         List<UUID> deliveries = fetched.stream()
+                .filter(delivery -> delivery.getCourierID() != null)
                 .filter(delivery -> delivery.getCourierID().equals(courierID))
                 .map(Delivery::getDeliveryID)
                 .collect(Collectors.toList());

@@ -39,6 +39,7 @@ public class CustomerService implements RoleService {
     public ResponseEntity<List<UUID>> getAllDeliveriesCustomer(UUID customerID) {
         List<Delivery> fetched = deliveryRepository.findAll();
         List<UUID> deliveries = fetched.stream()
+                .filter(delivery -> delivery.getCustomerID() != null)
                 .filter(delivery -> delivery.getCustomerID().equals(customerID))
                 .map(Delivery::getDeliveryID)
                 .collect(Collectors.toList());

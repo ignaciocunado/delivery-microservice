@@ -35,10 +35,22 @@ public class VendorService implements RoleService {
     @Getter
     private final RestaurantGetterService restaurantGetterService;
 
+    /**
+     * Constructor for the VendorService.
+     * @param courierToRestaurantService sub-service
+     * @param deliveryIdGetterService sub-service
+     * @param deliveryManipulationService sub-service
+     * @param deliveryStatusService sub-service
+     * @param pickUpEstimateService sub-service
+     * @param restaurantGetterService sub-service
+     */
     @Autowired
-    public VendorService(CourierToRestaurantService courierToRestaurantService, DeliveryIdGetterService deliveryIdGetterService,
-                                      DeliveryManipulationService deliveryManipulationService, DeliveryStatusService deliveryStatusService,
-                                      PickUpEstimateService pickUpEstimateService, RestaurantGetterService restaurantGetterService) {
+    public VendorService(CourierToRestaurantService courierToRestaurantService,
+                         DeliveryIdGetterService deliveryIdGetterService,
+                          DeliveryManipulationService deliveryManipulationService,
+                         DeliveryStatusService deliveryStatusService,
+                                      PickUpEstimateService pickUpEstimateService,
+                         RestaurantGetterService restaurantGetterService) {
         this.courierToRestaurantService = courierToRestaurantService;
         this.deliveryIdGetterService = deliveryIdGetterService;
         this.deliveryManipulationService = deliveryManipulationService;
