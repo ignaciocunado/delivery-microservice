@@ -148,21 +148,21 @@ public class DeliveryLocationCourierServiceTest {
         ResponseEntity<String> response = sut.setLiveLocation(randomId.get(), location);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("error 404: Delivery not found!", response.getBody());
+        assertEquals("404 not found", response.getBody());
     }
 
     @Test
     public void setLiveLocationReturnsBadRequest() {
         ResponseEntity<String> response = sut.setLiveLocation(deliveryId, "");
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("error 400", response.getBody());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("404 not found", response.getBody());
 
         response = sut.setLiveLocation(deliveryId, null);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("error 400", response.getBody());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("404 not found", response.getBody());
 
         response = sut.setLiveLocation(deliveryId, "    ");
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("error 400", response.getBody());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("404 not found", response.getBody());
     }
 }

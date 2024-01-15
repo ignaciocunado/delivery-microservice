@@ -38,7 +38,7 @@ public class DeliveryStatusCourierService {
     public ResponseEntity<String> deliveredDelivery(UUID deliveryId) {
         Optional<Delivery> fetchedDelivery = deliveryRepository.findById(deliveryId);
         if (fetchedDelivery.isEmpty()) {
-            return new ResponseEntity<>("404 not found", HttpStatus.NOT_FOUND);  // BAD REQUEST is not in the spec
+            return new ResponseEntity<>("Delivery not found!", HttpStatus.NOT_FOUND);
         }
 
         Delivery d = fetchedDelivery.get();

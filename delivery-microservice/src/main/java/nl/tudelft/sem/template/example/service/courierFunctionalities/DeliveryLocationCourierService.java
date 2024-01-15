@@ -92,7 +92,7 @@ public class DeliveryLocationCourierService {
     public ResponseEntity<String> setLiveLocation(UUID deliveryId, String body) {
         Optional<Delivery> fetchedDelivery = deliveryRepository.findById(deliveryId);
         if(fetchedDelivery.isEmpty() || !validateLocation(body)) {
-            return new ResponseEntity<>("error 404: Delivery not found!", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("404 not found", HttpStatus.NOT_FOUND);
         }
 
         Delivery delivery = fetchedDelivery.get();
