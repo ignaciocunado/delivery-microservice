@@ -41,7 +41,7 @@ public class ExternalServiceIntegrationTest {
         Mockito.when(restTemplate.getForObject(Mockito.anyString(), Mockito.any()))
                 .thenReturn("Destination in format xxx.xxx");
 
-        assert(externalService.getOrderDestination(UUID.randomUUID(), UUID.randomUUID())
+        assert (externalService.getOrderDestination(UUID.randomUUID(), UUID.randomUUID())
                 .equals("Destination in format xxx.xxx"));
     }
 

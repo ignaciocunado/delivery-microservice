@@ -48,9 +48,9 @@ public class GlobalService {
      * @return the response type obj
      */
     public <T> ResponseEntity<T> checkAndHandle(String role, Supplier<ResponseEntity<T>> operation) {
-        if(!role.equals("admin")) {
-            return new ResponseEntity<T>(HttpStatus.UNAUTHORIZED);
-        }
+        // here we do not have a check for the role,
+        // as the correctness of role has already been checked in
+        // the AssociationService class
         return operation.get();
     }
 }

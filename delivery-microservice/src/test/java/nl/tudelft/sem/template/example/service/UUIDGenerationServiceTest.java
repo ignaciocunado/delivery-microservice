@@ -43,8 +43,8 @@ public class UUIDGenerationServiceTest {
         }
 
         // Ensure ID generation still works
-        Optional<UUID> Id = sut.generateUniqueId(existingIds);
-        assertTrue(Id.isPresent());
+        Optional<UUID> id = sut.generateUniqueId(existingIds);
+        assertTrue(id.isPresent());
     }
 
     /**
