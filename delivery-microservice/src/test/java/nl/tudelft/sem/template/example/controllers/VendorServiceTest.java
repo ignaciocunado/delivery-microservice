@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
@@ -301,10 +303,11 @@ class VendorServiceTest {
     }
 
     @Test
-    void testGetRestaurantOk() {
+    void testGetRestaurantOk() throws JsonProcessingException {
         ResponseEntity<String> res = restaurantGetterService.getRest(restaurantId);
-
-        assertEquals(res.getBody(), restaurantRepo.findById(restaurantId).get().toString());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(restaurantRepo.findById(restaurantId).get());
+        assertEquals(res.getBody(), jsonString);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
     }
 
