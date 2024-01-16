@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service;
+package nl.tudelft.sem.template.example.service.filters;
 
 import javax.servlet.http.HttpServletRequest;
 

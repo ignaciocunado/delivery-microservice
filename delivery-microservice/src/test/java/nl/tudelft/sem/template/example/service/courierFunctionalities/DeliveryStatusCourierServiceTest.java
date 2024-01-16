@@ -4,7 +4,7 @@ import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ public class DeliveryStatusCourierServiceTest {
 
     private transient RestaurantRepository restaurantRepository;
 
-    private transient UUIDGenerationService uuidGenerationService;
+    private transient UuidGenerationService uuidGenerationService;
 
     private transient DeliveryStatusCourierService sut;
 
@@ -37,7 +37,7 @@ public class DeliveryStatusCourierServiceTest {
         restaurantRepository = new TestRestaurantRepository();
 
         // Setup services
-        uuidGenerationService = new UUIDGenerationService();
+        uuidGenerationService = new UuidGenerationService();
 
         // Create a sample restaurant
         Restaurant restaurant = new Restaurant(

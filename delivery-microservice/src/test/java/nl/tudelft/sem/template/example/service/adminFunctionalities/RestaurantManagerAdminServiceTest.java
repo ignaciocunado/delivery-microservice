@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.example.service.adminFunctionalities;
 
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.service.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ public class RestaurantManagerAdminServiceTest {
 
     private transient TestRestaurantRepository restaurantRepository;
 
-    private transient UUIDGenerationService uuidGenerationService;
+    private transient UuidGenerationService uuidGenerationService;
 
     private transient RestaurantManagerAdminService sut;
 
@@ -30,7 +30,7 @@ public class RestaurantManagerAdminServiceTest {
         restaurantRepository = new TestRestaurantRepository();
 
         // Create services
-        uuidGenerationService = new UUIDGenerationService();
+        uuidGenerationService = new UuidGenerationService();
 
         sut = new RestaurantManagerAdminService(restaurantRepository, uuidGenerationService);
     }
@@ -149,7 +149,7 @@ public class RestaurantManagerAdminServiceTest {
 
         restaurantToCreate.setVendorID(UUID.randomUUID());
         RestaurantManagerAdminService localSut = new RestaurantManagerAdminService(
-                mockedRestaurantRepository, new UUIDGenerationService()
+                mockedRestaurantRepository, new UuidGenerationService()
         );
 
         ResponseEntity<Restaurant> response = localSut.createRestaurant(restaurantToCreate);
@@ -165,7 +165,7 @@ public class RestaurantManagerAdminServiceTest {
         // We mock the repositories, so we can fake saving failing.
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
         RestaurantManagerAdminService localSut = new RestaurantManagerAdminService(
-                mockedRestaurantRepository, new UUIDGenerationService()
+                mockedRestaurantRepository, new UuidGenerationService()
         );
 
         // Saving always fails and returns a restaurant with a null ID
@@ -199,7 +199,7 @@ public class RestaurantManagerAdminServiceTest {
         Mockito.when(mockedRestaurantRepository.findById(Mockito.any()))
                 .thenReturn(Optional.empty());
         RestaurantManagerAdminService localSut = new RestaurantManagerAdminService(
-                mockedRestaurantRepository, new UUIDGenerationService()
+                mockedRestaurantRepository, new UuidGenerationService()
         );
 
         // Ensure a server error occurs

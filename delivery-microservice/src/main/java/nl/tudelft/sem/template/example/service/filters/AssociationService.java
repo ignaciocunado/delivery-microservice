@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service;
+package nl.tudelft.sem.template.example.service.filters;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
@@ -14,8 +14,8 @@ import java.util.UUID;
 @Service
 public class AssociationService implements ChainHandler {
 
-    private final DeliveryRepository deliveryRepository;
-    private final RestaurantRepository restaurantRepository;
+    private final transient DeliveryRepository deliveryRepository;
+    private final transient RestaurantRepository restaurantRepository;
 
     @Autowired
     public AssociationService(DeliveryRepository deliveryRepository, RestaurantRepository restaurantRepository) {
@@ -31,39 +31,37 @@ public class AssociationService implements ChainHandler {
      */
     public boolean authorize(HttpServletRequest request) {
         String userId = request.getHeader("X-User-Id");
-        UUID userUuid;
+
         try {
-            userUuid = UUID.fromString(userId);
+            UUID userUuid = UUID.fromString(userId);
+            String role = request.getParameter("role");
+
+            // admins can do anything
+            if (role.equals("admin")) {
+                return true;
+            }
+
+            // only restrict patch requests
+            if (!request.getMethod().equals("PATCH")) {
+                return true;
+            }
+
+            // get the endpoint
+            String endpoint = request.getRequestURI();
+
+
+            if (endpoint.contains("/status/delivered")) {
+                UUID deliveryId = UUID.fromString(endpoint.split("/")[2]);
+                return courierDeliveryAssociation(userUuid, deliveryId);
+            } else if (endpoint.contains("/status/")) {
+                UUID deliveryId = UUID.fromString(endpoint.split("/")[2]);
+                return vendorDeliveryAssociation(userUuid, deliveryId);
+            }
+
+            return true;
         } catch (Exception e) {
             return false;
         }
-        userUuid = UUID.fromString(userId);
-        String role = request.getParameter("role");
-
-        // admins can do anything
-        if (role.equals("admin")) {
-            return true;
-        }
-
-        // only restrict patch requests
-        if (!request.getMethod().equals("PATCH")) {
-            return true;
-        }
-
-        // get the endpoint
-        String endpoint = request.getRequestURI();
-
-
-        if (endpoint.contains("/status/delivered")) {
-            UUID deliveryId = UUID.fromString(endpoint.split("/")[2]);
-            return courierDeliveryAssociation(userUuid, deliveryId);
-        } else if (endpoint.contains("/status/")) {
-            UUID deliveryId = UUID.fromString(endpoint.split("/")[2]);
-            return vendorDeliveryAssociation(userUuid, deliveryId);
-        }
-
-
-        return true;
     }
 
     private boolean vendorDeliveryAssociation(UUID userId, UUID deliveryId) {

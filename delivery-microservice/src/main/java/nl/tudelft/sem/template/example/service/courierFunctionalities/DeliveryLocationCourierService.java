@@ -5,7 +5,7 @@ import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.ExternalService;
+import nl.tudelft.sem.template.example.service.externalCommunication.ExternalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,6 +62,9 @@ public class DeliveryLocationCourierService {
         // cannot be deleted as per the specification, this .get() is safe.
         Restaurant rest = restaurantRepository.findById(delivery.get().getRestaurantID()).get();
         String location = externalService.getRestaurantLocation(rest.getVendorID());
+        if (location == null) {
+            return new ResponseEntity<>("Location not found!", HttpStatus.NOT_FOUND);
+        }
 
         return new ResponseEntity<>("location: " + location, HttpStatus.OK);
     }
@@ -79,6 +82,9 @@ public class DeliveryLocationCourierService {
 
         final Delivery delivery = fetchedDelivery.get();
         String location = externalService.getOrderDestination(delivery.getCustomerID(), delivery.getOrderID());
+        if (location == null) {
+            return new ResponseEntity<>("Location not found!", HttpStatus.NOT_FOUND);
+        }
 
         return new ResponseEntity<>("location: " + location, HttpStatus.OK);
     }

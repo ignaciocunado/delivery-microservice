@@ -1,7 +1,7 @@
-package nl.tudelft.sem.template.example.authorization;
+package nl.tudelft.sem.template.example.config;
 
-import nl.tudelft.sem.template.example.service.AuthorizationService;
-import org.mapstruct.Qualifier;
+import nl.tudelft.sem.template.example.authorization.AuthorizationFilter;
+import nl.tudelft.sem.template.example.service.filters.AuthorizationService;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

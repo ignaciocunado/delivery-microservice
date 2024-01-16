@@ -5,7 +5,7 @@ import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 public class DeliveryManipulationService {
 
     @Getter
-    RestaurantRepository restaurantRepository;
-    DeliveryRepository deliveryRepository;
-    UUIDGenerationService uuidGenerationService;
+    private final transient RestaurantRepository restaurantRepository;
+    private final transient DeliveryRepository deliveryRepository;
+    private final transient UuidGenerationService uuidGenerationService;
 
     /**
      * Constructor for DeliveryManipulationService.
@@ -33,7 +33,7 @@ public class DeliveryManipulationService {
      */
     @Autowired
     public DeliveryManipulationService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
-                            UUIDGenerationService uuidGenerationService) {
+                            UuidGenerationService uuidGenerationService) {
         this.restaurantRepository = restaurantRepository;
         this.deliveryRepository = deliveryRepository;
         this.uuidGenerationService = uuidGenerationService;

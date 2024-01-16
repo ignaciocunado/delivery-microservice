@@ -13,7 +13,7 @@ import java.util.UUID;
 @Service
 public class OrderToCourierService {
 
-    DeliveryRepository deliveryRepository;
+    private final transient DeliveryRepository deliveryRepository;
 
     /**
      * Constructor.

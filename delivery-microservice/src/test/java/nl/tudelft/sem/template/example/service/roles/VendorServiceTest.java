@@ -4,8 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.service.UUIDGenerationService;
-import nl.tudelft.sem.template.example.service.vendorFunctionalities.*;
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.CourierToRestaurantService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryIdGetterService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryManipulationService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.RestaurantGetterService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryStatusService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.PickUpEstimateService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +40,7 @@ import static org.mockito.Mockito.verify;
 class VendorServiceTest {
     private transient TestRestaurantRepository restaurantRepo;
     private transient TestDeliveryRepository deliveryRepo;
-    private transient UUIDGenerationService uuidGenerationService;
+    private transient UuidGenerationService uuidGenerationService;
     private transient VendorService sut;
 
     private transient UUID restaurantId;
@@ -73,7 +78,7 @@ class VendorServiceTest {
         deliveryRepo = new TestDeliveryRepository();
 
         // initialize other services
-        uuidGenerationService = new UUIDGenerationService();
+        uuidGenerationService = new UuidGenerationService();
 
         // generate random UUID
         restaurantId = UUID.randomUUID();
@@ -89,9 +94,9 @@ class VendorServiceTest {
         // setup test repository with some sample objects
         if ("true".equals(System.getProperty("isRunningPiTest"))) {
             // Logic specific to PiTest
-            couriersList = new ArrayList<UUID>();
+            couriersList = new ArrayList<>();
         } else {
-            couriersList = Mockito.spy(new ArrayList<UUID>());
+            couriersList = Mockito.spy(new ArrayList<>());
         }
         couriersList.add(courierId);
         Restaurant r1 = new Restaurant(restaurantId, vendorId, couriersList, 1.0d);
@@ -126,22 +131,22 @@ class VendorServiceTest {
         deliveryRepo.save(d4);
 
         courierToRestaurantService = new CourierToRestaurantService(
-                restaurantRepo, deliveryRepo, new UUIDGenerationService());
+                restaurantRepo, deliveryRepo, new UuidGenerationService());
 
         deliveryIdGetterService = new DeliveryIdGetterService(
-                restaurantRepo, deliveryRepo, new UUIDGenerationService());
+                restaurantRepo, deliveryRepo, new UuidGenerationService());
 
         deliveryManipulationService = new DeliveryManipulationService(
-                restaurantRepo, deliveryRepo, new UUIDGenerationService());
+                restaurantRepo, deliveryRepo, new UuidGenerationService());
 
         deliveryStatusService = new DeliveryStatusService(
-                restaurantRepo, deliveryRepo, new UUIDGenerationService());
+                restaurantRepo, deliveryRepo, new UuidGenerationService());
 
         pickUpEstimateService = new PickUpEstimateService(
-                restaurantRepo, deliveryRepo, new UUIDGenerationService());
+                restaurantRepo, deliveryRepo, new UuidGenerationService());
 
         restaurantGetterService = new RestaurantGetterService(
-                restaurantRepo, deliveryRepo, new UUIDGenerationService());
+                restaurantRepo, deliveryRepo, new UuidGenerationService());
 
         sut = new VendorService(courierToRestaurantService, deliveryIdGetterService,
                 deliveryManipulationService, deliveryStatusService,
@@ -220,6 +225,30 @@ class VendorServiceTest {
     }
 
     @Test
+    void testRejectAcceptedDelivery() {
+        // Create a new "accepted" delivery, add it to the database
+        final Optional<UUID> newDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepo);
+        assertTrue(newDeliveryId.isPresent());
+
+        final Delivery newDelivery = new Delivery();
+        newDelivery.setDeliveryID(newDeliveryId.get());
+        newDelivery.setStatus("accepted");
+
+        deliveryRepo.save(newDelivery);
+
+        // Ensure the accepted delivery can be rejected
+        final ResponseEntity<Void> response = deliveryStatusService.rejectDelivery(newDeliveryId.get());
+        assertEquals(
+                HttpStatus.OK,
+                response.getStatusCode()
+        );
+        assertEquals(
+                "rejected",
+                deliveryRepo.findById(newDeliveryId.get()).get().getStatus()
+        );
+    }
+
+    @Test
     void testRemoveRestaurantNotFound() {
         ResponseEntity<Void> res = courierToRestaurantService.removeCourierRest(UUID.randomUUID(), UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
@@ -231,7 +260,6 @@ class VendorServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
         assertEquals(deliveryRepo.findById(deliveryId2).get().getStatus(), "preparing");
     }
-
 
     @Test
     void testRemoveCourierNotFound() {
@@ -277,7 +305,7 @@ class VendorServiceTest {
         dp.save(new Delivery(did, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "pending", null, null, 1.d, null,
                 "", "", 1));
-        PickUpEstimateService vc = new PickUpEstimateService(rp, dp, new UUIDGenerationService());
+        PickUpEstimateService vc = new PickUpEstimateService(rp, dp, new UuidGenerationService());
         ResponseEntity<OffsetDateTime> res = vc.getPickUpEstimate(did);
         assertEquals(HttpStatus.NOT_FOUND, res.getStatusCode());
     }
@@ -539,13 +567,13 @@ class VendorServiceTest {
         TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
 
-        DeliveryManipulationService localVendorService = new DeliveryManipulationService(
-                mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
-        );
-
         // Every single delivery ID is mapped to this one delivery
         Delivery foundDelivery = new Delivery();
         foundDelivery.setRestaurantID(restaurantId);
+
+        DeliveryManipulationService localVendorService = new DeliveryManipulationService(
+                mockedRestaurantRepository, mockedDeliveryRepository, new UuidGenerationService()
+        );
 
         Mockito.when(mockedDeliveryRepository.findById(Mockito.any()))
                 .thenReturn(Optional.of(foundDelivery));
@@ -571,12 +599,12 @@ class VendorServiceTest {
         TestDeliveryRepository mockedDeliveryRepository = Mockito.mock(TestDeliveryRepository.class);
         TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
 
-        DeliveryManipulationService localVendorService = new DeliveryManipulationService(
-                mockedRestaurantRepository, mockedDeliveryRepository, new UUIDGenerationService()
-        );
-
         final Delivery deliveryToCreate = new Delivery();
         deliveryToCreate.setRestaurantID(restaurantId);
+
+        DeliveryManipulationService localVendorService = new DeliveryManipulationService(
+                mockedRestaurantRepository, mockedDeliveryRepository, new UuidGenerationService()
+        );
 
         Mockito.when(mockedDeliveryRepository.save(Mockito.any()))
                 .thenReturn(deliveryToCreate);
@@ -625,6 +653,7 @@ class VendorServiceTest {
                 response.getStatusCode()
         );
     }
+
     @Test
     void testCreateDeliveryRestaurantNull() {
         final Delivery deliveryToCreate = new Delivery();

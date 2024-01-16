@@ -8,7 +8,6 @@ import nl.tudelft.sem.template.example.service.courierFunctionalities.DeliverySt
 import nl.tudelft.sem.template.example.service.globalFunctionalities.AttributeGetterGlobalService;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.DeliveryIdGetterGlobalService;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.MaxDeliveryZoneService;
-import nl.tudelft.sem.template.example.service.roles.*;
 import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryIdGetterService;
 import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryManipulationService;
 import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryStatusService;
@@ -22,7 +21,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mock;
+
+import nl.tudelft.sem.template.example.service.roles.AdminService;
+import nl.tudelft.sem.template.example.service.roles.CourierService;
+import nl.tudelft.sem.template.example.service.roles.GlobalService;
+import nl.tudelft.sem.template.example.service.roles.VendorService;
+import nl.tudelft.sem.template.example.service.roles.VendorOrCourierService;
+import nl.tudelft.sem.template.example.service.roles.CustomerService;
+
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -31,7 +37,6 @@ import org.springframework.http.ResponseEntity;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

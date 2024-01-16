@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.service;
 
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,13 +16,13 @@ import java.util.UUID;
 /**
  * Most parts of the UUID generation service are already implicitly tested through other tests.
  */
-public class UUIDGenerationServiceTest {
+public class UuidGenerationServiceTest {
 
-    private transient UUIDGenerationService sut;
+    private transient UuidGenerationService sut;
 
     @BeforeEach
     void setup() {
-        sut = new UUIDGenerationService();
+        sut = new UuidGenerationService();
     }
 
     @Test

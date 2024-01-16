@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service;
+package nl.tudelft.sem.template.example.service.externalCommunication;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;

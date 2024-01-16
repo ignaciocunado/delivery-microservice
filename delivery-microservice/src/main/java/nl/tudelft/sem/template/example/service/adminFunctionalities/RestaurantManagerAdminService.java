@@ -2,7 +2,7 @@ package nl.tudelft.sem.template.example.service.adminFunctionalities;
 
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +21,13 @@ public class RestaurantManagerAdminService {
     /**
      * Holds restaurant database objects.
      */
-    RestaurantRepository restaurantRepository;
+    private final transient RestaurantRepository restaurantRepository;
 
     /**
      * Generates unique UUIDs for our database. This is injected, instead of being a singleton,
      * so that it can be mocked.
      */
-    UUIDGenerationService uuidGenerationService;
+    private final transient UuidGenerationService uuidGenerationService;
 
     /**
      * Construct a new RestaurantManagerAdminService.
@@ -35,7 +35,8 @@ public class RestaurantManagerAdminService {
      * @param uuidGenerationService Injected UUID generation service
      */
     @Autowired
-    public RestaurantManagerAdminService(RestaurantRepository restaurantRepository, UUIDGenerationService uuidGenerationService) {
+    public RestaurantManagerAdminService(RestaurantRepository restaurantRepository,
+                                         UuidGenerationService uuidGenerationService) {
         this.restaurantRepository = restaurantRepository;
         this.uuidGenerationService = uuidGenerationService;
     }

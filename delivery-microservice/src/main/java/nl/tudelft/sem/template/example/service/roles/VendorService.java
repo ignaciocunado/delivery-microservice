@@ -5,7 +5,12 @@ import java.util.function.Supplier;
 
 import lombok.Getter;
 
-import nl.tudelft.sem.template.example.service.vendorFunctionalities.*;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.CourierToRestaurantService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryIdGetterService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryManipulationService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.RestaurantGetterService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryStatusService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.PickUpEstimateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,22 +23,22 @@ import org.springframework.stereotype.Service;
 public class VendorService implements RoleService {
 
     @Getter
-    private final CourierToRestaurantService courierToRestaurantService;
+    private final transient CourierToRestaurantService courierToRestaurantService;
 
     @Getter
-    private final DeliveryIdGetterService deliveryIdGetterService;
+    private final transient DeliveryIdGetterService deliveryIdGetterService;
 
     @Getter
-    private final DeliveryManipulationService deliveryManipulationService;
+    private final transient DeliveryManipulationService deliveryManipulationService;
 
     @Getter
-    private final DeliveryStatusService deliveryStatusService;
+    private final transient DeliveryStatusService deliveryStatusService;
 
     @Getter
-    private final PickUpEstimateService pickUpEstimateService;
+    private final transient PickUpEstimateService pickUpEstimateService;
 
     @Getter
-    private final RestaurantGetterService restaurantGetterService;
+    private final transient RestaurantGetterService restaurantGetterService;
 
     /**
      * Constructor for the VendorService.

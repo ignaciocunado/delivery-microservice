@@ -6,6 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
+
+import nl.tudelft.sem.template.example.service.externalCommunication.ExternalService;
+import nl.tudelft.sem.template.example.service.filters.AuthorizationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
