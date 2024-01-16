@@ -15,7 +15,7 @@ import java.util.UUID;
 public class DeliveryEstimateService {
 
 
-    DeliveryRepository deliveryRepository;
+    private final transient DeliveryRepository deliveryRepository;
 
 
     @Autowired

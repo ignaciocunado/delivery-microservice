@@ -14,8 +14,8 @@ import java.util.UUID;
 @Service
 public class AssociationService implements ChainHandler {
 
-    private final DeliveryRepository deliveryRepository;
-    private final RestaurantRepository restaurantRepository;
+    private final transient DeliveryRepository deliveryRepository;
+    private final transient RestaurantRepository restaurantRepository;
 
     @Autowired
     public AssociationService(DeliveryRepository deliveryRepository, RestaurantRepository restaurantRepository) {

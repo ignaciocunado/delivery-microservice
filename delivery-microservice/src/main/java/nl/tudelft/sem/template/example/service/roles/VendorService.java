@@ -18,22 +18,22 @@ import org.springframework.stereotype.Service;
 public class VendorService implements RoleService {
 
     @Getter
-    private final CourierToRestaurantService courierToRestaurantService;
+    private final transient CourierToRestaurantService courierToRestaurantService;
 
     @Getter
-    private final DeliveryIdGetterService deliveryIdGetterService;
+    private final transient DeliveryIdGetterService deliveryIdGetterService;
 
     @Getter
-    private final DeliveryManipulationService deliveryManipulationService;
+    private final transient DeliveryManipulationService deliveryManipulationService;
 
     @Getter
-    private final DeliveryStatusService deliveryStatusService;
+    private final transient DeliveryStatusService deliveryStatusService;
 
     @Getter
-    private final PickUpEstimateService pickUpEstimateService;
+    private final transient PickUpEstimateService pickUpEstimateService;
 
     @Getter
-    private final RestaurantGetterService restaurantGetterService;
+    private final transient RestaurantGetterService restaurantGetterService;
 
     /**
      * Constructor for the VendorService.

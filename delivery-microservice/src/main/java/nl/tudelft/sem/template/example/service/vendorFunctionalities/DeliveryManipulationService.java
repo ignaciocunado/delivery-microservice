@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 public class DeliveryManipulationService {
 
     @Getter
-    RestaurantRepository restaurantRepository;
-    DeliveryRepository deliveryRepository;
-    UUIDGenerationService uuidGenerationService;
+    private final transient RestaurantRepository restaurantRepository;
+    private final transient DeliveryRepository deliveryRepository;
+    private final transient UUIDGenerationService uuidGenerationService;
 
     /**
      * Constructor for DeliveryManipulationService.

@@ -16,9 +16,9 @@ import java.util.UUID;
 public class DeliveryIdGetterService {
 
 
-    RestaurantRepository restaurantRepository;
-    DeliveryRepository deliveryRepository;
-    UUIDGenerationService uuidGenerationService;
+    private final transient RestaurantRepository restaurantRepository;
+    private final transient DeliveryRepository deliveryRepository;
+    private final transient UUIDGenerationService uuidGenerationService;
 
     /**
      * Constructor for the Vendor Controller.

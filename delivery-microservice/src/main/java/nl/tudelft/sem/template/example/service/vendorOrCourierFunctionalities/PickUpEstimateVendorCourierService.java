@@ -15,7 +15,7 @@ import java.util.UUID;
 @Service
 public class PickUpEstimateVendorCourierService {
 
-    DeliveryRepository deliveryRepository;
+    private final transient DeliveryRepository deliveryRepository;
 
     /**
      * Constructor.

@@ -18,9 +18,9 @@ import java.util.UUID;
 public class DeliveryStatusService {
 
     @Getter
-    RestaurantRepository restaurantRepository;
-    DeliveryRepository deliveryRepository;
-    UUIDGenerationService uuidGenerationService;
+    private final transient RestaurantRepository restaurantRepository;
+    private final transient DeliveryRepository deliveryRepository;
+    private final transient UUIDGenerationService uuidGenerationService;
 
     /**
      * Constructor for DeliveryStatusService.

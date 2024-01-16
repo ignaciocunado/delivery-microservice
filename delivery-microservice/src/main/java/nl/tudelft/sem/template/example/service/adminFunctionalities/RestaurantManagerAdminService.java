@@ -21,13 +21,13 @@ public class RestaurantManagerAdminService {
     /**
      * Holds restaurant database objects.
      */
-    RestaurantRepository restaurantRepository;
+    private final transient RestaurantRepository restaurantRepository;
 
     /**
      * Generates unique UUIDs for our database. This is injected, instead of being a singleton,
      * so that it can be mocked.
      */
-    UUIDGenerationService uuidGenerationService;
+    private final transient UUIDGenerationService uuidGenerationService;
 
     /**
      * Construct a new RestaurantManagerAdminService.

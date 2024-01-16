@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Service
 public class DeliveryEventService {
-    DeliveryRepository deliveryRepository;
+    private final transient DeliveryRepository deliveryRepository;
 
     /**
      * Constructor.
