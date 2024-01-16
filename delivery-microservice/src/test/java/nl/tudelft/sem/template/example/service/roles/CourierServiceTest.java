@@ -2,23 +2,12 @@ package nl.tudelft.sem.template.example.service.roles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
-import java.util.UUID;
 import java.util.function.Supplier;
 
-import nl.tudelft.sem.model.Delivery;
-import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.ExternalService;
 import nl.tudelft.sem.template.example.service.courierFunctionalities.DeliveryGettersCourierService;
 import nl.tudelft.sem.template.example.service.courierFunctionalities.DeliveryLocationCourierService;
 import nl.tudelft.sem.template.example.service.courierFunctionalities.DeliveryStatusCourierService;
-import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
-import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

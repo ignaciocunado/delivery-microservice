@@ -2,7 +2,7 @@ package nl.tudelft.sem.template.example.service.roles;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.service.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UUIDGenerationService;
 import nl.tudelft.sem.template.example.service.vendorOrCourierFunctionalities.DeliveryEstimateService;
 import nl.tudelft.sem.template.example.service.vendorOrCourierFunctionalities.DeliveryEventService;
 import nl.tudelft.sem.template.example.service.vendorOrCourierFunctionalities.OrderToCourierService;

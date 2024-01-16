@@ -5,7 +5,7 @@ import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.AttributeGetterGlobalService;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.DeliveryIdGetterGlobalService;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.MaxDeliveryZoneService;
-import nl.tudelft.sem.template.example.service.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UUIDGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;

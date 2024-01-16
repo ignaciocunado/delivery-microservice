@@ -8,8 +8,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import nl.tudelft.sem.template.example.service.AssociationService;
-import nl.tudelft.sem.template.example.service.AuthorizationService;
+import nl.tudelft.sem.template.example.service.filters.AssociationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

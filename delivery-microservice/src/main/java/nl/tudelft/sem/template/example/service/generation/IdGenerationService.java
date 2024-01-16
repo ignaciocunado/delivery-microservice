@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service;
+package nl.tudelft.sem.template.example.service.generation;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;

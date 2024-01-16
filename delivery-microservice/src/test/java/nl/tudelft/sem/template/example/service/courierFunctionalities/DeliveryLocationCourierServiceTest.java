@@ -4,8 +4,8 @@ import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.ExternalService;
-import nl.tudelft.sem.template.example.service.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.externalCommunication.ExternalService;
+import nl.tudelft.sem.template.example.service.generation.UUIDGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,6 +106,16 @@ public class DeliveryLocationCourierServiceTest {
     }
 
     @Test
+    public void getPickUpLocationReturnsNotFound2() {
+        when(externalService.getRestaurantLocation(any())).thenReturn(null);
+
+        ResponseEntity<String> response = sut.getPickUpLocation(deliveryId);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Location not found!", response.getBody());
+    }
+
+    @Test
     public void getLocationOfDeliveryReturnsOk() {
         String expectedLocation = "123.321.656";
 
@@ -126,6 +136,16 @@ public class DeliveryLocationCourierServiceTest {
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Delivery not found!", response.getBody());
+    }
+
+    @Test
+    public void getLocationOfDeliveryReturnsNotFound2() {
+        when(externalService.getOrderDestination(any(), any())).thenReturn(null);
+
+        ResponseEntity<String> response = sut.getLocationOfDelivery(deliveryId);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Location not found!", response.getBody());
     }
 
     @Test
@@ -165,4 +185,6 @@ public class DeliveryLocationCourierServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("404 not found", response.getBody());
     }
+
+
 }

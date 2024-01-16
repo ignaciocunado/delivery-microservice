@@ -1,12 +1,5 @@
 package nl.tudelft.sem.template.example.config;
 
-import nl.tudelft.sem.template.example.authorization.AssociationFilterConfiguration;
-import nl.tudelft.sem.template.example.authorization.AuthorizationFilter;
-import nl.tudelft.sem.template.example.authorization.AuthorizationFilterConfiguration;
-import nl.tudelft.sem.template.example.service.AuthorizationService;
-import org.hibernate.Incubating;
-import org.hibernate.service.spi.InjectService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;

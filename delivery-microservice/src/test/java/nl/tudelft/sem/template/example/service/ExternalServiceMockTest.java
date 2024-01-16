@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.service;
 
+import nl.tudelft.sem.template.example.service.externalCommunication.ExternalService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

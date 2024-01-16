@@ -1,7 +1,8 @@
-package nl.tudelft.sem.template.example.service;
+package nl.tudelft.sem.template.example.service.filters;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nl.tudelft.sem.template.example.service.externalCommunication.ExternalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
