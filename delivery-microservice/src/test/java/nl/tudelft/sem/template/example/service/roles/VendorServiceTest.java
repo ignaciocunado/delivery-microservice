@@ -211,6 +211,30 @@ class VendorServiceTest {
     }
 
     @Test
+    void testRejectAcceptedDelivery() {
+        // Create a new "accepted" delivery, add it to the database
+        final Optional<UUID> newDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepo);
+        assertTrue(newDeliveryId.isPresent());
+
+        final Delivery newDelivery = new Delivery();
+        newDelivery.setDeliveryID(newDeliveryId.get());
+        newDelivery.setStatus("accepted");
+
+        deliveryRepo.save(newDelivery);
+
+        // Ensure the accepted delivery can be rejected
+        final ResponseEntity<Void> response = deliveryStatusService.rejectDelivery(newDeliveryId.get());
+        assertEquals(
+                HttpStatus.OK,
+                response.getStatusCode()
+        );
+        assertEquals(
+                "rejected",
+                deliveryRepo.findById(newDeliveryId.get()).get().getStatus()
+        );
+    }
+
+    @Test
     void testRemoveRestaurantNotFound() {
         ResponseEntity<Void> res = courierToRestaurantService.removeCourierRest(UUID.randomUUID(), UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
@@ -222,7 +246,6 @@ class VendorServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
         assertEquals(deliveryRepo.findById(deliveryId2).get().getStatus(), "preparing");
     }
-
 
     @Test
     void testRemoveCourierNotFound() {
