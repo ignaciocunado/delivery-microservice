@@ -41,6 +41,8 @@ class VendorServiceTest {
     private transient UUID restaurantId;
     private transient UUID deliveryId;
     private transient UUID deliveryId2;
+    private transient UUID deliveryId3;
+    private transient UUID deliveryId4;
 
     private transient UUID vendorId;
     private transient UUID vendorId2;
@@ -80,6 +82,8 @@ class VendorServiceTest {
         vendorId = UUID.randomUUID();
         vendorId2 = UUID.randomUUID();
         deliveryId2 = UUID.randomUUID();
+        deliveryId3 = UUID.randomUUID();
+        deliveryId4 = UUID.randomUUID();
         UUID restaurantId2 = UUID.randomUUID();
 
         // setup test repository with some sample objects
@@ -108,13 +112,18 @@ class VendorServiceTest {
                 UUID.randomUUID(), restaurantId, "preparing", sampleOffsetDateTime,
                 sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
                 "", 1);
-        Delivery d3 = new Delivery(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                UUID.randomUUID(), UUID.randomUUID(), "pending", sampleOffsetDateTime,
+        Delivery d3 = new Delivery(deliveryId3, UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), "accepted", sampleOffsetDateTime,
+                sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
+                "", 1);
+        Delivery d4 = new Delivery(deliveryId4, UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), "idk", sampleOffsetDateTime,
                 sampleOffsetDateTime, 1.d, sampleOffsetDateTime, "",
                 "", 1);
         deliveryRepo.save(d);
         deliveryRepo.save(d2);
         deliveryRepo.save(d3);
+        deliveryRepo.save(d4);
 
         courierToRestaurantService = new CourierToRestaurantService(
                 restaurantRepo, deliveryRepo, new UUIDGenerationService());
@@ -217,7 +226,7 @@ class VendorServiceTest {
     }
 
     @Test
-    void testRejecttWrongStatus() {
+    void testRejectWrongStatus() {
         ResponseEntity<Void> res = deliveryStatusService.rejectDelivery(deliveryId2);
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
         assertEquals(deliveryRepo.findById(deliveryId2).get().getStatus(), "preparing");
@@ -302,14 +311,22 @@ class VendorServiceTest {
 
     @Test
     void testEditStatusDeliveryOkQuotes() {
-        ResponseEntity<Void> res = deliveryStatusService.editStatusDelivery(deliveryId, "\"preparing\"");
+        ResponseEntity<Void> res = deliveryStatusService.editStatusDelivery(deliveryId3, "\"preparing\"");
         assertEquals(HttpStatus.OK, res.getStatusCode());
-        assertEquals(deliveryRepo.findById(deliveryId).get().getStatus(), "preparing");
+        assertEquals(deliveryRepo.findById(deliveryId3).get().getStatus(), "preparing");
     }
 
     @Test
     void testEditStatusDeliveryInvalidStatus() {
         ResponseEntity<Void> res = deliveryStatusService.editStatusDelivery(deliveryId, "invalid");
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+    }
+
+    @Test
+    void testEditStatusDeliveryInvalidDelivery() {
+        System.out.println(deliveryRepo.findById(deliveryId4).get());
+        ResponseEntity<Void> res = deliveryStatusService.editStatusDelivery(deliveryId4, "idk");
+        System.out.println(deliveryRepo.findById(deliveryId4).get());
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
     }
 

@@ -36,14 +36,6 @@ public class PickUpEstimateService {
         this.uuidGenerationService = uuidGenerationService;
     }
 
-    public boolean checkVendor(String role) {
-        return role.equals("vendor");
-    }
-
-    public boolean checkCourier(String role) {
-        return role.equals("courier");
-    }
-
     /**
      * Gets the pick-up time for a delivery.
      * @param deliveryID UUID of the delivery object

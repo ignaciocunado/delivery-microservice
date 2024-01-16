@@ -74,7 +74,7 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
-     * Integrates controller with API to set the exception of delivery.
+     * Integrates controller with API to set the exception to delivery.
      * @param deliveryId ID of the delivery to query. (required)
      * @param role The role of the user (required)
      * @param body  (required)
