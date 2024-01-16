@@ -4,31 +4,33 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.net.URI;
 import java.util.UUID;
 
 @SpringBootTest
-@ActiveProfiles("integration")
-public class ExternalServiceIntegrationTest {
+public class ExternalServiceActualTest {
 
-    private transient ExternalService externalService;
+    private transient ExternalServiceActual externalService;
     private transient RestTemplate restTemplate;
+
+    private HttpEntity<String> requestEntity;
 
 
     @BeforeEach
     void setUp() {
         restTemplate = Mockito.mock(RestTemplate.class);
         externalService = new ExternalServiceActual(restTemplate, "a", "b");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-User-ID", "123");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        requestEntity = new HttpEntity<>("123", headers);
     }
 
     @Test
@@ -62,7 +64,7 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void verifyVendorRole() {
-        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+        Mockito.when(restTemplate.exchange("b/vendors/123/proof", HttpMethod.POST, requestEntity, String.class))
                 .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
         boolean result = externalService.verify("123", "vendor");
 
@@ -71,7 +73,7 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void verifyCourierRole() {
-        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+        Mockito.when(restTemplate.exchange("b/couriers/123/proof", HttpMethod.POST, requestEntity, String.class))
                 .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
         boolean result = externalService.verify("123", "courier");
 
@@ -80,7 +82,7 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void verifyAdminRole() {
-        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+        Mockito.when(restTemplate.exchange("b/admins/123", HttpMethod.GET, requestEntity, String.class))
                 .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
         boolean result = externalService.verify("123", "admin");
 
@@ -88,8 +90,8 @@ public class ExternalServiceIntegrationTest {
     }
 
     @Test
-    void verifyValidRoleNon200ErrorCode() {
-        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+    void verifyProofExceptionThrown() {
+        Mockito.when(restTemplate.exchange("b/customers/123", HttpMethod.GET, requestEntity, String.class))
                 .thenThrow(new RestClientException(""));
         boolean result = externalService.verify("123", "customer");
 
@@ -97,8 +99,8 @@ public class ExternalServiceIntegrationTest {
     }
 
     @Test
-    void verifyClientExceptionThrown() {
-        Mockito.when(restTemplate.getForEntity(Mockito.anyString(), Mockito.any()))
+    void verifyGetExceptionThrown() {
+        Mockito.when(restTemplate.exchange("b/admins/123", HttpMethod.GET, requestEntity, String.class))
                 .thenThrow(new RestClientException(":)"));
         boolean result = externalService.verify("123", "admin");
 
