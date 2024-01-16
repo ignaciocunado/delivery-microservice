@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.example.service.generation;
 
-import nl.tudelft.sem.template.example.service.generation.IdGenerationService;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,7 @@ import java.util.UUID;
  * Provides unique UUID generation, given a set of existing UUIDs.
  */
 @Service
-public class UUIDGenerationService implements IdGenerationService<UUID> {
+public class UuidGenerationService implements IdGenerationService<UUID> {
 
     /**
      * Generate a new UUID that is not present in the given list.

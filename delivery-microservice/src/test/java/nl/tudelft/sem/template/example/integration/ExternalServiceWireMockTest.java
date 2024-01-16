@@ -13,8 +13,15 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class ExternalServiceWireMockTest {
     private RestTemplate restTemplate = new RestTemplate();
@@ -24,7 +31,7 @@ public class ExternalServiceWireMockTest {
     private transient ExternalService externalService;
 
     @BeforeAll
-    static void startWireServer(){
+    static void startWireServer() {
         int port = 8088;
         wireMockServer = new WireMockServer(port);
         wireMockServer.start();
@@ -32,22 +39,22 @@ public class ExternalServiceWireMockTest {
     }
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         externalService = new ExternalServiceActual(restTemplate, wireMockServer.baseUrl(), wireMockServer.baseUrl());
     }
 
     @AfterAll
-    static void stopWireServer(){
+    static void stopWireServer() {
         wireMockServer.stop();
     }
 
     @Test
-    void testWireMock(){
+    void testWireMock() {
         assertTrue(wireMockServer.isRunning());
     }
 
     @Test
-    void testGetRestaurantLocation(){
+    void testGetRestaurantLocation() {
         UUID vendorId = UUID.randomUUID();
         wireMockServer.stubFor(
                 WireMock.get("/vendors/" + vendorId)
@@ -55,24 +62,24 @@ public class ExternalServiceWireMockTest {
                                 .withStatus(200)
                                 .withHeader("Content-Type", "application/json")
                                 .withBody(
-                                        "{\n" +
-                                                "  \"vendorId\": \"908ads99-sd8sad8-sdasda88-dasdad9\",\n" +
-                                                "  \"name\": \"Arthur Dent\",\n" +
-                                                "  \"isBlocked\": true,\n" +
-                                                "  \"email\": \"user@example.com\",\n" +
-                                                "  \"isApproved\": false,\n" +
-                                                "  \"location\": {\n" +
-                                                "    \"id\": \"908ads99-sd8sad8-sdasda88-dasdad9\",\n" +
-                                                "    \"latitude\": 34.092,\n" +
-                                                "    \"longitude\": 34.092,\n" +
-                                                "    \"zipCode\": \"2554EZ\",\n" +
-                                                "    \"houseNumber\": 24\n" +
-                                                "  },\n" +
-                                                "  \"schedule\": {\n" +
-                                                "    \"id\": \"908ads99-sd8sad8-sdasda88-dasdad9\",\n" +
-                                                "    \"schedule\": \"10:00-20:00,10:00-20:00\"\n" +
-                                                "  }\n" +
-                                                "}")));
+                                        "{\n"
+                                        + "  \"vendorId\": \"908ads99-sd8sad8-sdasda88-dasdad9\",\n"
+                                        + "  \"name\": \"Arthur Dent\",\n"
+                                        + "  \"isBlocked\": true,\n"
+                                        + "  \"email\": \"user@example.com\",\n"
+                                        + "  \"isApproved\": false,\n"
+                                        + "  \"location\": {\n"
+                                        + "    \"id\": \"908ads99-sd8sad8-sdasda88-dasdad9\",\n"
+                                        + "    \"latitude\": 34.092,\n"
+                                        + "    \"longitude\": 34.092,\n"
+                                        + "    \"zipCode\": \"2554EZ\",\n"
+                                        + "    \"houseNumber\": 24\n"
+                                        + "  },\n"
+                                        + "  \"schedule\": {\n"
+                                        + "    \"id\": \"908ads99-sd8sad8-sdasda88-dasdad9\",\n"
+                                        + "    \"schedule\": \"10:00-20:00,10:00-20:00\"\n"
+                                        + "  }\n"
+                                        + "}")));
         String restaurantLocation = externalService.getRestaurantLocation(vendorId);
 
         assertEquals("34.092, 34.092", restaurantLocation);
@@ -82,7 +89,7 @@ public class ExternalServiceWireMockTest {
     }
 
     @Test
-    void testGetRestaurantLocationNull(){
+    void testGetRestaurantLocationNull() {
         UUID vendorId = UUID.randomUUID();
         wireMockServer.stubFor(
                 WireMock.get("/vendors/" + vendorId)
@@ -90,7 +97,8 @@ public class ExternalServiceWireMockTest {
                                 .withStatus(403)
                                 .withHeader("Content-Type", "application/json")
                                 .withBody(
-                                        "{\"httpCode\": 403, \"message\": " + "\"You do not have the right permissions to access this resource.\"}")));
+                                        "{\"httpCode\": 403, \"message\": " + "\"You do not have the right permissions "
+                                        + "to access this resource.\"}")));
         String restaurantLocation = externalService.getRestaurantLocation(vendorId);
 
         assertNull(restaurantLocation);
@@ -100,7 +108,7 @@ public class ExternalServiceWireMockTest {
     }
 
     @Test
-    void testGetRestaurantLocationNull404(){
+    void testGetRestaurantLocationNull404() {
         UUID vendorId = UUID.randomUUID();
         wireMockServer.stubFor(
                 WireMock.get("/vendors/" + vendorId)
@@ -108,7 +116,8 @@ public class ExternalServiceWireMockTest {
                                 .withStatus(403)
                                 .withHeader("Content-Type", "application/json")
                                 .withBody(
-                                        "{\"httpCode\": 404, \"message\": " + "\"You do not have the right permissions to access this resource.\"}")));
+                                        "{\"httpCode\": 404, \"message\": " + "\"You do not have the right permissions"
+                                        + " to access this resource.\"}")));
         String restaurantLocation = externalService.getRestaurantLocation(vendorId);
 
         assertNull(restaurantLocation);
@@ -118,7 +127,7 @@ public class ExternalServiceWireMockTest {
     }
 
     @Test
-    void testGetOrderDestination(){
+    void testGetOrderDestination() {
         UUID customerId = UUID.randomUUID();
         UUID orderId = UUID.randomUUID();
         wireMockServer.stubFor(
@@ -135,7 +144,7 @@ public class ExternalServiceWireMockTest {
     }
 
     @Test
-    void testGetOrderDestinationNull(){
+    void testGetOrderDestinationNull() {
         UUID customerId = UUID.randomUUID();
         UUID orderId = UUID.randomUUID();
         wireMockServer.stubFor(

@@ -48,7 +48,7 @@ public class DeliveryGettersCourierService {
     }
 
     /**
-     * Get the entire list of delivery ratings, for one courier
+     * Get the entire list of delivery ratings, for one courier.
      * @param courierId ID of courier to query.
      * @return Ratings of all their deliveries.
      */

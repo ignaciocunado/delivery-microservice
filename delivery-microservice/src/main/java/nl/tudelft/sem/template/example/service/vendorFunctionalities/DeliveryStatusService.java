@@ -4,7 +4,7 @@ import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.generation.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class DeliveryStatusService {
     @Getter
     private final transient RestaurantRepository restaurantRepository;
     private final transient DeliveryRepository deliveryRepository;
-    private final transient UUIDGenerationService uuidGenerationService;
+    private final transient UuidGenerationService uuidGenerationService;
 
     /**
      * Constructor for DeliveryStatusService.
@@ -29,7 +29,7 @@ public class DeliveryStatusService {
      */
     @Autowired
     public DeliveryStatusService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
-                            UUIDGenerationService uuidGenerationService) {
+                            UuidGenerationService uuidGenerationService) {
         this.restaurantRepository = restaurantRepository;
         this.deliveryRepository = deliveryRepository;
         this.uuidGenerationService = uuidGenerationService;
@@ -88,8 +88,8 @@ public class DeliveryStatusService {
         if (d.isPresent()) {
             Delivery delivery = d.get();
             status = status.replace("\"", "");
-            if (!status.equals("preparing") && !status.equals("given to courier") &&
-                    !delivery.getStatus().equals("accepted") && !delivery.getStatus().equals("preparing")) {
+            if (!status.equals("preparing") && !status.equals("given to courier")
+                    && !delivery.getStatus().equals("accepted") && !delivery.getStatus().equals("preparing")) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             delivery.setStatus(status);

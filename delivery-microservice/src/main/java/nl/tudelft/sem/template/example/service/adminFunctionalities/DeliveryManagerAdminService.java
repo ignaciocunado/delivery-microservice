@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Manages the editing of delivery properties that are only accessible by admins
+ * Manages the editing of delivery properties that are only accessible by admins.
  */
 @Service
 public class DeliveryManagerAdminService {
@@ -23,7 +23,7 @@ public class DeliveryManagerAdminService {
     private final transient DeliveryRepository deliveryRepository;
 
     /**
-     * Constructor for DeliveryManagerAdminService
+     * Constructor for DeliveryManagerAdminService.
      * @param restaurantRepository restaurant DB
      * @param deliveryRepository delivery DB
      */
