@@ -34,8 +34,7 @@ public class AssociationService implements ChainHandler {
         UUID userUuid;
         try {
             userUuid = UUID.fromString(userId);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
         userUuid = UUID.fromString(userId);
