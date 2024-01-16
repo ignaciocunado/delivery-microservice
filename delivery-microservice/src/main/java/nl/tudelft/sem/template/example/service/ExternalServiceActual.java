@@ -3,7 +3,11 @@ package nl.tudelft.sem.template.example.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -137,7 +141,7 @@ public class ExternalServiceActual implements ExternalService {
             return response.getStatusCodeValue();
         } catch (RestClientException e) {
             System.out.println("\033[96;40m unauthorized \033[0m");
-            return 401; // You may want to handle specific exceptions based on your use case
+            return 401;
         }
     }
 }
