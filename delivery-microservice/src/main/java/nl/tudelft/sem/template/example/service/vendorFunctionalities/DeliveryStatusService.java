@@ -68,7 +68,8 @@ public class DeliveryStatusService {
         }
 
         Delivery delivery = fetched.get();
-        if(!delivery.getStatus().equalsIgnoreCase("pending")) {
+        if(!delivery.getStatus().equalsIgnoreCase("pending")
+            && !delivery.getStatus().equalsIgnoreCase("accepted")) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
