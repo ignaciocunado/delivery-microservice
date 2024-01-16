@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.service.roles;
 
 import nl.tudelft.sem.model.Restaurant;
+import nl.tudelft.sem.template.example.service.adminFunctionalities.DeliveryManagerAdminService;
 import nl.tudelft.sem.template.example.service.adminFunctionalities.RestaurantManagerAdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,8 @@ public class AdminServiceTest {
     @BeforeEach
     void setUp() {
         RestaurantManagerAdminService restaurantManagerAdminService = Mockito.mock(RestaurantManagerAdminService.class);
-        sut = new AdminService(restaurantManagerAdminService);
+        DeliveryManagerAdminService deliveryManagerAdminService = Mockito.mock(DeliveryManagerAdminService.class);
+        sut = new AdminService(restaurantManagerAdminService, deliveryManagerAdminService);
     }
 
     @Test

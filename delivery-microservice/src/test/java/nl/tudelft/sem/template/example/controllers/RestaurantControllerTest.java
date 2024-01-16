@@ -37,7 +37,7 @@ class RestaurantControllerTest {
     RestaurantManagerAdminService restaurantManagerAdminService = Mockito.mock(RestaurantManagerAdminService.class);
 
     @Mock
-    AttributeGetterGlobalService attributeGetterGlobalService= Mockito.mock(AttributeGetterGlobalService.class);
+    AttributeGetterGlobalService attributeGetterGlobalService = Mockito.mock(AttributeGetterGlobalService.class);
 
     @Mock
     DeliveryIdGetterGlobalService deliveryIdGetterGlobalService = Mockito.mock(DeliveryIdGetterGlobalService.class);
@@ -98,7 +98,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    public void testAddCourierToRest(){
+    public void testAddCourierToRest() {
         UUID customerID = UUID.randomUUID();
         UUID restaurantId = UUID.randomUUID();
         Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
@@ -109,7 +109,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    public void testRemoveCourierRest(){
+    public void testRemoveCourierRest() {
         UUID customerID = UUID.randomUUID();
         UUID restaurantId = UUID.randomUUID();
         Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
@@ -120,7 +120,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    public void testCreateRest(){
+    public void testCreateRest() {
         String role = "admin";
         Restaurant restaurant = new Restaurant();
         Mockito.when(adminService.checkAndHandle(Mockito.eq(role), Mockito.any()))
@@ -132,7 +132,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    public void testGetMaxDeliveryZone(){
+    public void testGetMaxDeliveryZone() {
         String role = "admin";
         UUID deliveryId = UUID.randomUUID();
 
@@ -145,7 +145,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    public void testSetMaxDeliveryZone(){
+    public void testSetMaxDeliveryZone() {
         String role = "admin";
         UUID restaurantId = UUID.randomUUID();
 
@@ -158,7 +158,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    public void testGetRest(){
+    public void testGetRest() {
         UUID restaurantId = UUID.randomUUID();
         Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
@@ -168,7 +168,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    public void testGetVendorRest(){
+    public void testGetVendorRest() {
         UUID vendorId = UUID.randomUUID();
         Mockito.when(vendorService.checkAndHandle(Mockito.any(), Mockito.any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));

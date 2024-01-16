@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.interfaces.DSAKey;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,14 +42,19 @@ public class DeliveryStatusService {
      * @return Whether the request was successful or not
      */
     public ResponseEntity<Void> acceptDelivery(UUID deliveryId) {
-        if (deliveryRepository.findById(deliveryId).isPresent()) {
-            Delivery delivery = deliveryRepository.findById(deliveryId).get();
-            delivery.setStatus("accepted");
-            deliveryRepository.save(delivery);
-
-            return new ResponseEntity<>(HttpStatus.OK);
+        Optional<Delivery> fetched = deliveryRepository.findById(deliveryId);
+        if (!fetched.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        Delivery delivery = fetched.get();
+        if(!delivery.getStatus().equalsIgnoreCase("pending")) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        delivery.setStatus("accepted");
+        deliveryRepository.save(delivery);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /** Sets the status to rejected for a delivery.
@@ -57,14 +63,19 @@ public class DeliveryStatusService {
      * @return Whether the request was successful or not
      */
     public ResponseEntity<Void> rejectDelivery(UUID deliveryId) {
-        if (deliveryRepository.findById(deliveryId).isPresent()) {
-            Delivery delivery = deliveryRepository.findById(deliveryId).get();
-            delivery.setStatus("rejected");
-            deliveryRepository.save(delivery);
-
-            return new ResponseEntity<>(HttpStatus.OK);
+        Optional<Delivery> fetched = deliveryRepository.findById(deliveryId);
+        if (!fetched.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        Delivery delivery = fetched.get();
+        if(!delivery.getStatus().equalsIgnoreCase("pending")) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        delivery.setStatus("rejected");
+        deliveryRepository.save(delivery);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /** Gets the list of deliveries for a restaurant.
@@ -75,11 +86,12 @@ public class DeliveryStatusService {
     public ResponseEntity<Void> editStatusDelivery(UUID deliveryId, String status) {
         Optional<Delivery> d = deliveryRepository.findById(deliveryId);
         if (d.isPresent()) {
+            Delivery delivery = d.get();
             status = status.replace("\"", "");
-            if (!status.equals("preparing") && !status.equals("given to courier")) {
+            if (!status.equals("preparing") && !status.equals("given to courier") &&
+                    !delivery.getStatus().equals("accepted") && !delivery.getStatus().equals("preparing")) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            Delivery delivery = d.get();
             delivery.setStatus(status);
             deliveryRepository.save(delivery);
 

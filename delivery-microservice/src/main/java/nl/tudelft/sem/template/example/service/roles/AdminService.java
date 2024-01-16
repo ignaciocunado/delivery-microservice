@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.service.roles;
 
 import lombok.Getter;
+import nl.tudelft.sem.template.example.service.adminFunctionalities.DeliveryManagerAdminService;
 import nl.tudelft.sem.template.example.service.adminFunctionalities.RestaurantManagerAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,14 +18,18 @@ public class AdminService implements RoleService {
 
     @Getter
     private final transient RestaurantManagerAdminService restaurantManagerAdminService;
+    @Getter
+    private final transient DeliveryManagerAdminService deliveryManagerAdminService;
 
     /**
      * Construct a new Admin Service.
      * @param restaurantManagerAdminService Restaurant manager.
      */
     @Autowired
-    public AdminService(RestaurantManagerAdminService restaurantManagerAdminService) {
+    public AdminService(RestaurantManagerAdminService restaurantManagerAdminService,
+                        DeliveryManagerAdminService deliveryManagerAdminService) {
         this.restaurantManagerAdminService = restaurantManagerAdminService;
+        this.deliveryManagerAdminService = deliveryManagerAdminService;
     }
 
     /**

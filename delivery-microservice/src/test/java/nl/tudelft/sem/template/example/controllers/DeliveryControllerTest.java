@@ -7,6 +7,7 @@ import nl.tudelft.sem.template.example.service.globalFunctionalities.MaxDelivery
 import nl.tudelft.sem.template.example.service.roles.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,7 @@ class DeliveryControllerTest {
     private transient DeliveryIdGetterGlobalService deliveryIdGetterGlobalService;
 
     private transient MaxDeliveryZoneService maxDeliveryZoneService;
+    private transient AdminService adminService;
 
     private transient UUID deliveryId;
     private transient String role;
@@ -57,6 +59,7 @@ class DeliveryControllerTest {
         attributeGetterGlobalService = Mockito.mock(AttributeGetterGlobalService.class);
         deliveryIdGetterGlobalService = Mockito.mock(DeliveryIdGetterGlobalService.class);
         maxDeliveryZoneService = Mockito.mock(MaxDeliveryZoneService.class);
+        adminService = Mockito.mock(AdminService.class);
 
         globalService = Mockito.mock(GlobalService.class);
 
@@ -67,7 +70,7 @@ class DeliveryControllerTest {
         vendorOrCourierService = Mockito.mock(VendorOrCourierService.class);
         customerService = Mockito.mock(CustomerService.class);
         deliveryController = new DeliveryController(courierService, vendorService,
-                globalService, vendorOrCourierService, customerService);
+                globalService, vendorOrCourierService, customerService, adminService);
     }
 
     @Test
@@ -155,7 +158,8 @@ class DeliveryControllerTest {
 
     @Test
     void testGetDeliveryException() {
-        Mockito.when(attributeGetterGlobalService.getDeliveryException(deliveryId)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        Mockito.when(attributeGetterGlobalService.getDeliveryException(deliveryId))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         ResponseEntity<?> r = deliveryController.getDeliveryException(deliveryId, role);
         Mockito.verify(attributeGetterGlobalService).getDeliveryException(deliveryId);
         assertNotNull(r);
@@ -366,5 +370,19 @@ class DeliveryControllerTest {
         ResponseEntity<String> response = deliveryController.getPickUpLocation(deliveryId, role);
 
         assertEquals("MockedResponse", response.getBody());
+    }
+
+    @Test
+    void setRestaurantID() {
+        UUID del = UUID.randomUUID();
+        UUID res = UUID.randomUUID();
+        String role = "admin";
+
+        Mockito.when(adminService.checkAndHandle(Mockito.eq(role), Mockito.any()))
+                .thenReturn(new ResponseEntity<>(res, HttpStatus.OK));
+        ResponseEntity<UUID> response = deliveryController.setRestIdOfDelivery(del, role, res);
+        Mockito.verify(adminService).checkAndHandle(Mockito.any(), Mockito.any());
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(response.getBody(), res);
     }
 }
