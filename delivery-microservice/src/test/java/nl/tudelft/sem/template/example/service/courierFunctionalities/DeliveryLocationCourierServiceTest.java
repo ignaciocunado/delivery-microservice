@@ -5,7 +5,7 @@ import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import nl.tudelft.sem.template.example.service.externalCommunication.ExternalService;
-import nl.tudelft.sem.template.example.service.generation.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ public class DeliveryLocationCourierServiceTest {
 
     private transient ExternalService externalService;
 
-    private transient UUIDGenerationService uuidGenerationService;
+    private transient UuidGenerationService uuidGenerationService;
 
     private transient DeliveryLocationCourierService sut;
 
@@ -50,7 +50,7 @@ public class DeliveryLocationCourierServiceTest {
 
         // Setup other services
         externalService = Mockito.mock(ExternalService.class);
-        uuidGenerationService = new UUIDGenerationService();
+        uuidGenerationService = new UuidGenerationService();
 
         // Create a sample restaurant
         Restaurant restaurant = new Restaurant(

@@ -5,7 +5,12 @@ import java.util.function.Supplier;
 
 import lombok.Getter;
 
-import nl.tudelft.sem.template.example.service.vendorFunctionalities.*;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.CourierToRestaurantService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryIdGetterService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryManipulationService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.RestaurantGetterService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.DeliveryStatusService;
+import nl.tudelft.sem.template.example.service.vendorFunctionalities.PickUpEstimateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
