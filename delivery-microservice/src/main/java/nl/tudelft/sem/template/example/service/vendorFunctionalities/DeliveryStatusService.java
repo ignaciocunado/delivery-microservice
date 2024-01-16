@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -87,10 +88,17 @@ public class DeliveryStatusService {
         if (d.isPresent()) {
             Delivery delivery = d.get();
             status = status.replace("\"", "");
+
             if (!status.equals("preparing") && !status.equals("given to courier") &&
                     !delivery.getStatus().equals("accepted") && !delivery.getStatus().equals("preparing")) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
+
+            // If the new status is "given to courier", set the picked-up time field to now
+            if (status.equals("given to courier")) {
+                delivery.setPickedUpTime(OffsetDateTime.now());
+            }
+
             delivery.setStatus(status);
             deliveryRepository.save(delivery);
 
