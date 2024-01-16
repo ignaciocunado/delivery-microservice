@@ -1,0 +1,1669 @@
+{
+	"info": {
+		"_postman_id": "e0c351cd-c80e-4772-96bc-de35ef4da571",
+		"name": "YumYumNowDelivery",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26631163"
+	},
+	"item": [
+		{
+			"name": "Restaurant",
+			"item": [
+				{
+					"name": "Getters",
+					"item": [
+						{
+							"name": "Get Restaurant",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/restaurant/{{path-restaurant-id}}/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"restaurant",
+										"{{path-restaurant-id}}",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Restaurants of Vendor",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/restaurant/vendor/{{path-vendor-id}}/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"restaurant",
+										"vendor",
+										"{{path-vendor-id}}",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Restaurant Max Delivery Zone",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/restaurant/{{path-restaurant-id}}/deliveryZone/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"restaurant",
+										"{{path-restaurant-id}}",
+										"deliveryZone",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Setters",
+					"item": [
+						{
+							"name": "Set Restaurant Max Delivery Zone",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "300",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/restaurant/{{path-restaurant-id}}/deliveryZone/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"restaurant",
+										"{{path-restaurant-id}}",
+										"deliveryZone",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Restaurant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "{{querying-user-id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"vendorID\": \"{{path-vendor-id}}\",\r\n    \"courierIDs\": [\r\n        \"{{path-courier-id}}\"\r\n    ],\r\n    \"maxDeliveryZone\": 100\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/restaurant/?role={{querying-role}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"restaurant",
+								""
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "{{querying-role}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Courier to Restaurant",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "{{querying-user-id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/restaurant/{{path-restaurant-id}}/add/courier/{{path-courier-id}}?role={{querying-role}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"restaurant",
+								"{{path-restaurant-id}}",
+								"add",
+								"courier",
+								"{{path-courier-id}}"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "{{querying-role}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Courier from Restaurant",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "{{querying-user-id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/restaurant/{{path-restaurant-id}}/remove/courier/{{path-courier-id}}?role={{querying-role}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"restaurant",
+								"{{path-restaurant-id}}",
+								"remove",
+								"courier",
+								"{{path-courier-id}}"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "{{querying-role}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delivery",
+			"item": [
+				{
+					"name": "Getters",
+					"item": [
+						{
+							"name": "Get Delivery",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Deliveries of Customer",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/delivery/customer/{{path-customer-id}}/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"customer",
+										"{{path-customer-id}}",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Deliveries of Vendor",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/delivery/vendor/{{path-vendor-id}}/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"vendor",
+										"{{path-vendor-id}}",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Deliveries of Courier",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/delivery/courier/{{path-courier-id}}/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"courier",
+										"{{path-courier-id}}",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Order ID",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/orderID/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"orderID",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Restaurant ID",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/restaurant/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"restaurant",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Courier ID",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/courierID/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"courierID",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Customer ID",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/customerID/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"customerID",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Pickup Time Estimate",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/time/pickupTimeEstimate/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"time",
+										"pickupTimeEstimate",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Picked Up Time",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/pickedUpTime/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"pickedUpTime",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Delivery Time Estimate",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/time/deliveryTimeEstimate/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"time",
+										"deliveryTimeEstimate",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Delay",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/delay/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"delay",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Rating",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/rating/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"rating",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Live Location",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/liveLocation/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"liveLocation",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Destination",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/destination/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"destination",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery Pickup Location",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/pickUpLocation/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"pickUpLocation",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Delivery User Exception",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/userException/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"userException",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Courier Avg Delivery Rating",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/delivery/courier/{{path-courier-id}}/avg_rating/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"courier",
+										"{{path-courier-id}}",
+										"avg_rating",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Setters",
+					"item": [
+						{
+							"name": "Set Delivery Restaurant ID",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"{{path-restaurant-id}}\"",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/restaurant/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"restaurant",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set Delivery Pickup Time Estimate",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"2031-06-12T16:23:11Z\"",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/time/pickupTimeEstimate/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"time",
+										"pickupTimeEstimate",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set Delivery Delivery Time Estimate",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"2035-12-09T12:25:50Z\"",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/time/deliveryTimeEstimate/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"time",
+										"deliveryTimeEstimate",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set Delivery Delay",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "100",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/delay/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"delay",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set Delivery Rating",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "1.0",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/rating/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"rating",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set Delivery Live Location",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"live location\"",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/liveLocation/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"liveLocation",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set Delivery User Exception",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"new user exception\"",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/userException/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"userException",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Status Markers",
+					"item": [
+						{
+							"name": "Mark Delivery 'Accepted'",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/status/accept/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"status",
+										"accept",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Mark Delivery 'Rejected'",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/status/reject/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"status",
+										"reject",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Mark Delivery 'Preparing' or 'Given'",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"preparing\"",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/status/edit/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"status",
+										"edit",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Mark Delivery 'Delivered'",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-User-Id",
+										"value": "{{querying-user-id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/delivery/{{path-delivery-id}}/status/delivered/?role={{querying-role}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"delivery",
+										"{{path-delivery-id}}",
+										"status",
+										"delivered",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "{{querying-role}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Delivery",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "{{querying-user-id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    // Restaurant ID must exist in the database!\r\n    \"restaurantID\": \"{{path-restaurant-id}}\",\r\n\r\n    // References to external object IDs\r\n    \"orderID\": \"b3e7ba08-b982-4a0e-9093-bca46569e8ad\",\r\n    \"customerID\": \"{{path-customer-id}}\",\r\n\r\n    // The courier is to be initially unassigned\r\n    \"courierID\": null,\r\n    \r\n    // Initial status of a delivery\r\n    \"status\": \"preparing\",\r\n    \r\n    // Time-related values\r\n    \"pickupTimeEstimate\": \"2024-01-13T14:30:10Z\",\r\n    \"pickedUpTime\": null,\r\n    \"deliveryTimeEstimate\": null,\r\n    \"delay\": 0,\r\n    \r\n    \"customerRating\": 0,\r\n    \"liveLocation\": \"no location set\",\r\n    \"userException\": \"all is well!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/delivery/?role={{querying-role}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"delivery",
+								""
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "{{querying-role}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Delivery to Courier",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-User-Id",
+								"value": "{{querying-user-id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/delivery/courier/{{path-courier-id}}/assign/{{path-delivery-id}}/?role={{querying-role}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"delivery",
+								"courier",
+								"{{path-courier-id}}",
+								"assign",
+								"{{path-delivery-id}}",
+								""
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "{{querying-role}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "localhost:8082"
+		},
+		{
+			"key": "querying-role",
+			"value": "admin"
+		},
+		{
+			"key": "querying-user-id",
+			"value": "8c262f5b-a743-4804-9025-fb509d6a13e0",
+			"type": "string"
+		},
+		{
+			"key": "path-vendor-id",
+			"value": "8f0083f9-aee3-4254-8b50-14640c34a2f6"
+		},
+		{
+			"key": "path-delivery-id",
+			"value": "57300387-d38d-4f17-b447-08b2a3da3173",
+			"type": "string"
+		},
+		{
+			"key": "path-restaurant-id",
+			"value": "04e580fc-005d-4250-8660-b3339d338f2c"
+		},
+		{
+			"key": "path-customer-id",
+			"value": "35a64124-c274-4125-be9c-9831d9a3ed15"
+		},
+		{
+			"key": "path-courier-id",
+			"value": "f1926a63-e2ea-4961-b4c6-180f25f1a80f"
+		}
+	]
+}

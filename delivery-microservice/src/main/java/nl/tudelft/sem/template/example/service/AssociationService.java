@@ -31,7 +31,13 @@ public class AssociationService implements ChainHandler {
      */
     public boolean authorize(HttpServletRequest request) {
         String userId = request.getHeader("X-User-Id");
-        UUID userUuid = UUID.fromString(userId);
+        UUID userUuid;
+        try {
+            userUuid = UUID.fromString(userId);
+        } catch (Exception e) {
+            return false;
+        }
+        userUuid = UUID.fromString(userId);
         String role = request.getParameter("role");
 
         // admins can do anything

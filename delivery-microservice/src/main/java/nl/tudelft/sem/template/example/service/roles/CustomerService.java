@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ public class CustomerService implements RoleService {
     public ResponseEntity<List<UUID>> getAllDeliveriesCustomer(UUID customerID) {
         List<Delivery> fetched = deliveryRepository.findAll();
         List<UUID> deliveries = fetched.stream()
+                .filter(delivery -> delivery.getCustomerID() != null)
                 .filter(delivery -> delivery.getCustomerID().equals(customerID))
                 .map(Delivery::getDeliveryID)
                 .collect(Collectors.toList());
@@ -52,15 +54,18 @@ public class CustomerService implements RoleService {
      * @return a response entity with the given rating
      */
     public ResponseEntity<String> setRateOfDelivery(UUID deliveryID, Double body) {
-        if (deliveryRepository.existsById(deliveryID)) {
-            if (body < 0 || body > 1) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<>(deliveryRepository.save(deliveryRepository.findById(deliveryID).get()
-                    .customerRating(body)).toString(), HttpStatus.OK);
-        } else {
+        Optional<Delivery> fetched = deliveryRepository.findById(deliveryID);
+        if (fetched.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+        Delivery del = fetched.get();
+        if (body < 0 || body > 1) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        del.customerRating(body);
+        deliveryRepository.save(del);
+        return new ResponseEntity<>("200 OK", HttpStatus.OK);
     }
 
     /**

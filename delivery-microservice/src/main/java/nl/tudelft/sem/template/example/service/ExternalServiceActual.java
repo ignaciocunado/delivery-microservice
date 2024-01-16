@@ -3,6 +3,10 @@ package nl.tudelft.sem.template.example.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -70,50 +74,73 @@ public class ExternalServiceActual implements ExternalService {
      */
     @Override
     public boolean verify(String userId, String role) {
+        return switch (role) {
+            case "vendor", "courier" -> verifyWithProof(userId, role);
+            case "admin", "customer" -> verifyWithGetter(userId, role);
+            default -> false;
+        };
+    }
+
+
+    /**
+     * Verifies using User microservice's proof endpoint.
+     *
+     * @param userId User ID to query.
+     * @param role Role to query.
+     * @return Whether the user was authorized.
+     */
+    private boolean verifyWithProof(String userId, String role) {
         // Create URL to contact user microservice
-        final Optional<String> url = buildUserAuthorizationQueryURL(userId, role);
-        if (url.isEmpty()) {
-            return false;
-        }
+        String url = userServiceUrl + "/" + role + "s/" + userId + "/proof";
 
-        final int statusCode = performGetRequestToURL(url.get());
-
-        // Print debug info
-        System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
-
-        System.out.println("\033[96;40m response status code: \033[30;106m " + statusCode + " \033[0m");
+        final int statusCode = performRequest(url, userId, HttpMethod.POST);
 
         return statusCode == 200;
     }
 
     /**
-     * Creates a URL that can be used to query the 'user' microservice for authorization.
+     * Verifies using User microservice's getter endpoint.
+     *
      * @param userId User ID to query.
-     * @param role Role to query.
-     * @return URL formatted like 'userServiceUrl/role/userUUID/proof'.
+     * @param role  Role to query.
+     * @return Whether the user was authorized.
      */
-    private Optional<String> buildUserAuthorizationQueryURL(final String userId, final String role) {
-        // Ensure the given role actually exists - otherwise the URL would be invalid!
-        final List<String> validRoles = List.of("vendor", "courier", "admin", "customer");
-        if (!validRoles.contains(role)) {
-            return Optional.empty();
-        }
+    private boolean verifyWithGetter(String userId, String role) {
+        // Create URL to contact user microservice
+        String url = userServiceUrl + "/" + role + "s/" + userId;
 
-        // Construct the URL
-        String url = userServiceUrl + "/" + role + "/" + userId + "/proof";
-        return Optional.of(url);
+        final int statusCode = performRequest(url, userId, HttpMethod.GET);
+
+        return statusCode == 200;
     }
 
+
     /**
-     * Given a URL, perform a GET request and return the response status code (regardless of success).
+     * Performs request to the given URL with given method.
+     *
      * @param url URL to query.
+     * @param userId User ID to query.
      * @return Response status code.
      */
-    private int performGetRequestToURL(final String url) {
+    private int performRequest(final String url, final String userId, final HttpMethod method) {
+        System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-User-ID", userId);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
+
         try {
-            ResponseEntity<String> response = restTemplate.getForEntity(url.toString(), String.class);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    method,
+                    requestEntity,
+                    String.class
+            );
+            System.out.println("\033[96;40m authorized \033[0m");
             return response.getStatusCodeValue();
         } catch (RestClientException e) {
+            System.out.println("\033[96;40m unauthorized \033[0m");
             return 401;
         }
     }

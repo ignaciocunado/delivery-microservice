@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.controllers;
+package nl.tudelft.sem.template.example.service.roles;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
@@ -48,9 +48,12 @@ public class CustomerServiceTest {
         delivery = new Delivery(deliveryId, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 UUID.randomUUID(), "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d,
                 sampleOffsetDateTime, "69.655,69.425", "late", 1);
+        Delivery delivery2 = new Delivery(UUID.randomUUID(), null, null, null,
+                null, null, null, null, 1.d,
+                null, "69.655,69.425", "late", 1);
         deliveryRepository.save(delivery);
 
-        deliveryRepository.save(delivery);
+        deliveryRepository.save(delivery2);
 
         customerService = new CustomerService(deliveryRepository);
     }
@@ -125,6 +128,8 @@ public class CustomerServiceTest {
 
         response = customerService.setRateOfDelivery(deliveryId, 1d);
         assertEquals(200, response.getStatusCodeValue());
+        assertEquals("200 OK", response.getBody());
+
     }
 
     @Test
@@ -132,6 +137,8 @@ public class CustomerServiceTest {
         ResponseEntity<String> response = customerService.setRateOfDelivery(deliveryId, 0.5d);
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(0.5d, deliveryRepository.findById(deliveryId).get().getCustomerRating());
+        assertEquals("200 OK", response.getBody());
+
     }
 
     @Test

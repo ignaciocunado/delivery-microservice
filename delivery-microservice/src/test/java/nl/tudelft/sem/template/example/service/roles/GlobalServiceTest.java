@@ -1,9 +1,11 @@
-package nl.tudelft.sem.template.example.controllers;
+package nl.tudelft.sem.template.example.service.roles;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.AttributeGetterGlobalService;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.DeliveryIdGetterGlobalService;
+import nl.tudelft.sem.template.example.service.globalFunctionalities.MaxDeliveryZoneService;
 import nl.tudelft.sem.template.example.service.UUIDGenerationService;
-import nl.tudelft.sem.template.example.service.roles.GlobalService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,6 +46,12 @@ public class GlobalServiceTest {
     private transient UUIDGenerationService uuidGenerationService;
 
     private transient OffsetDateTime pickupTimeEstimate;
+
+    private transient AttributeGetterGlobalService attributeGetterGlobalService;
+
+    private transient DeliveryIdGetterGlobalService deliveryIdGetterGlobalService;
+
+    private transient MaxDeliveryZoneService maxDeliveryZoneService;
 
     @BeforeEach
     void setUp() {
@@ -79,33 +88,40 @@ public class GlobalServiceTest {
 
         restaurantRepository.save(r);
 
-        globalService = new GlobalService(restaurantRepository, deliveryRepository);
+        attributeGetterGlobalService = new AttributeGetterGlobalService(restaurantRepository, deliveryRepository);
+
+        deliveryIdGetterGlobalService = new DeliveryIdGetterGlobalService(restaurantRepository, deliveryRepository);
+
+        maxDeliveryZoneService = new MaxDeliveryZoneService(restaurantRepository, deliveryRepository);
+
+        globalService = new GlobalService(attributeGetterGlobalService,
+                deliveryIdGetterGlobalService, maxDeliveryZoneService);
     }
 
     @Test
     void getLiveLocation() {
-        ResponseEntity<String> res = globalService.getLiveLocation(deliveryId);
+        ResponseEntity<String> res = attributeGetterGlobalService.getLiveLocation(deliveryId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "69.655,69.425");
     }
 
     @Test
     void getLiveLocationNotFound() {
-        ResponseEntity<String> res = globalService.getLiveLocation(UUID.randomUUID());
+        ResponseEntity<String> res = attributeGetterGlobalService.getLiveLocation(UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
 
     @Test
     void getUserException() {
-        ResponseEntity<String> res = globalService.getDeliveryException(deliveryId);
+        ResponseEntity<String> res = attributeGetterGlobalService.getDeliveryException(deliveryId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "late");
     }
 
     @Test
     void getUserExceptionNotFound() {
-        ResponseEntity<String> res = globalService.getDeliveryException(UUID.randomUUID());
+        ResponseEntity<String> res = attributeGetterGlobalService.getDeliveryException(UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
         assertNull(res.getBody());
     }
@@ -123,7 +139,7 @@ public class GlobalServiceTest {
                 "69.655,69.425", "", 1);
 
         deliveryRepository.save(save);
-        ResponseEntity<String> res = globalService.getDeliveryException(id);
+        ResponseEntity<String> res = attributeGetterGlobalService.getDeliveryException(id);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "");
     }
@@ -140,21 +156,21 @@ public class GlobalServiceTest {
                 "pending", sampleOffsetDateTime, sampleOffsetDateTime, 1.d, sampleOffsetDateTime,
                 "69.655,69.425", null, 1);
         deliveryRepository.save(save);
-        ResponseEntity<String> res = globalService.getDeliveryException(id);
+        ResponseEntity<String> res = attributeGetterGlobalService.getDeliveryException(id);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), "");
     }
 
     @Test
     void testDeliveryZoneNotFound() {
-        ResponseEntity<Double> res = globalService.getMaxDeliveryZone(UUID.randomUUID());
+        ResponseEntity<Double> res = maxDeliveryZoneService.getMaxDeliveryZone(UUID.randomUUID());
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
     void testDeliveryZoneOk() {
 
-        ResponseEntity<Double> res = globalService.getMaxDeliveryZone(restaurantId);
+        ResponseEntity<Double> res = maxDeliveryZoneService.getMaxDeliveryZone(restaurantId);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody(), 10.2d);
     }
@@ -165,7 +181,7 @@ public class GlobalServiceTest {
      */
     @Test
     void testGetDeliveryByIdGoodWeather() {
-        ResponseEntity<Delivery> response = globalService.getDeliveryById(deliveryId);
+        ResponseEntity<Delivery> response = deliveryIdGetterGlobalService.getDeliveryById(deliveryId);
 
         assertEquals(
                 HttpStatus.OK,
@@ -185,7 +201,7 @@ public class GlobalServiceTest {
         Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
         assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<Delivery> response = globalService.getDeliveryById(invalidDeliveryId.get());
+        ResponseEntity<Delivery> response = deliveryIdGetterGlobalService.getDeliveryById(invalidDeliveryId.get());
         assertEquals(
                 HttpStatus.NOT_FOUND,
                 response.getStatusCode()
@@ -197,7 +213,7 @@ public class GlobalServiceTest {
      */
     @Test
     void testGetRestaurantIdByDeliveryIdGoodWeather() {
-        ResponseEntity<UUID> response = globalService.getRestaurantIdByDeliveryId(deliveryId);
+        ResponseEntity<UUID> response = deliveryIdGetterGlobalService.getRestaurantIdByDeliveryId(deliveryId);
 
         assertEquals(
                 HttpStatus.OK,
@@ -217,7 +233,7 @@ public class GlobalServiceTest {
         Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
         assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<UUID> response = globalService.getRestaurantIdByDeliveryId(invalidDeliveryId.get());
+        ResponseEntity<UUID> response = deliveryIdGetterGlobalService.getRestaurantIdByDeliveryId(invalidDeliveryId.get());
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
@@ -229,7 +245,7 @@ public class GlobalServiceTest {
      */
     @Test
     void testGetOrderByDeliveryIdGoodWeather() {
-        ResponseEntity<UUID> response = globalService
+        ResponseEntity<UUID> response = deliveryIdGetterGlobalService
                 .getOrderByDeliveryId(deliveryId);
 
         assertEquals(
@@ -250,7 +266,7 @@ public class GlobalServiceTest {
         Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
         assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<UUID> response = globalService.getOrderByDeliveryId(invalidDeliveryId.get());
+        ResponseEntity<UUID> response = deliveryIdGetterGlobalService.getOrderByDeliveryId(invalidDeliveryId.get());
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
@@ -262,7 +278,7 @@ public class GlobalServiceTest {
      */
     @Test
     void testGetRatingByDeliveryIdGoodWeather() {
-        ResponseEntity<Double> response = globalService.getRatingByDeliveryId(deliveryId);
+        ResponseEntity<Double> response = deliveryIdGetterGlobalService.getRatingByDeliveryId(deliveryId);
 
         assertEquals(
                 HttpStatus.OK,
@@ -282,7 +298,7 @@ public class GlobalServiceTest {
         Optional<UUID> invalidDeliveryId = uuidGenerationService.generateUniqueId(List.of(deliveryId));
         assertTrue(invalidDeliveryId.isPresent());
 
-        ResponseEntity<Double> response = globalService.getRatingByDeliveryId(invalidDeliveryId.get());
+        ResponseEntity<Double> response = deliveryIdGetterGlobalService.getRatingByDeliveryId(invalidDeliveryId.get());
         assertEquals(
                 response.getStatusCode(),
                 HttpStatus.NOT_FOUND
@@ -296,14 +312,14 @@ public class GlobalServiceTest {
             id = UUID.randomUUID();
         }
 
-        ResponseEntity<Void> res = globalService.setMaxDeliveryZone(id, 25.0);
+        ResponseEntity<Void> res = maxDeliveryZoneService.setMaxDeliveryZone(id, 25.0);
 
         assertEquals(res.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
     void testSetMaxZoneOk() {
-        ResponseEntity<Void> res = globalService.setMaxDeliveryZone(restaurantId, 25.1d);
+        ResponseEntity<Void> res = maxDeliveryZoneService.setMaxDeliveryZone(restaurantId, 25.1d);
 
         assertEquals(res.getStatusCode(), HttpStatus.OK);
 
@@ -324,7 +340,7 @@ public class GlobalServiceTest {
             assertTrue(invalidDeliveryId.isPresent());
 
             // Try to fetch that delivery
-            ResponseEntity<OffsetDateTime> response = globalService.getPickUpTime(
+            ResponseEntity<OffsetDateTime> response = attributeGetterGlobalService.getPickUpTime(
                     invalidDeliveryId.get());
             assertEquals(
                     HttpStatus.NOT_FOUND,
@@ -334,9 +350,24 @@ public class GlobalServiceTest {
     }
 
     @Test
-    public void testGetPickUpTime(){
-        ResponseEntity<OffsetDateTime> response = globalService.getPickUpTime(deliveryId);
+    public void testGetPickUpTime() {
+        ResponseEntity<OffsetDateTime> response = attributeGetterGlobalService.getPickUpTime(deliveryId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(pickupTimeEstimate, response.getBody());
+    }
+
+    @Test
+    void testCheckAndHandleGoodWeather() {
+        List<String> allowedRoles = List.of("admin", "customer", "vendor", "courier");
+        Supplier<ResponseEntity<Restaurant>> operation = () -> new ResponseEntity<>(HttpStatus.OK);
+
+        for (final String roleToTest : allowedRoles) {
+            ResponseEntity<Restaurant> response = globalService.checkAndHandle(roleToTest, operation);
+
+            assertEquals(
+                    HttpStatus.OK,
+                    response.getStatusCode()
+            );
+        }
     }
 }
