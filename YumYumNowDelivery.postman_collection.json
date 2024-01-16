@@ -1538,7 +1538,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    // Restaurant ID must exist in the database!\r\n    \"restaurantID\": \"{{path-restaurant-id}}\",\r\n\r\n    // References to external object IDs\r\n    \"orderID\": \"b3e7ba08-b982-4a0e-9093-bca46569e8ad\",\r\n    \"customerID\": \"{{path-customer-id}}\",\r\n\r\n    // The courier is to be initially unassigned\r\n    \"courierID\": null,\r\n    \r\n    // Initial status of a delivery\r\n    \"status\": \"preparing\",\r\n    \r\n    // Time-related values\r\n    \"pickupTimeEstimate\": \"2024-01-13T14:30:10Z\",\r\n    \"pickedUpTime\": null,\r\n    \"deliveryTimeEstimate\": null,\r\n    \"delay\": 0,\r\n    \r\n    \"customerRating\": 0,\r\n    \"liveLocation\": \"no location set\",\r\n    \"userException\": \"all is well!\"\r\n}",
+							"raw": "{\r\n    // Restaurant ID must exist in the database!\r\n    \"restaurantID\": \"{{path-restaurant-id}}\",\r\n\r\n    // References to external object IDs\r\n    \"orderID\": \"b3e7ba08-b982-4a0e-9093-bca46569e8ad\",\r\n    \"customerID\": \"{{path-customer-id}}\",\r\n\r\n    // The courier is to be initially unassigned\r\n    \"courierID\": null,\r\n    \r\n    // Initial status of a delivery\r\n    \"status\": \"pending\",\r\n    \r\n    // Time-related values\r\n    \"pickupTimeEstimate\": \"2024-01-13T14:30:10Z\",\r\n    \"pickedUpTime\": null,\r\n    \"deliveryTimeEstimate\": null,\r\n    \"delay\": 0,\r\n    \r\n    \"customerRating\": 0,\r\n    \"liveLocation\": \"no location set\",\r\n    \"userException\": \"all is well!\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

@@ -7,7 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class TestDeliveryRepository implements DeliveryRepository {
     List<Delivery> list = new ArrayList<>();
@@ -28,12 +31,32 @@ public class TestDeliveryRepository implements DeliveryRepository {
     }
 
     @Override
+    public <S extends Delivery> List<S> findAll(Example<S> example) {
+        return null;
+    }
+
+    @Override
+    public <S extends Delivery> List<S> findAll(Example<S> example, Sort sort) {
+        return null;
+    }
+
+    @Override
+    public <S extends Delivery> Page<S> findAll(Example<S> example, Pageable pageable) {
+        return null;
+    }
+
+    @Override
     public List<Delivery> findAllById(Iterable<UUID> ids) {
         return null;
     }
 
     @Override
     public long count() {
+        return 0;
+    }
+
+    @Override
+    public <S extends Delivery> long count(Example<S> example) {
         return 0;
     }
 
@@ -116,26 +139,6 @@ public class TestDeliveryRepository implements DeliveryRepository {
     @Override
     public <S extends Delivery> Optional<S> findOne(Example<S> example) {
         return Optional.empty();
-    }
-
-    @Override
-    public <S extends Delivery> List<S> findAll(Example<S> example) {
-        return null;
-    }
-
-    @Override
-    public <S extends Delivery> List<S> findAll(Example<S> example, Sort sort) {
-        return null;
-    }
-
-    @Override
-    public <S extends Delivery> Page<S> findAll(Example<S> example, Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public <S extends Delivery> long count(Example<S> example) {
-        return 0;
     }
 
     @Override

@@ -1,7 +1,9 @@
 package nl.tudelft.sem.template.example.integration;
 
 import nl.tudelft.sem.template.example.service.filters.AuthorizationService;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -11,7 +13,15 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 
 import java.util.UUID;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -31,8 +41,11 @@ public class AuthorizationIntegrationTest {
 
     private MockHttpServletRequest request;
 
+    /**
+     * Setup tests.
+     */
     @BeforeEach
-    public void setUp() {
+    public void setup() {
         int port = 8081;
         wireMockServer = new WireMockServer(port);
         wireMockServer.start();
@@ -50,10 +63,9 @@ public class AuthorizationIntegrationTest {
         wireMockServer.stop();
     }
 
-
     @Test
     void testCourierRequest() {
-        stubFor(post(urlEqualTo("/couriers/"+userId.toString()+"/proof"))
+        stubFor(post(urlEqualTo("/couriers/" + userId.toString() + "/proof"))
                 .willReturn(aResponse()
                         .withStatus(200)));
 
@@ -61,7 +73,7 @@ public class AuthorizationIntegrationTest {
         boolean result = authorizationService.authorize(request);
 
         assertTrue(result);
-        verify(postRequestedFor(urlEqualTo("/couriers/"+userId.toString()+"/proof")));
+        verify(postRequestedFor(urlEqualTo("/couriers/" + userId.toString() + "/proof")));
     }
 
     @Test
@@ -105,7 +117,7 @@ public class AuthorizationIntegrationTest {
 
     @Test
     void testInvalidCourierRequest() {
-        stubFor(post(urlEqualTo("/couriers/"+userId.toString()+"/proof"))
+        stubFor(post(urlEqualTo("/couriers/" + userId.toString() + "/proof"))
                 .willReturn(aResponse()
                         .withStatus(401)));
 
@@ -113,7 +125,7 @@ public class AuthorizationIntegrationTest {
         boolean result = authorizationService.authorize(request);
 
         assertFalse(result);
-        verify(postRequestedFor(urlEqualTo("/couriers/"+userId.toString()+"/proof")));
+        verify(postRequestedFor(urlEqualTo("/couriers/" + userId.toString() + "/proof")));
     }
 
     @Test

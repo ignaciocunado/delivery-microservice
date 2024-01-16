@@ -62,7 +62,7 @@ public class DeliveryLocationCourierService {
         // cannot be deleted as per the specification, this .get() is safe.
         Restaurant rest = restaurantRepository.findById(delivery.get().getRestaurantID()).get();
         String location = externalService.getRestaurantLocation(rest.getVendorID());
-        if (location == null){
+        if (location == null) {
             return new ResponseEntity<>("Location not found!", HttpStatus.NOT_FOUND);
         }
 
@@ -82,7 +82,7 @@ public class DeliveryLocationCourierService {
 
         final Delivery delivery = fetchedDelivery.get();
         String location = externalService.getOrderDestination(delivery.getCustomerID(), delivery.getOrderID());
-        if (location == null){
+        if (location == null) {
             return new ResponseEntity<>("Location not found!", HttpStatus.NOT_FOUND);
         }
 
