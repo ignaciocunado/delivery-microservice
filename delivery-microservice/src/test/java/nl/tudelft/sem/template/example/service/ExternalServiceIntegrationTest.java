@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
@@ -12,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.net.URI;
 import java.util.UUID;
 
 @SpringBootTest
@@ -30,19 +33,25 @@ public class ExternalServiceIntegrationTest {
 
     @Test
     void getRestaurantLocation() {
-        Mockito.when(restTemplate.getForObject(Mockito.anyString(), Mockito.any()))
-                .thenReturn("PickUp in format xxx.xxx");
+        Mockito.when(restTemplate.exchange(Mockito.anyString(), (HttpMethod) Mockito.any(), (HttpEntity<?>) Mockito.any(), (Class<Object>) Mockito.any()))
+                .thenReturn(ResponseEntity.ok("{\"location\": {\n" +
+                        "    \"latitude\": 34.092,\n" +
+                        "    \"longitude\": 34.092\n" +
+                        "  }}"));
 
-        assert (externalService.getRestaurantLocation(UUID.randomUUID()).equals("PickUp in format xxx.xxx"));
+        assert (externalService.getRestaurantLocation(UUID.randomUUID()).equals("34.092, 34.092"));
     }
 
     @Test
     void getOrderDestination() {
-        Mockito.when(restTemplate.getForObject(Mockito.anyString(), Mockito.any()))
-                .thenReturn("Destination in format xxx.xxx");
+        Mockito.when(restTemplate.exchange(Mockito.anyString(), (HttpMethod) Mockito.any(), (HttpEntity<?>) Mockito.any(), (Class<Object>) Mockito.any()))
+                .thenReturn(ResponseEntity.ok("{\"location\": {\n" +
+                        "    \"latitude\": 34.092,\n" +
+                        "    \"longitude\": 34.092\n" +
+                        "  }}"));
 
         assert(externalService.getOrderDestination(UUID.randomUUID(), UUID.randomUUID())
-                .equals("Destination in format xxx.xxx"));
+                .equals("34.092, 34.092"));
     }
 
     @Test

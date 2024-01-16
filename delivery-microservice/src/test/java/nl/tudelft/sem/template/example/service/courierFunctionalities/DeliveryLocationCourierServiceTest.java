@@ -106,6 +106,16 @@ public class DeliveryLocationCourierServiceTest {
     }
 
     @Test
+    public void getPickUpLocationReturnsNotFound2() {
+        when(externalService.getRestaurantLocation(any())).thenReturn(null);
+
+        ResponseEntity<String> response = sut.getPickUpLocation(deliveryId);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Location not found!", response.getBody());
+    }
+
+    @Test
     public void getLocationOfDeliveryReturnsOk() {
         String expectedLocation = "123.321.656";
 
@@ -126,6 +136,16 @@ public class DeliveryLocationCourierServiceTest {
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Delivery not found!", response.getBody());
+    }
+
+    @Test
+    public void getLocationOfDeliveryReturnsNotFound2() {
+        when(externalService.getOrderDestination(any(), any())).thenReturn(null);
+
+        ResponseEntity<String> response = sut.getLocationOfDelivery(deliveryId);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Location not found!", response.getBody());
     }
 
     @Test
@@ -165,4 +185,6 @@ public class DeliveryLocationCourierServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("404 not found", response.getBody());
     }
+
+
 }
