@@ -7,7 +7,7 @@ import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import nl.tudelft.sem.template.example.service.AuthorizationService;
+import nl.tudelft.sem.template.example.service.filters.AuthorizationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

@@ -2,8 +2,8 @@ package nl.tudelft.sem.template.example.integration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import nl.tudelft.sem.template.example.service.ExternalService;
-import nl.tudelft.sem.template.example.service.ExternalServiceActual;
+import nl.tudelft.sem.template.example.service.externalCommunication.ExternalService;
+import nl.tudelft.sem.template.example.service.externalCommunication.ExternalServiceActual;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

@@ -8,8 +8,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nl.tudelft.sem.template.example.service.AssociationService;
-import nl.tudelft.sem.template.example.service.AuthorizationService;
+import nl.tudelft.sem.template.example.service.filters.AssociationService;
 import org.springframework.http.MediaType;
 import org.springframework.web.filter.GenericFilterBean;
 

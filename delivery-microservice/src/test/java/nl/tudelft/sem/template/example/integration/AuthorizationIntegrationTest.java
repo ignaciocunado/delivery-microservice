@@ -1,8 +1,6 @@
 package nl.tudelft.sem.template.example.integration;
 
-import nl.tudelft.sem.template.example.service.AuthorizationService;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Before;
+import nl.tudelft.sem.template.example.service.filters.AuthorizationService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

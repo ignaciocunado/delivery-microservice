@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.service;
 
+import nl.tudelft.sem.template.example.service.externalCommunication.ExternalServiceActual;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
