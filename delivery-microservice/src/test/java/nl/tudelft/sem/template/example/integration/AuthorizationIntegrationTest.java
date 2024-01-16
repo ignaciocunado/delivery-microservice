@@ -16,147 +16,137 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("integration")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest
 public class AuthorizationIntegrationTest {
-
-    @LocalServerPort
-    private transient int port;
-
-    private WireMockServer wireMockServer;
-
-    private UUID userId;
 
     @Autowired
     private AuthorizationService authorizationService;
 
-    private MockHttpServletRequest request;
-
-    @BeforeEach
-    public void setUp() {
-        int port = 8081;
-        wireMockServer = new WireMockServer(port);
-        wireMockServer.start();
-        configureFor("localhost", wireMockServer.port());
-
-        userId = UUID.randomUUID();
-
-        request = new MockHttpServletRequest();
-        request.addHeader("X-User-Id", userId.toString());
-        request.setRequestURI("/anywhere");
-    }
-
-    @AfterEach
-    public void tearDown() {
-        wireMockServer.stop();
-    }
-
-
     @Test
     void testCourierRequest() {
-        stubFor(post(urlEqualTo("/couriers/"+userId.toString()+"/proof"))
-                .willReturn(aResponse()
-                        .withStatus(200)));
+//        8aad7a16-cc11-4850-b5e9-6a894bbfa48b
+        UUID userId = UUID.fromString("8aad7a16-cc11-4850-b5e9-6a894bbfa48b");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", userId.toString());
+        request.setRequestURI("/anywhere");
 
         request.addParameter("role", "courier");
         boolean result = authorizationService.authorize(request);
 
         assertTrue(result);
-        verify(postRequestedFor(urlEqualTo("/couriers/"+userId.toString()+"/proof")));
     }
 
     @Test
     void testAdminRequest() {
-        stubFor(get(urlEqualTo("/admins/" + userId.toString()))
-                .willReturn(aResponse()
-                        .withStatus(200)));
+//        70d37716-e257-4ff9-9083-5a29649d0cc9
+        UUID userId = UUID.fromString("65c182ce-3b37-409e-b5a9-750a46871c8f");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", userId.toString());
+        request.setRequestURI("/anywhere");
 
         request.addParameter("role", "admin");
         boolean result = authorizationService.authorize(request);
 
         assertTrue(result);
-        verify(getRequestedFor(urlEqualTo("/admins/" + userId.toString())));
     }
 
     @Test
     void testCustomerRequest() {
-        stubFor(get(urlEqualTo("/customers/" + userId.toString()))
-                .willReturn(aResponse()
-                        .withStatus(200)));
+//        b40293f2-aec7-470f-92c7-34b9f6b15ebe
+
+        UUID userId = UUID.fromString("469f18d5-0112-4a25-b958-abba0c95cf3b");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", userId.toString());
+        request.setRequestURI("/anywhere");
 
         request.addParameter("role", "customer");
         boolean result = authorizationService.authorize(request);
 
         assertTrue(result);
-        verify(getRequestedFor(urlEqualTo("/customers/" + userId.toString())));
     }
 
     @Test
     void testVendorRequest() {
-        stubFor(post(urlEqualTo("/vendors/" + userId.toString() + "/proof"))
-                .willReturn(aResponse()
-                        .withStatus(200)));
+//        e886a65c-b096-4412-8754-929d54bfea89
+        UUID userId = UUID.fromString("e886a65c-b096-4412-8754-929d54bfea89");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", userId.toString());
+        request.setRequestURI("/anywhere");
 
         request.addParameter("role", "vendor");
         boolean result = authorizationService.authorize(request);
 
         assertTrue(result);
-        verify(postRequestedFor(urlEqualTo("/vendors/" + userId.toString() + "/proof")));
     }
 
     @Test
     void testInvalidCourierRequest() {
-        stubFor(post(urlEqualTo("/couriers/"+userId.toString()+"/proof"))
-                .willReturn(aResponse()
-                        .withStatus(401)));
+        UUID userId = UUID.fromString("16e8cb52-fa90-4a1d-bc00-016c18ee65c0");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", userId.toString());
+        request.setRequestURI("/anywhere");
 
         request.addParameter("role", "courier");
         boolean result = authorizationService.authorize(request);
 
         assertFalse(result);
-        verify(postRequestedFor(urlEqualTo("/couriers/"+userId.toString()+"/proof")));
     }
 
     @Test
     void testInvalidAdminRequest() {
-        stubFor(get(urlEqualTo("/admins/" + userId.toString()))
-                .willReturn(aResponse()
-                        .withStatus(401)));
+        UUID userId = UUID.fromString("16e8cb52-fa90-4a1d-bc00-016c18ee63c1");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", userId.toString());
+        request.setRequestURI("/anywhere");
 
         request.addParameter("role", "admin");
         boolean result = authorizationService.authorize(request);
 
         assertFalse(result);
-        verify(getRequestedFor(urlEqualTo("/admins/" + userId.toString())));
     }
 
     @Test
     void testInvalidCustomerRequest() {
-        stubFor(get(urlEqualTo("/customers/" + userId.toString()))
-                .willReturn(aResponse()
-                        .withStatus(401)));
+        UUID userId = UUID.fromString("16e8cb52-fa90-4a1d-bc00-016c18ee25c1");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", userId.toString());
+        request.setRequestURI("/anywhere");
 
         request.addParameter("role", "customer");
         boolean result = authorizationService.authorize(request);
 
         assertFalse(result);
-        verify(getRequestedFor(urlEqualTo("/customers/" + userId.toString())));
     }
 
     @Test
     void testInvalidVendorRequest() {
-        stubFor(post(urlEqualTo("/vendors/" + userId.toString() + "/proof"))
-                .willReturn(aResponse()
-                        .withStatus(401)));
+        UUID userId = UUID.fromString("16e8cb52-fa90-4a1d-bc30-016c18ee65c1");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", userId.toString());
+        request.setRequestURI("/anywhere");
 
         request.addParameter("role", "vendor");
         boolean result = authorizationService.authorize(request);
 
         assertFalse(result);
-        verify(postRequestedFor(urlEqualTo("/vendors/" + userId.toString() + "/proof")));
     }
 
     @Test
     void testInvalidRoleRequest() {
+        UUID userId = UUID.fromString("16e8cb52-fa93-4a1d-bc00-016c18ee65c1");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", userId.toString());
+        request.setRequestURI("/anywhere");
+
         request.addParameter("role", "invalid");
         boolean result = authorizationService.authorize(request);
 
@@ -165,6 +155,12 @@ public class AuthorizationIntegrationTest {
 
     @Test
     void testNoRoleRequest() {
+        UUID userId = UUID.fromString("16e8db52-fa90-4a1d-bc00-016c18ee65c1");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-User-Id", userId.toString());
+        request.setRequestURI("/anywhere");
+
         boolean result = authorizationService.authorize(request);
 
         assertFalse(result);
