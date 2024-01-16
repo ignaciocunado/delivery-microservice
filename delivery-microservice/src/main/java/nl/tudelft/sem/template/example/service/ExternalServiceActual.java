@@ -1,11 +1,16 @@
 package nl.tudelft.sem.template.example.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -39,26 +44,30 @@ public class ExternalServiceActual implements ExternalService {
 
     @Override
     public String getRestaurantLocation(UUID vendorID) {
-        // For future integration with the orders service,
-        // remember to add the API key as a header, etc.
-        // This right now is meant to set up the facade structure.
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-User-Id", vendorID.toString());
 
-        // header user id injection ...
-
-        String url = orderServiceUrl + "/vendor/" + vendorID + "/location";
-        return restTemplate.getForObject(url, String.class);
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        String url = userServiceUrl + "/vendors/" + vendorID;
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
+            return getLocationFromJson(response.getBody());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
-    public String getOrderDestination(UUID customerId, UUID orderID) {
-        // For future integration with the orders service,
-        // remember to add the API key as a header, etc.
-        // This right now is meant to set up the facade structure.
+    public String getOrderDestination(UUID customerId, UUID orderId) {
+        HttpEntity<String> requestEntity = new HttpEntity<>(new HttpHeaders());
+        String url = orderServiceUrl + "/customer/" + customerId + "/order/" + orderId;
 
-        // header user id injection ...
-
-        String url = orderServiceUrl + "/delivery/" + customerId + "/order/" + orderID + "/destination";
-        return restTemplate.getForObject(url, String.class);
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
+            return getLocationFromJson(response.getBody());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -116,5 +125,15 @@ public class ExternalServiceActual implements ExternalService {
         } catch (RestClientException e) {
             return 401;
         }
+    }
+
+    private String getLocationFromJson(String body) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(body);
+
+        JsonNode locationNode = jsonNode.get("location");
+        String latitude = locationNode.get("latitude").toString();
+        String longitude = locationNode.get("longitude").toString();
+        return latitude + ", " + longitude;
     }
 }
