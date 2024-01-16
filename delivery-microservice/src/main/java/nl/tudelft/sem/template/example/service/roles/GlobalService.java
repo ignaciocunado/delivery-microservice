@@ -18,13 +18,13 @@ import java.util.function.Supplier;
 public class GlobalService {
 
     @Getter
-    private final AttributeGetterGlobalService attributeGetterGlobalService;
+    private final transient AttributeGetterGlobalService attributeGetterGlobalService;
 
     @Getter
-    private final DeliveryIdGetterGlobalService deliveryIdGetterGlobalService;
+    private final transient DeliveryIdGetterGlobalService deliveryIdGetterGlobalService;
 
     @Getter
-    private final MaxDeliveryZoneService maxDeliveryZoneService;
+    private final transient MaxDeliveryZoneService maxDeliveryZoneService;
 
     /**
      * Constructor for GlobalService.

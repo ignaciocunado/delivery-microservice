@@ -21,16 +21,16 @@ import java.util.function.Supplier;
 public class VendorOrCourierService implements RoleService {
 
     @Getter
-    private final DeliveryEstimateService deliveryEstimateService;
+    private final transient DeliveryEstimateService deliveryEstimateService;
 
     @Getter
-    private final DeliveryEventService deliveryEventService;
+    private final transient DeliveryEventService deliveryEventService;
 
     @Getter
-    private final PickUpEstimateVendorCourierService pickUpEstimateVendorCourierService;
+    private final transient PickUpEstimateVendorCourierService pickUpEstimateVendorCourierService;
 
     @Getter
-    private final OrderToCourierService orderToCourierService;
+    private final transient OrderToCourierService orderToCourierService;
 
 
     /**

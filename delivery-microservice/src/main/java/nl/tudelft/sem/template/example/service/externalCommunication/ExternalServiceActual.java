@@ -22,9 +22,9 @@ import java.util.UUID;
 @Profile("integration")
 public class ExternalServiceActual implements ExternalService {
 
-    private final RestTemplate restTemplate;
-    private final String orderServiceUrl;
-    private final String userServiceUrl;
+    private final transient RestTemplate restTemplate;
+    private final transient String orderServiceUrl;
+    private final transient String userServiceUrl;
 
     /**
      * Constructor for the external service integration implementation.

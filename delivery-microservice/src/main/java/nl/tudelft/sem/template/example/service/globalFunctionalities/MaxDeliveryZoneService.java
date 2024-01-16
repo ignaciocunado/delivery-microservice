@@ -14,8 +14,8 @@ import java.util.UUID;
 @Service
 public class MaxDeliveryZoneService {
 
-    RestaurantRepository restaurantRepository;
-    DeliveryRepository deliveryRepository;
+    private final transient RestaurantRepository restaurantRepository;
+    private final transient DeliveryRepository deliveryRepository;
 
     /**
      * Constructor for the global controller.
