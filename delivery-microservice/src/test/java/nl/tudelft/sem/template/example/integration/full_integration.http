@@ -1,0 +1,19 @@
+POST http://localhost:6943/delivery?role=vendor HTTP/1.1
+Content-Type: application/json
+X-User-Id: 1e9cccbf-a406-437e-ab1c-96db29ef553b
+
+{
+  "deliveryID": "550e8400-e29b-41d4-a716-446655440000",
+  "orderID": "550e8400-e29b-41d4-a716-446655440000",
+  "customerID": "550e8400-e29b-41d4-a716-446655440000",
+  "courierID": "550e8400-e29b-41d4-a716-446655440000",
+  "restaurantID": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "pending",
+  "pickupTimeEstimate": "2022-01-10T15:23:44Z",
+  "deliveryTimeEstimate": "2022-01-10T15:23:44Z",
+  "customerRating": 0.5,
+  "pickedUpTime": "2022-01-10T15:23:44Z",
+  "liveLocation": "52.00667,4.35556",
+  "userException": "Rider has fallen",
+  "delay": 15
+}
