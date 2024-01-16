@@ -13,12 +13,11 @@ import java.util.function.Supplier;
 /**
  * Service that authorizes requests from admins.
  */
+@Getter
 @Service
 public class AdminService implements RoleService {
 
-    @Getter
     private final transient RestaurantManagerAdminService restaurantManagerAdminService;
-    @Getter
     private final transient DeliveryManagerAdminService deliveryManagerAdminService;
 
     /**

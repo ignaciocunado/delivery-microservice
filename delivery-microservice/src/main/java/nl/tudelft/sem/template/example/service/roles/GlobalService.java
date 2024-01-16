@@ -14,16 +14,14 @@ import java.util.function.Supplier;
 /**
  * Service that authorizes requests from any user.
  */
+@Getter
 @Service
 public class GlobalService {
 
-    @Getter
     private final transient AttributeGetterGlobalService attributeGetterGlobalService;
 
-    @Getter
     private final transient DeliveryIdGetterGlobalService deliveryIdGetterGlobalService;
 
-    @Getter
     private final transient MaxDeliveryZoneService maxDeliveryZoneService;
 
     /**

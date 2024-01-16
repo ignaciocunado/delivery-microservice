@@ -93,7 +93,7 @@ public class ExternalServiceActual implements ExternalService {
      * @param role Role to query.
      * @return Whether the user was authorized.
      */
-    private boolean verifyWithProof(String userId, String role) {
+    public boolean verifyWithProof(String userId, String role) {
         // Create URL to contact user microservice
         String url = userServiceUrl + "/" + role + "s/" + userId + "/proof";
 
@@ -109,7 +109,7 @@ public class ExternalServiceActual implements ExternalService {
      * @param role  Role to query.
      * @return Whether the user was authorized.
      */
-    private boolean verifyWithGetter(String userId, String role) {
+    public boolean verifyWithGetter(String userId, String role) {
         // Create URL to contact user microservice
         String url = userServiceUrl + "/" + role + "s/" + userId;
 

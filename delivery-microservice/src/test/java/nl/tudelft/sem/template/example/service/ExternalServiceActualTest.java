@@ -113,4 +113,31 @@ public class ExternalServiceActualTest {
 
         assertFalse(result);
     }
+
+    @Test
+    void testVerifyWithProof() {
+        Mockito.when(restTemplate.exchange("b/vendors/123/proof", HttpMethod.POST, requestEntity, String.class))
+                .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
+        boolean result = externalService.verifyWithProof("123", "vendor");
+
+        assertTrue(result);
+    }
+
+    @Test
+    void testVerifyWithProofException() {
+        Mockito.when(restTemplate.exchange("b/vendors/123/proof", HttpMethod.POST, requestEntity, String.class))
+                .thenThrow(new RestClientException(""));
+        boolean result = externalService.verifyWithProof("123", "vendor");
+
+        assertFalse(result);
+    }
+
+    @Test
+    void testVerifyWithGetter() {
+        Mockito.when(restTemplate.exchange("b/admins/123", HttpMethod.GET, requestEntity, String.class))
+                .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
+        boolean result = externalService.verifyWithGetter("123", "admin");
+
+        assertTrue(result);
+    }
 }
