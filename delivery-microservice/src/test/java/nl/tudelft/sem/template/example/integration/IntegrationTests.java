@@ -12,14 +12,22 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * To run the integration tests, 2 other microservices should be started and
@@ -28,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @SpringBootTest
 @ActiveProfiles("integration")
-@Disabled
+//@Disabled
 public class IntegrationTests {
     private static final RestTemplate restTemplate = new RestTemplate();
 
@@ -47,65 +55,62 @@ public class IntegrationTests {
     private AuthorizationService authorizationService;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         externalService = new ExternalServiceActual(restTemplate, baseUrlOrders, baseUrlUsers);
     }
 
     @BeforeAll
-    static void setUpMicroservices(){
-        String createOrderJson = "{\n" +
-                "  \"vendorId\": \"94f95e69-81b7-4c35-932e-9e4baa8dcec2\",\n" +
-                "  \"address\": {\n" +
-                "    \"houseNumber\": 123,\n" +
-                "    \"zip\": \"2133DC\",\n" +
-                "    \"longitude\": 40.7128,\n" +
-                "    \"latitude\": -74.006\n" +
-                "  }\n" +
-                "}";
-
-        String createVendorJson = "{\n" +
-                "  \"name\": \"vendor4\",\n" +
-                "  \"email\": \"user@example.com\",\n" +
-                "  \"location\": {\n" +
-                "      \"latitude\": 34,\n" +
-                "      \"longitude\": 35\n" +
-                "    }\n" +
-                "}";
-
-        String createCourierJson = "{\n" +
-                "  \"name\": \"courier\",\n" +
-                "  \"email\": \"user@example.com\"\n" +
-                "}";
-
-        String createCustomerJson = "{\n" +
-                "  \"name\": \"customer\",\n" +
-                "  \"email\": \"user@example.com\"\n" +
-                "}";
-
+    static void setUpMicroservices() {
+        String createOrderJson = "{\n"
+                + "  \"vendorId\": \"94f95e69-81b7-4c35-932e-9e4baa8dcec2\",\n"
+                + "  \"address\": {\n"
+                + "    \"houseNumber\": 123,\n"
+                + "    \"zip\": \"2133DC\",\n"
+                + "    \"longitude\": 40.7128,\n"
+                + "    \"latitude\": -74.006\n"
+                + "  }\n"
+                + "}";
         String urlOrders = baseUrlOrders + "/customer/" + customerId_team14c + "/order";
-        String urlVendor = baseUrlUsers + "/vendors";
-        String urlCourier = baseUrlUsers + "/couriers";
-        String urlCustomer = baseUrlUsers + "/customers";
-
         orderId = performRequest(createOrderJson, urlOrders, "ID");
         assertNotNull(orderId);
+
+        String createVendorJson = "{\n"
+                + "  \"name\": \"vendor4\",\n"
+                + "  \"email\": \"user@example.com\",\n"
+                + "  \"location\": {\n"
+                + "      \"latitude\": 34,\n"
+                + "      \"longitude\": 35\n"
+                + "    }\n"
+                + "}";
+        String urlVendor = baseUrlUsers + "/vendors";
         vendorId = performRequest(createVendorJson, urlVendor, "vendorId");
         assertNotNull(vendorId);
+
+        String createCourierJson = "{\n"
+                + "  \"name\": \"courier\",\n"
+                + "  \"email\": \"user@example.com\"\n"
+                + "}";
+        String urlCourier = baseUrlUsers + "/couriers";
         courierId = performRequest(createCourierJson, urlCourier, "courierId");
         assertNotNull(courierId);
+
+        String createCustomerJson = "{\n"
+                + "  \"name\": \"customer\",\n"
+                + "  \"email\": \"user@example.com\"\n"
+                + "}";
+        String urlCustomer = baseUrlUsers + "/customers";
         customerId = performRequest(createCustomerJson, urlCustomer, "customerId");
         assertNotNull(customerId);
     }
 
-    private static UUID performRequest(String requestBody, String url, String search){
+    private static UUID performRequest(String requestBody, String url, String search) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
             return UUID.fromString(getIdFromJson(response.getBody(), search));
-        }
-        catch (Exception ignored){
+        } catch (Exception ignored) {
             return null;
         }
     }
@@ -118,14 +123,14 @@ public class IntegrationTests {
     }
 
     @Test
-    void testGetRestaurantLocation(){
+    void testGetRestaurantLocation() {
         String restaurantLocation = externalService.getRestaurantLocation(vendorId);
 
         assertEquals("34.0, 35.0", restaurantLocation);
     }
 
     @Test
-    void testGetRestaurantLocationNull(){
+    void testGetRestaurantLocationNull() {
         UUID vendorId = UUID.randomUUID();
         String restaurantLocation = externalService.getRestaurantLocation(vendorId);
 
@@ -133,14 +138,14 @@ public class IntegrationTests {
     }
 
     @Test
-    void testGetOrderDestination(){
+    void testGetOrderDestination() {
         String orderLocation = externalService.getOrderDestination(customerId_team14c, orderId);
 
         assertEquals("-74.006, 40.7128", orderLocation);
     }
 
     @Test
-    void testGetOrderDestinationNull(){
+    void testGetOrderDestinationNull() {
         UUID customerId = UUID.randomUUID();
         String orderLocation = externalService.getOrderDestination(customerId, orderId);
 
@@ -162,7 +167,7 @@ public class IntegrationTests {
     @Test
     void testAdminRequest() {
         // The admin is generated automatically by user's team each time!
-        UUID adminId = UUID.fromString("244742b6-161d-4975-a36f-aa5488c73b6a");
+        UUID adminId = UUID.fromString("bcf30f46-9d77-4965-ae21-8ca2b44ec3da");
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("X-User-Id", adminId.toString());
