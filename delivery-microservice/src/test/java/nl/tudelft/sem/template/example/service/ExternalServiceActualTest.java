@@ -36,7 +36,7 @@ public class ExternalServiceActualTest {
         headers.set("X-User-ID", "123");
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        requestEntity = new HttpEntity<>("{\"proof\":\"" + "123" + "\"}", headers);
+        requestEntity = new HttpEntity<>("123", headers);
     }
 
     @Test
