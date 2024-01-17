@@ -432,15 +432,15 @@ public class DeliveryController implements DeliveryApi {
 
     @lombok.Generated
     private static ResponseEntity<Double> sanityCheck(ResponseEntity<Double> r, UUID deliveryId) {
-//        if (r != null && r.getBody() != null) {
-////            if (r.getBody() < 0 || r.getBody() > 1) {
-////                System.out.println("\033[91;40m getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
-////                        + " \033[91;40m got response: \033[30;101m " + r.getBody() + " \033[0m");
-////            }
-//        } else {
-//            System.out.println("\033[91;40m ** getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
-//                    + " \033[91;40m was NULL ** \033[0m");
-//        }
+        // if (r != null && r.getBody() != null) {
+        // if (r.getBody() < 0 || r.getBody() > 1) {
+        // System.out.println("\033[91;40m getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
+        // + " \033[91;40m got response: \033[30;101m " + r.getBody() + " \033[0m");
+        // }
+        // } else {
+        // System.out.println("\033[91;40m ** getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
+        // + " \033[91;40m was NULL ** \033[0m");
+        // }
         return r;
     }
 }

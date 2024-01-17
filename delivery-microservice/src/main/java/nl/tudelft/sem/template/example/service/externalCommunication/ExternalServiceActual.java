@@ -127,7 +127,7 @@ public class ExternalServiceActual implements ExternalService {
      * @return Response status code.
      */
     public int performRequest(final String url, final String userId, final HttpMethod method) {
-//        System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
+        // System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-User-ID", userId);
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -141,14 +141,20 @@ public class ExternalServiceActual implements ExternalService {
                     requestEntity,
                     String.class
             );
-//            System.out.println("\033[96;40m authorized \033[0m");
+            // System.out.println("\033[96;40m authorized \033[0m");
             return response.getStatusCodeValue();
         } catch (RestClientException e) {
-//            System.out.println("\033[96;40m unauthorized \033[0m");
+            // System.out.println("\033[96;40m unauthorized \033[0m");
             return 401;
         }
     }
 
+    /**
+     * Extracts the location from the given JSON string.
+     * @param body JSON string to extract from.
+     * @return Location string.
+     * @throws JsonProcessingException if the JSON string is invalid.
+     */
     public String getLocationFromJson(String body) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(body);

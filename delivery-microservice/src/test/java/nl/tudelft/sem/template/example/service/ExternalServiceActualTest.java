@@ -192,7 +192,7 @@ public class ExternalServiceActualTest {
             String result = externalService.getLocationFromJson(json);
             assertEquals("34.092, 34.092", result);
         } catch (JsonProcessingException e) {
-            assert(false);
+            assert (false);
         }
     }
 
@@ -202,9 +202,9 @@ public class ExternalServiceActualTest {
                 + "  ";
         try {
             externalService.getLocationFromJson(json);
-            assert(false);
+            assert (false);
         } catch (JsonProcessingException e) {
-            assert(true);
+            assert (true);
         }
     }
 }

@@ -96,6 +96,8 @@ public class ControllerFullTest {
 
     @Mock
     private transient RestTemplate restTemplate;
+
+
     @BeforeEach
     void setUp() {
         // 1. no args
