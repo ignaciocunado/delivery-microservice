@@ -43,6 +43,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.OffsetDateTime;
@@ -197,7 +198,8 @@ public class ControllerFullTest {
         assertNotNull(rr);
 
         // now a new delivery appears!
-        Delivery delivery = new Delivery().deliveryID(delivery1).orderID(delivery1Order).customerID(customer1).restaurantID(restaurant1);
+        Delivery delivery = new Delivery().deliveryID(delivery1).orderID(delivery1Order).customerID(customer1)
+                .restaurantID(restaurant1).status("pending");
         dc.createDelivery("admin", delivery);
         assertTrue(deliveryRepository.findById(delivery1).isPresent());
         System.out.println(deliveryRepository.findAll());
@@ -206,17 +208,19 @@ public class ControllerFullTest {
         ResponseEntity<UUID> a = dc.assignOrderToCourier(courier2, delivery1, "vendor");
         assertEquals(delivery1, a.getBody());
         assertEquals(courier2, deliveryRepository.findById(delivery1).get().getCourierID());
-//        ResponseEntity<?> aa = dc.acceptDelivery(delivery1, "admin");
-//        System.out.println(aa);
-//        assertEquals(HttpStatus.OK, aa.getStatusCode());
-//        assertEquals("accepted", deliveryRepository.findById(delivery1).get().getStatus());
+        ResponseEntity<?> aa = dc.acceptDelivery(delivery1, "admin");
+        System.out.println(aa);
+        assertEquals(HttpStatus.OK, aa.getStatusCode());
+        assertEquals("accepted", deliveryRepository.findById(delivery1).get().getStatus());
 
         // guess how long till pick-up
         ResponseEntity<String> b = dc.setPickUpTime(delivery1, "courier", time1.toString());
         assertEquals(time1.toString(), b.getBody());
 
         // then the courier picks it up
-        dc.setDeliveryEstimate(delivery1, "courier", time1);
+        ResponseEntity<String> es = dc.setDeliveryEstimate(delivery1, "courier", time1);
+        assertEquals(HttpStatus.OK, es.getStatusCode());
+        assertEquals(time1.toString(), es.getBody());
         deliveryRepository.findById(delivery1);
         ResponseEntity<?> s = dc.editStatusDelivery(delivery1, "vendor", "given to courier");
         assertEquals(time1, deliveryRepository.findById(delivery1).get().getDeliveryTimeEstimate());
@@ -228,6 +232,7 @@ public class ControllerFullTest {
         ResponseEntity<Integer> ir = dc.setDeliveryDelay(delivery1, "vendor", 420);
         assertEquals(time2, dc.getDeliveryEstimate(delivery1, "vendor").getBody());
         assertEquals(420, ir.getBody());
+        assertEquals(420, dc.getDeliveryDelay(delivery1, "admin").getBody());
 
         assertEquals(List.of(restaurant1), rc.getVendorRest(vendor1, "admin").getBody());
 
@@ -244,6 +249,7 @@ public class ControllerFullTest {
 
     @Test
     public void ScenarioTwo() {
+        // here i kinda gave up on pretending there's a story
         UUID vendor1 = UUID.randomUUID();
         UUID vendor2 = UUID.randomUUID();
         UUID courier1 = UUID.randomUUID();
@@ -267,12 +273,16 @@ public class ControllerFullTest {
         Restaurant otherestaurant = new Restaurant(restaurant2, vendor2, List.of(courier2), maxDeliveryZone);
         rc.createRestaurant("admin", otherestaurant);
 
-        Delivery delivery = new Delivery().deliveryID(delivery1).orderID(delivery1Order).customerID(customer1).restaurantID(restaurant1);
+        Delivery delivery = new Delivery().deliveryID(delivery1).orderID(delivery1Order).customerID(customer1)
+                .restaurantID(restaurant1).status("pending");
         dc.createDelivery("vendor", delivery);
-        Delivery otherdelivery = new Delivery().deliveryID(delivery2).orderID(UUID.randomUUID()).customerID(customer2).restaurantID(restaurant2);
+        Delivery otherdelivery = new Delivery().deliveryID(delivery2).orderID(UUID.randomUUID()).customerID(customer2)
+                .restaurantID(restaurant2).status("pending");
         dc.createDelivery("vendor", otherdelivery);
-        Delivery thirdelivery = new Delivery().deliveryID(delivery3).orderID(UUID.randomUUID()).customerID(customer2).restaurantID(restaurant1);
-        dc.createDelivery("vendor", thirdelivery);
+        Delivery thirdelivery = new Delivery().deliveryID(delivery3).orderID(UUID.randomUUID()).customerID(customer2)
+                .restaurantID(restaurant1).status("pending").pickupTimeEstimate(time1).pickedUpTime(time1);
+        ResponseEntity<Delivery> dd = dc.createDelivery("vendor", thirdelivery);
+        assertEquals(thirdelivery, dd.getBody());
 
         when(externalService.getOrderDestination(customer1, delivery.getOrderID())).thenReturn(location1);
 
@@ -290,6 +300,60 @@ public class ControllerFullTest {
         ResponseEntity<?> g = dc.getCustomerByDeliveryId(delivery1, "admin");
         assertEquals(customer1, g.getBody());
 
+        ResponseEntity<?> rj = dc.rejectDelivery(delivery2, "vendor");
+        assertEquals(HttpStatus.OK, rj.getStatusCode());
+        assertEquals("rejected", deliveryRepository.findById(delivery2).get().getStatus());
+
+        dc.assignOrderToCourier(courier1, delivery1, "vendor");
+        dc.assignOrderToCourier(courier1, delivery2, "vendor");
+        ResponseEntity<List<UUID>> ll = dc.getAllDeliveriesCourier(courier1, "admin");
+        assertTrue(ll.getBody().contains(delivery1));
+        assertTrue(ll.getBody().contains(delivery2));
+        assertFalse(ll.getBody().contains(delivery3));
+
+        ResponseEntity<List<UUID>> lll = dc.getAllDeliveriesVendor(vendor1, "admin");
+        assertTrue(lll.getBody().contains(delivery1));
+        assertFalse(lll.getBody().contains(delivery2));
+        assertTrue(lll.getBody().contains(delivery3));
+        ResponseEntity<UUID> cri = dc.setRestIdOfDelivery(delivery2, "admin", restaurant1);
+        assertEquals(HttpStatus.OK, cri.getStatusCode());
+        assertEquals(restaurant1, deliveryRepository.findById(delivery2).get().getRestaurantID());
+
+        dc.editStatusDelivery(delivery1, "vendor", "given to courier");
+        OffsetDateTime actuallyPickedUpFromRestaurantByCourier = dc.getDeliveyById(delivery1, "admin")
+                .getBody().getPickedUpTime();
+        assertEquals(actuallyPickedUpFromRestaurantByCourier,
+                dc.getPickUpEstimateDeliveryId(delivery1, "admin").getBody());
+
+        assertEquals(maxDeliveryZone, rc.getMaxDeliveryZone(restaurant1, "admin").getBody());
+
+        ResponseEntity<String> lvl = dc.setLiveLocation(delivery1, "courier", location2);
+        assertEquals("200 OK", lvl.getBody());
+        ResponseEntity<String> gll = dc.getLiveLocation(delivery1, "admin");
+        assertEquals(location2, gll.getBody());
+    }
+
+    @Test
+    void WhenStatusIsSetToPickedUpByCourierTheTimestampForPickedUpChangesProperly() {
+        UUID res = UUID.randomUUID();
+        UUID ven = UUID.randomUUID();
+        UUID cou = UUID.randomUUID();
+        UUID del = UUID.randomUUID();
+
+        Restaurant restaurant = new Restaurant(res, ven, List.of(cou), 1.0);
+        rc.createRestaurant("admin", restaurant);
+        Delivery delivery = new Delivery().deliveryID(del).orderID(UUID.randomUUID()).customerID(UUID.randomUUID())
+                .restaurantID(res).status("pending");
+        dc.createDelivery("vendor", delivery);
+
+        assertNull(dc.getDeliveyById(del, "admin").getBody().getPickedUpTime());
+        dc.editStatusDelivery(del, "vendor", "accepted");
+        assertNull(dc.getDeliveyById(del, "admin").getBody().getPickedUpTime());
+
+        dc.editStatusDelivery(del, "vendor", "given to courier");
+        assertNotNull(dc.getDeliveyById(del, "admin").getBody().getPickedUpTime());
+        OffsetDateTime actualPickUpTime = dc.getDeliveyById(del, "admin").getBody().getPickedUpTime();
+        assertEquals(actualPickUpTime, dc.getPickUpEstimateDeliveryId(del, "admin").getBody());
     }
 
     @AfterAll

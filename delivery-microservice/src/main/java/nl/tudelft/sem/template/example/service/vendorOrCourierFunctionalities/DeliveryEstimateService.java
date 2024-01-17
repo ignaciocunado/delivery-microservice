@@ -40,7 +40,7 @@ public class DeliveryEstimateService {
         int delay = 0;
         if (delivery.get().getDelay() != null) {
             delay = delivery.get().getDelay();
-            System.out.println("\033[96;40m delay: " + delay + " \033[0m");
+//            System.out.println("\033[96;40m delay: " + delay + " \033[0m");
         }
         r = r.plusSeconds(delay);
         return new ResponseEntity<>(r, HttpStatus.OK);

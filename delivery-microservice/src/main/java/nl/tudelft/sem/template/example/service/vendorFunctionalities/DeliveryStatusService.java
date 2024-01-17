@@ -17,7 +17,6 @@ import java.util.UUID;
 @Service
 public class DeliveryStatusService {
 
-    @Getter
     private final transient RestaurantRepository restaurantRepository;
     private final transient DeliveryRepository deliveryRepository;
     private final transient UuidGenerationService uuidGenerationService;
@@ -48,7 +47,7 @@ public class DeliveryStatusService {
         }
 
         Delivery delivery = fetched.get();
-        if(!delivery.getStatus().equalsIgnoreCase("pending")) {
+        if(delivery.getStatus() != null && !delivery.getStatus().equalsIgnoreCase("pending")) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -69,7 +68,7 @@ public class DeliveryStatusService {
         }
 
         Delivery delivery = fetched.get();
-        if(!delivery.getStatus().equalsIgnoreCase("pending")
+        if(delivery.getStatus() != null && !delivery.getStatus().equalsIgnoreCase("pending")
             && !delivery.getStatus().equalsIgnoreCase("accepted")) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

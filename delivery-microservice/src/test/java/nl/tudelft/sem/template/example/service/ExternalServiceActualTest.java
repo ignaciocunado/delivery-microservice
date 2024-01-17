@@ -166,6 +166,14 @@ public class ExternalServiceActualTest {
     }
 
     @Test
+    void testThatPerformRequestReturnsTheCorrectErrorCode401() {
+        Mockito.when(restTemplate.exchange("b/vendors/123/proof", HttpMethod.POST, requestEntity, String.class))
+                .thenThrow(new RestClientException(""));
+        int r = externalService.performRequest("b/vendors/123/proof", "123", HttpMethod.POST);
+        assertEquals(401, r);
+    }
+
+    @Test
     void testVerifyWithGetter() {
         Mockito.when(restTemplate.exchange("b/admins/123", HttpMethod.GET, requestEntity, String.class))
                 .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));

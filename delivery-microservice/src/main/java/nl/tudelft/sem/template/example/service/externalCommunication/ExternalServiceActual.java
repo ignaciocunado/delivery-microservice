@@ -126,8 +126,8 @@ public class ExternalServiceActual implements ExternalService {
      * @param userId User ID to query.
      * @return Response status code.
      */
-    private int performRequest(final String url, final String userId, final HttpMethod method) {
-        System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
+    public int performRequest(final String url, final String userId, final HttpMethod method) {
+//        System.out.println("\033[96;40m calling users microservice: \033[30;106m " + url + " \033[0m");
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-User-ID", userId);
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -141,10 +141,10 @@ public class ExternalServiceActual implements ExternalService {
                     requestEntity,
                     String.class
             );
-            System.out.println("\033[96;40m authorized \033[0m");
+//            System.out.println("\033[96;40m authorized \033[0m");
             return response.getStatusCodeValue();
         } catch (RestClientException e) {
-            System.out.println("\033[96;40m unauthorized \033[0m");
+//            System.out.println("\033[96;40m unauthorized \033[0m");
             return 401;
         }
     }

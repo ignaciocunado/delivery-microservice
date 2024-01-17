@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @Service
 public class RestaurantGetterService {
 
-    @Getter
     private final transient RestaurantRepository restaurantRepository;
     private final transient DeliveryRepository deliveryRepository;
     private final transient UuidGenerationService uuidGenerationService;
