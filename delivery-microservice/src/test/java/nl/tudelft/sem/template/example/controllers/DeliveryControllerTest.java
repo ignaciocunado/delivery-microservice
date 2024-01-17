@@ -104,13 +104,15 @@ class DeliveryControllerTest {
     void getPickUpLocation() {
         Mockito.when(courierService.checkAndHandle(Mockito.any(), functionArgumentCaptor.capture()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        DeliveryLocationCourierService deliveryLocationCourierService = Mockito.mock(DeliveryLocationCourierService.class);
         Mockito.when(courierService.getDeliveryLocationCourierService())
-                .thenReturn(Mockito.mock(DeliveryLocationCourierService.class));
+                .thenReturn(deliveryLocationCourierService);
         ResponseEntity<?> r = deliveryController.getPickUpLocation(deliveryId, role);
         Mockito.verify(courierService).checkAndHandle(Mockito.any(), functionArgumentCaptor.capture());
 
         functionArgumentCaptor.getValue().get();
         Mockito.verify(courierService).getDeliveryLocationCourierService();
+        Mockito.verify(deliveryLocationCourierService).getPickUpLocation(deliveryId);
 
         assertNotNull(r);
     }

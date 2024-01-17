@@ -81,6 +81,12 @@ public class TestDeliveryRepository implements DeliveryRepository {
 
     @Override
     public <S extends Delivery> S save(S entity) {
+        for (Delivery d : list) {
+            if (d.getDeliveryID().equals(entity.getDeliveryID())) {
+                list.remove(d);
+                break;
+            }
+        }
         list.add(entity);
         return entity;
     }

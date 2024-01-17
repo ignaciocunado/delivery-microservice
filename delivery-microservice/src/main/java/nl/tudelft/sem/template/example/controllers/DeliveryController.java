@@ -25,8 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class DeliveryController implements DeliveryApi {
 
-    @Setter
-    private transient CourierService courierService;
+    private final transient CourierService courierService;
     private final transient VendorService vendorService;
     private final transient GlobalService globalService;
     private final transient VendorOrCourierService vendorOrCourierService;
@@ -242,7 +241,7 @@ public class DeliveryController implements DeliveryApi {
      * Integrates controller with API for set delivery delay endpoint.
      * @param deliveryID ID of delivery to update. (required)
      * @param role The role of the user (required)
-     * @param body  (required)
+     * @param body integer representing seconds (required)
      * @return the new delay
      */
     @Override

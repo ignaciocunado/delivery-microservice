@@ -149,7 +149,7 @@ public class ExternalServiceActual implements ExternalService {
         }
     }
 
-    private String getLocationFromJson(String body) throws JsonProcessingException {
+    public String getLocationFromJson(String body) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(body);
 

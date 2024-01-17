@@ -15,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.net.URI;
+import java.net.http.HttpRequest;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -170,5 +172,11 @@ class AssociationServiceTest {
         when(d.getCourierID()).thenReturn(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
 
         assertTrue(associationService.authorize(request));
+    }
+
+    @Test
+    void testAuthoriseNull() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        assertFalse(associationService.authorize(request));
     }
 }

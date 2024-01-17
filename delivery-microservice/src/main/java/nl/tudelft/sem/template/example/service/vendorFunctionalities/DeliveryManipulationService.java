@@ -50,19 +50,14 @@ public class DeliveryManipulationService {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        // Generate a new ID for the delivery
-        final Optional<UUID> newDeliveryId = uuidGenerationService.generateUniqueId(deliveryRepository);
-        if (newDeliveryId.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         // If the given restaurant does not exist, fail.
         if (delivery.getRestaurantID() == null || !restaurantRepository.existsById(delivery.getRestaurantID())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        // Once we have the new ID - save delivery to the DB.
-        delivery.setDeliveryID(newDeliveryId.get());
+        if (delivery.getDeliveryID() == null || deliveryRepository.existsById(delivery.getDeliveryID())) {
+            delivery.setDeliveryID(UUID.randomUUID());
+        }
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
         final Optional<Delivery> databaseDelivery = deliveryRepository.findById(savedDelivery.getDeliveryID());

@@ -8,18 +8,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import javax.swing.text.html.Option;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TestRestaurantRepository implements RestaurantRepository {
-    List<Restaurant> list = new ArrayList<>();
+    Set<Restaurant> list = new HashSet<>();
 
     @Override
     public List<Restaurant> findAll() {
-        return list;
+        return new ArrayList<>(list);
     }
 
     @Override
@@ -79,12 +76,17 @@ public class TestRestaurantRepository implements RestaurantRepository {
 
     @Override
     public void deleteAll() {
-        list = new ArrayList<>();
-
+        list = new HashSet<>();
     }
 
     @Override
     public <S extends Restaurant> S save(S entity) {
+        if (entity.getRestaurantID() == null) {
+            entity.setRestaurantID(UUID.randomUUID());
+        }
+        if (existsById(entity.getRestaurantID())) {
+            list.removeIf(x -> x.getRestaurantID().equals(entity.getRestaurantID()));
+        }
         list.add(entity);
         return entity;
     }
@@ -96,12 +98,12 @@ public class TestRestaurantRepository implements RestaurantRepository {
 
     @Override
     public Optional<Restaurant> findById(UUID s) {
-        List<Restaurant> matching = list.stream().filter(x -> s.equals(x.getRestaurantID())).collect(Collectors.toList());
-        if(!matching.isEmpty()) {
-            return Optional.of(matching.get(0));
-        } else {
-            return Optional.empty();
+        for (Restaurant restaurant : list) {
+            if (restaurant.getRestaurantID().equals(s)) {
+                return Optional.of(restaurant);
+            }
         }
+        return Optional.empty();
     }
 
     @Override

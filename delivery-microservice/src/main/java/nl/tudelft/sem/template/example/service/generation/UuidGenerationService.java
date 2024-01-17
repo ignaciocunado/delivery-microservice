@@ -21,23 +21,7 @@ public class UuidGenerationService implements IdGenerationService<UUID> {
      */
     @Override
     public Optional<UUID> generateUniqueId(List<UUID> existingIds) {
-        // Since list lookups are (assumed to be) cheap, the generation iteration limit is high.
-        final int maxNewIdGenerationAttempts = 500;
-        int newIdGenerationAttempts = 0;
-        UUID newId;
-
-        // Generate a unique ID, or fail after max iteration count
-        do {
-            newId = UUID.randomUUID();
-            newIdGenerationAttempts += 1;
-        } while (existingIds.contains(newId) && newIdGenerationAttempts < maxNewIdGenerationAttempts);
-
-        // Check result - did we succeed?
-        if (!existingIds.contains(newId)) {
-            return Optional.of(newId);
-        } else {
-            return Optional.empty();
-        }
+        return Optional.of(UUID.randomUUID());
     }
 
     /**
@@ -48,24 +32,6 @@ public class UuidGenerationService implements IdGenerationService<UUID> {
      */
     @Override
     public <C> Optional<UUID> generateUniqueId(JpaRepository<C, UUID> repository) {
-        // Since database lookups could be expensive, the generation iteration limit is low.
-        // Unfortunately, as models do not share a base class, we cannot simply fetch all
-        // entities and map them to their ID - as their type constraints are unbounded.
-        final int maxNewIdGenerationAttempts = 10;
-        int newIdGenerationAttempts = 0;
-        UUID newId;
-
-        // Generate a unique ID, or fail after max iteration count
-        do {
-            newId = UUID.randomUUID();
-            newIdGenerationAttempts += 1;
-        } while (repository.findById(newId).isPresent() && newIdGenerationAttempts < maxNewIdGenerationAttempts);
-
-        // Check result - did we succeed?
-        if (!repository.findById(newId).isPresent()) {
-            return Optional.of(newId);
-        } else {
-            return Optional.empty();
-        }
+        return Optional.of(UUID.randomUUID());
     }
 }
