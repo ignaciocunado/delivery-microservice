@@ -7,7 +7,7 @@ import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import nl.tudelft.sem.template.example.service.filters.AuthorizationService;
+import nl.tudelft.sem.template.example.service.filters.RoleHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,14 +16,14 @@ import org.springframework.mock.web.MockHttpServletResponse;
 class AuthorizationFilterTest {
 
     private transient AuthorizationFilter authorizationFilter;
-    private transient AuthorizationService authorizationService;
+    private transient RoleHandler roleHandler;
     private transient HttpServletRequest request;
     private transient FilterChain filterChain;
 
     @BeforeEach
     void setUp() {
-        authorizationService = Mockito.mock(AuthorizationService.class);
-        authorizationFilter = new AuthorizationFilter(authorizationService);
+        roleHandler = Mockito.mock(RoleHandler.class);
+        authorizationFilter = new AuthorizationFilter(roleHandler);
         request = Mockito.mock(HttpServletRequest.class);
         filterChain = Mockito.mock(FilterChain.class);
     }
@@ -32,7 +32,7 @@ class AuthorizationFilterTest {
     public void testDoFilter_AuthorizationSuccess() throws IOException, ServletException {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        when(authorizationService.authorize(Mockito.any())).thenReturn(true);
+        when(roleHandler.handle(Mockito.any())).thenReturn(true);
 
         authorizationFilter.doFilter(request, response, filterChain);
 
@@ -44,7 +44,7 @@ class AuthorizationFilterTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        when(authorizationService.authorize(request)).thenReturn(false);
+        when(roleHandler.handle(request)).thenReturn(false);
 
         authorizationFilter.doFilter(request, response, filterChain);
 

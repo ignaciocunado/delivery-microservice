@@ -2,11 +2,14 @@ package nl.tudelft.sem.template.example.service.filters;
 
 import javax.servlet.http.HttpServletRequest;
 
-public interface ChainHandler {
+public interface Handler {
+
     /**
      * Defines a handler in the chain of responsibilities design pattern.
      * @param request the request to authorize
      * @return true if the request is authorized, false otherwise
      */
-    boolean authorize(HttpServletRequest request);
+    boolean handle(HttpServletRequest request);
+
+    boolean setNext(Handler next);
 }

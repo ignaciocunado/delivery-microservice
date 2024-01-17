@@ -8,7 +8,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import nl.tudelft.sem.template.example.service.filters.AssociationService;
+import nl.tudelft.sem.template.example.service.filters.AssociationHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,14 +17,14 @@ import org.springframework.mock.web.MockHttpServletResponse;
 class AssociationFilterTest {
 
     private transient AssociationFilter associationFilter;
-    private transient AssociationService associationService;
+    private transient AssociationHandler associationHandler;
     private transient HttpServletRequest request;
     private transient FilterChain filterChain;
 
     @BeforeEach
     void setUp() {
-        associationService = Mockito.mock(AssociationService.class);
-        associationFilter = new AssociationFilter(associationService);
+        associationHandler = Mockito.mock(AssociationHandler.class);
+        associationFilter = new AssociationFilter(associationHandler);
         request = Mockito.mock(HttpServletRequest.class);
         filterChain = Mockito.mock(FilterChain.class);
     }
@@ -33,7 +33,7 @@ class AssociationFilterTest {
     public void testDoFilter_AuthorizationSuccess() throws IOException, ServletException {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        when(associationService.authorize(Mockito.any())).thenReturn(true);
+        when(associationHandler.handle(Mockito.any())).thenReturn(true);
 
         associationFilter.doFilter(request, response, filterChain);
 
@@ -45,7 +45,7 @@ class AssociationFilterTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        when(associationService.authorize(request)).thenReturn(false);
+        when(associationHandler.handle(request)).thenReturn(false);
 
         associationFilter.doFilter(request, response, filterChain);
 

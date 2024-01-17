@@ -48,7 +48,7 @@ public class GlobalService {
     public <T> ResponseEntity<T> checkAndHandle(String role, Supplier<ResponseEntity<T>> operation) {
         // here we do not have a check for the role,
         // as the correctness of role has already been checked in
-        // the AssociationService class
+        // the AssociationHandler class
         return operation.get();
     }
 }
