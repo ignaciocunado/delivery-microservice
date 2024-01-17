@@ -162,20 +162,16 @@ public class ControllerFullTest {
     @Test
     public void ScenarioOne() {
         // constants
-        UUID vendor1 = UUID.randomUUID();
-        UUID vendor2 = UUID.randomUUID();
-        UUID courier1 = UUID.randomUUID();
-        UUID courier2 = UUID.randomUUID();
-        UUID restaurant1 = UUID.randomUUID();
-        UUID restaurant2 = UUID.randomUUID();
-        UUID delivery1 = UUID.randomUUID();
-        UUID delivery1Order = UUID.randomUUID();
-        UUID delivery2 = UUID.randomUUID();
-        UUID delivery3 = UUID.randomUUID();
-        UUID customer1 = UUID.randomUUID();
-        Double maxDeliveryZone = 10.0;
-        OffsetDateTime time1 = OffsetDateTime.now();
-        OffsetDateTime time2 = time1.plusSeconds(420);
+        final UUID vendor1 = UUID.randomUUID();
+        final UUID courier1 = UUID.randomUUID();
+        final UUID courier2 = UUID.randomUUID();
+        final UUID restaurant1 = UUID.randomUUID();
+        final UUID delivery1 = UUID.randomUUID();
+        final UUID delivery1Order = UUID.randomUUID();
+        final UUID customer1 = UUID.randomUUID();
+        final Double maxDeliveryZone = 10.0;
+        final OffsetDateTime time1 = OffsetDateTime.now();
+        final OffsetDateTime time2 = time1.plusSeconds(420);
 
         Restaurant restaurant = new Restaurant(restaurant1, vendor1, List.of(courier1), maxDeliveryZone);
         ResponseEntity<Restaurant> r = rc.createRestaurant("admin", restaurant);
@@ -185,7 +181,7 @@ public class ControllerFullTest {
         try {
             js = o.writeValueAsString(restaurant);
         } catch (Exception e) {
-            assert(false);
+            assert (false);
         }
         assertEquals(js, rc.getRest(restaurant1, "admin").getBody());
 
@@ -252,23 +248,23 @@ public class ControllerFullTest {
     @Test
     public void ScenarioTwo() {
         // here i kinda gave up on pretending there's a story
-        UUID vendor1 = UUID.randomUUID();
-        UUID vendor2 = UUID.randomUUID();
-        UUID courier1 = UUID.randomUUID();
-        UUID courier2 = UUID.randomUUID();
-        UUID restaurant1 = UUID.randomUUID();
-        UUID restaurant2 = UUID.randomUUID();
-        UUID delivery1 = UUID.randomUUID();
-        UUID delivery1Order = UUID.randomUUID();
-        UUID delivery2 = UUID.randomUUID();
-        UUID delivery3 = UUID.randomUUID();
-        UUID customer1 = UUID.randomUUID();
-        UUID customer2 = UUID.randomUUID();
-        Double maxDeliveryZone = 10.0;
-        OffsetDateTime time1 = OffsetDateTime.now();
-        OffsetDateTime time2 = time1.plusSeconds(42);
-        String location1 = "123.456";
-        String location2 = "987.426";
+        final UUID vendor1 = UUID.randomUUID();
+        final UUID vendor2 = UUID.randomUUID();
+        final UUID courier1 = UUID.randomUUID();
+        final UUID courier2 = UUID.randomUUID();
+        final UUID restaurant1 = UUID.randomUUID();
+        final UUID restaurant2 = UUID.randomUUID();
+        final UUID delivery1 = UUID.randomUUID();
+        final UUID delivery1Order = UUID.randomUUID();
+        final UUID delivery2 = UUID.randomUUID();
+        final UUID delivery3 = UUID.randomUUID();
+        final UUID customer1 = UUID.randomUUID();
+        final UUID customer2 = UUID.randomUUID();
+        final Double maxDeliveryZone = 10.0;
+        final OffsetDateTime time1 = OffsetDateTime.now();
+        final OffsetDateTime time2 = time1.plusSeconds(42);
+        final String location1 = "123.456";
+        final String location2 = "987.426";
 
         Restaurant restaurant = new Restaurant(restaurant1, vendor1, List.of(courier1), maxDeliveryZone);
         rc.createRestaurant("admin", restaurant);
@@ -289,11 +285,11 @@ public class ControllerFullTest {
         when(externalService.getOrderDestination(customer1, delivery.getOrderID())).thenReturn(location1);
 
         ResponseEntity<String> d = dc.getLocationOfDelivery(delivery1, "admin");
-        assertEquals("location: "+location1, d.getBody());
+        assertEquals("location: " + location1, d.getBody());
 
         when(externalService.getRestaurantLocation(vendor1)).thenReturn(location1);
         d = dc.getPickUpLocation(delivery1, "admin");
-        assertEquals("location: "+location1, d.getBody());
+        assertEquals("location: " + location1, d.getBody());
 
         ResponseEntity<?> l = dc.setLiveLocation(delivery1, "courier", location2);
         assertEquals("200 OK", l.getBody());

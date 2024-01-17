@@ -90,10 +90,10 @@ class DeliveryControllerTest {
 
         globalService = Mockito.mock(GlobalService.class);
 
-//        vendorOrCourierService = new VendorOrCourierService(Mockito.mock(DeliveryEstimateService.class),
-//                Mockito.mock(DeliveryEventService.class),
-//                Mockito.mock(PickUpEstimateVendorCourierService.class),
-//                Mockito.mock(OrderToCourierService.class));
+        // vendorOrCourierService = new VendorOrCourierService(Mockito.mock(DeliveryEstimateService.class),
+        //        Mockito.mock(DeliveryEventService.class),
+        //        Mockito.mock(PickUpEstimateVendorCourierService.class),
+        //        Mockito.mock(OrderToCourierService.class));
         vendorOrCourierService = Mockito.mock(VendorOrCourierService.class);
         customerService = Mockito.mock(CustomerService.class);
         deliveryController = new DeliveryController(courierService, vendorService,

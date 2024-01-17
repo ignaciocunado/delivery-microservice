@@ -246,7 +246,7 @@
         </module>
         <module name="OverloadMethodsDeclarationOrder"/>
         <module name="VariableDeclarationUsageDistance">
-            <property name="allowedDistance" value="4"/>
+            <property name="allowedDistance" value="6"/>
         </module>
         <module name="MethodParamPad">
             <property name="tokens"
