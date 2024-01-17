@@ -12,12 +12,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private transient AuthorizationFilterConfiguration authorizationFilterConfiguration;
-    private transient AssociationFilterConfiguration associationFilterConfiguration;
 
-    public SecurityConfig(AuthorizationFilterConfiguration authorizationFilterConfiguration,
-                          AssociationFilterConfiguration associationFilterConfiguration) {
+    public SecurityConfig(AuthorizationFilterConfiguration authorizationFilterConfiguration) {
         this.authorizationFilterConfiguration = authorizationFilterConfiguration;
-        this.associationFilterConfiguration = associationFilterConfiguration;
     }
 
     @Override
@@ -35,8 +32,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(authorizationFilterConfiguration.authorizationFilter().getFilter(),
-                        UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(associationFilterConfiguration.associationFilter().getFilter(),
                         UsernamePasswordAuthenticationFilter.class);
     }
 }

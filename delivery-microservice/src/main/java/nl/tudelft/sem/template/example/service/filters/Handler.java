@@ -11,5 +11,5 @@ public interface Handler {
      */
     boolean handle(HttpServletRequest request);
 
-    boolean setNext(Handler next);
+    void setNext(Handler next);
 }

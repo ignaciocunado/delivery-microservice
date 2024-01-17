@@ -18,7 +18,7 @@ public abstract class BaseHandler implements Handler {
      * @param request the request to handle
      * @return true if the request is authorized, false otherwise
      */
-    public abstract boolean handle(String request);
+    public abstract boolean handle(HttpServletRequest request);
 
     /**
      * Passes the request to the next handler in the chain.
