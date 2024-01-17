@@ -132,7 +132,7 @@ public class ExternalServiceActual implements ExternalService {
         headers.set("X-User-ID", userId);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>("{\"proof\":\"" + userId + "\"}", headers);
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(

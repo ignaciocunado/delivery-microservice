@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -28,10 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("integration")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AuthorizationIntegrationTest {
-
-    @LocalServerPort
-    private transient int port;
-
     private WireMockServer wireMockServer;
 
     private UUID userId;
@@ -46,7 +41,7 @@ public class AuthorizationIntegrationTest {
      */
     @BeforeEach
     public void setup() {
-        int port = 8081;
+        int port = 8088;
         wireMockServer = new WireMockServer(port);
         wireMockServer.start();
         configureFor("localhost", wireMockServer.port());

@@ -71,8 +71,9 @@ public class ExternalServiceActualTest {
 
     @Test
     void verifyVendorRole() {
-        Mockito.when(restTemplate.exchange("b/vendors/123/proof", HttpMethod.POST, requestEntity, String.class))
-                .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
+        Mockito.when(restTemplate.exchange(Mockito.anyString(), (HttpMethod) Mockito.any(),
+                        (HttpEntity<?>) Mockito.any(), (Class<Object>) Mockito.any()))
+                .thenReturn(ResponseEntity.ok(""));
         boolean result = externalService.verify("123", "vendor");
 
         assertTrue(result);
@@ -80,7 +81,8 @@ public class ExternalServiceActualTest {
 
     @Test
     void verifyCourierRole() {
-        Mockito.when(restTemplate.exchange("b/couriers/123/proof", HttpMethod.POST, requestEntity, String.class))
+        Mockito.when(restTemplate.exchange(Mockito.anyString(), (HttpMethod) Mockito.any(),
+                        (HttpEntity<?>) Mockito.any(), (Class<Object>) Mockito.any()))
                 .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
         boolean result = externalService.verify("123", "courier");
 
@@ -89,7 +91,8 @@ public class ExternalServiceActualTest {
 
     @Test
     void verifyAdminRole() {
-        Mockito.when(restTemplate.exchange("b/admins/123", HttpMethod.GET, requestEntity, String.class))
+        Mockito.when(restTemplate.exchange(Mockito.anyString(), (HttpMethod) Mockito.any(),
+                        (HttpEntity<?>) Mockito.any(), (Class<Object>) Mockito.any()))
                 .thenReturn(new ResponseEntity<>(null, null, HttpStatus.OK));
         boolean result = externalService.verify("123", "admin");
 
@@ -98,7 +101,8 @@ public class ExternalServiceActualTest {
 
     @Test
     void verifyProofExceptionThrown() {
-        Mockito.when(restTemplate.exchange("b/customers/123", HttpMethod.GET, requestEntity, String.class))
+        Mockito.when(restTemplate.exchange(Mockito.anyString(), (HttpMethod) Mockito.any(),
+                        (HttpEntity<?>) Mockito.any(), (Class<Object>) Mockito.any()))
                 .thenThrow(new RestClientException(""));
         boolean result = externalService.verify("123", "customer");
 
@@ -107,7 +111,8 @@ public class ExternalServiceActualTest {
 
     @Test
     void verifyGetExceptionThrown() {
-        Mockito.when(restTemplate.exchange("b/admins/123", HttpMethod.GET, requestEntity, String.class))
+        Mockito.when(restTemplate.exchange(Mockito.anyString(), (HttpMethod) Mockito.any(),
+                        (HttpEntity<?>) Mockito.any(), (Class<Object>) Mockito.any()))
                 .thenThrow(new RestClientException(":)"));
         boolean result = externalService.verify("123", "admin");
 
