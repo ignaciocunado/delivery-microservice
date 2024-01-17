@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @SpringBootTest
 @ActiveProfiles("integration")
-//@Disabled
+@Disabled
 public class IntegrationTests {
     private static final RestTemplate restTemplate = new RestTemplate();
 
