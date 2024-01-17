@@ -20,6 +20,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * To run the integration tests, 2 other microservices should be started and
+ * the adminId should be changed in testAdminRequest() method,
+ * as it is automatically generated.
+ */
 @SpringBootTest
 @ActiveProfiles("integration")
 @Disabled
@@ -143,8 +149,6 @@ public class IntegrationTests {
 
     @Test
     void testCourierRequest() {
-        // 8aad7a16-cc11-4850-b5e9-6a894bbfa48b
-
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("X-User-Id", courierId.toString());
         request.setRequestURI("/anywhere");
@@ -158,7 +162,7 @@ public class IntegrationTests {
     @Test
     void testAdminRequest() {
         // The admin is generated automatically by user's team each time!
-        UUID adminId = UUID.fromString("b38700b9-57a1-40be-ae21-51c4c4628348");
+        UUID adminId = UUID.fromString("244742b6-161d-4975-a36f-aa5488c73b6a");
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("X-User-Id", adminId.toString());
@@ -172,7 +176,6 @@ public class IntegrationTests {
 
     @Test
     void testCustomerRequest() {
-//        b40293f2-aec7-470f-92c7-34b9f6b15ebe
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("X-User-Id", customerId.toString());
         request.setRequestURI("/anywhere");
@@ -185,7 +188,6 @@ public class IntegrationTests {
 
     @Test
     void testVendorRequest() {
-//        e886a65c-b096-4412-8754-929d54bfea89
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("X-User-Id", vendorId.toString());
         request.setRequestURI("/anywhere");
