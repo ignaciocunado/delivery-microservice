@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthorizationService implements ChainHandler {
+public class RoleHandler extends BaseHandler {
 
     private final transient ExternalService externalService;
 
@@ -16,7 +16,7 @@ public class AuthorizationService implements ChainHandler {
      * @param externalService external microservice
      */
     @Autowired
-    public AuthorizationService(ExternalService externalService) {
+    public RoleHandler(ExternalService externalService) {
         this.externalService = externalService;
     }
 
@@ -27,7 +27,7 @@ public class AuthorizationService implements ChainHandler {
      * @param request gotten request
      * @return if the user is authorized
      */
-    public boolean authorize(HttpServletRequest request) {
+    public boolean handle(HttpServletRequest request) {
         //System.out.println("\033[96;40m new http request authorize(): \033[30;106m " + request + " \033[0m");
         if (request == null) {
             return false;
