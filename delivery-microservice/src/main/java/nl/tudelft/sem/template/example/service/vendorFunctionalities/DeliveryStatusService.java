@@ -4,12 +4,13 @@ import lombok.Getter;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.generation.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,9 +18,9 @@ import java.util.UUID;
 public class DeliveryStatusService {
 
     @Getter
-    RestaurantRepository restaurantRepository;
-    DeliveryRepository deliveryRepository;
-    UUIDGenerationService uuidGenerationService;
+    private final transient RestaurantRepository restaurantRepository;
+    private final transient DeliveryRepository deliveryRepository;
+    private final transient UuidGenerationService uuidGenerationService;
 
     /**
      * Constructor for DeliveryStatusService.
@@ -29,7 +30,7 @@ public class DeliveryStatusService {
      */
     @Autowired
     public DeliveryStatusService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
-                            UUIDGenerationService uuidGenerationService) {
+                            UuidGenerationService uuidGenerationService) {
         this.restaurantRepository = restaurantRepository;
         this.deliveryRepository = deliveryRepository;
         this.uuidGenerationService = uuidGenerationService;
@@ -68,7 +69,8 @@ public class DeliveryStatusService {
         }
 
         Delivery delivery = fetched.get();
-        if(!delivery.getStatus().equalsIgnoreCase("pending")) {
+        if(!delivery.getStatus().equalsIgnoreCase("pending")
+            && !delivery.getStatus().equalsIgnoreCase("accepted")) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -87,10 +89,17 @@ public class DeliveryStatusService {
         if (d.isPresent()) {
             Delivery delivery = d.get();
             status = status.replace("\"", "");
-            if (!status.equals("preparing") && !status.equals("given to courier") &&
-                    !delivery.getStatus().equals("accepted") && !delivery.getStatus().equals("preparing")) {
+
+            if (!status.equals("preparing") && !status.equals("given to courier")
+                && !delivery.getStatus().equals("accepted") && !delivery.getStatus().equals("preparing")) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
+
+            // If the new status is "given to courier", set the picked-up time field to now
+            if (status.equals("given to courier")) {
+                delivery.setPickedUpTime(OffsetDateTime.now());
+            }
+
             delivery.setStatus(status);
             deliveryRepository.save(delivery);
 

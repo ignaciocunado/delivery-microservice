@@ -33,12 +33,32 @@ public class TestRestaurantRepository implements RestaurantRepository {
     }
 
     @Override
+    public <S extends Restaurant> List<S> findAll(Example<S> example) {
+        return (List<S>) list;
+    }
+
+    @Override
+    public <S extends Restaurant> List<S> findAll(Example<S> example, Sort sort) {
+        return null;
+    }
+
+    @Override
+    public <S extends Restaurant> Page<S> findAll(Example<S> example, Pageable pageable) {
+        return null;
+    }
+
+    @Override
     public List<Restaurant> findAllById(Iterable<UUID> ids) {
         return null;
     }
 
     @Override
     public long count() {
+        return 0;
+    }
+
+    @Override
+    public <S extends Restaurant> long count(Example<S> example) {
         return 0;
     }
 
@@ -117,26 +137,6 @@ public class TestRestaurantRepository implements RestaurantRepository {
     @Override
     public <S extends Restaurant> Optional<S> findOne(Example<S> example) {
         return Optional.empty();
-    }
-
-    @Override
-    public <S extends Restaurant> List<S> findAll(Example<S> example) {
-        return (List<S>) list;
-    }
-
-    @Override
-    public <S extends Restaurant> List<S> findAll(Example<S> example, Sort sort) {
-        return null;
-    }
-
-    @Override
-    public <S extends Restaurant> Page<S> findAll(Example<S> example, Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public <S extends Restaurant> long count(Example<S> example) {
-        return 0;
     }
 
     @Override

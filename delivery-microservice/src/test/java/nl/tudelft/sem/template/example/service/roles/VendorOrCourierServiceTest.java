@@ -2,7 +2,7 @@ package nl.tudelft.sem.template.example.service.roles;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.service.generation.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import nl.tudelft.sem.template.example.service.vendorOrCourierFunctionalities.DeliveryEstimateService;
 import nl.tudelft.sem.template.example.service.vendorOrCourierFunctionalities.DeliveryEventService;
 import nl.tudelft.sem.template.example.service.vendorOrCourierFunctionalities.OrderToCourierService;
@@ -29,7 +29,7 @@ class VendorOrCourierServiceTest {
 
     private transient TestRestaurantRepository restaurantRepository;
 
-    private transient UUIDGenerationService uuidGenerationService;
+    private transient UuidGenerationService uuidGenerationService;
 
     private transient VendorOrCourierService vendorOrCourierService;
     private transient TestDeliveryRepository deliveryRepository;
@@ -270,7 +270,7 @@ class VendorOrCourierServiceTest {
 
     @Test
     void testSetInvalidDeliveryEstimate() {
-        ResponseEntity<String> res = deliveryEstimateService.setDeliveryEstimate(deliveryId,null);
+        ResponseEntity<String> res = deliveryEstimateService.setDeliveryEstimate(deliveryId, null);
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
     }
 

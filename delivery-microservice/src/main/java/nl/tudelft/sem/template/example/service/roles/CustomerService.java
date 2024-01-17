@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class CustomerService implements RoleService {
 
-    DeliveryRepository deliveryRepository;
+    private final transient DeliveryRepository deliveryRepository;
 
     /**
      * Constructor for the customer controller.

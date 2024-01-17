@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthorizationService implements ChainHandler {
 
-    ExternalService externalService;
+    private final transient ExternalService externalService;
 
     /**
      * Constructor for the external microservice.

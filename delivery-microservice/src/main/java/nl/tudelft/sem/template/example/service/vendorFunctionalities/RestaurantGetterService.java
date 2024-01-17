@@ -5,7 +5,7 @@ import lombok.Getter;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.generation.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 public class RestaurantGetterService {
 
     @Getter
-    RestaurantRepository restaurantRepository;
-    DeliveryRepository deliveryRepository;
-    UUIDGenerationService uuidGenerationService;
+    private final transient RestaurantRepository restaurantRepository;
+    private final transient DeliveryRepository deliveryRepository;
+    private final transient UuidGenerationService uuidGenerationService;
 
     /**
      * Constructor for the Vendor Controller.
@@ -33,7 +33,7 @@ public class RestaurantGetterService {
      */
     @Autowired
     public RestaurantGetterService(RestaurantRepository restaurantRepository, DeliveryRepository deliveryRepository,
-                         UUIDGenerationService uuidGenerationService) {
+                         UuidGenerationService uuidGenerationService) {
         this.restaurantRepository = restaurantRepository;
         this.deliveryRepository = deliveryRepository;
         this.uuidGenerationService = uuidGenerationService;
@@ -55,8 +55,7 @@ public class RestaurantGetterService {
         try {
             String jsonString = objectMapper.writeValueAsString(r);
             return new ResponseEntity<>(jsonString, HttpStatus.OK);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity<>("Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

@@ -5,7 +5,7 @@ import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.AttributeGetterGlobalService;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.DeliveryIdGetterGlobalService;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.MaxDeliveryZoneService;
-import nl.tudelft.sem.template.example.service.generation.UUIDGenerationService;
+import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import nl.tudelft.sem.template.example.testRepositories.TestRestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ public class GlobalServiceTest {
     /**
      * Used to generate UUIDs for test objects.
      */
-    private transient UUIDGenerationService uuidGenerationService;
+    private transient UuidGenerationService uuidGenerationService;
 
     private transient OffsetDateTime pickupTimeEstimate;
 
@@ -57,7 +57,7 @@ public class GlobalServiceTest {
     void setUp() {
         deliveryRepository = new TestDeliveryRepository();
         restaurantRepository = new TestRestaurantRepository();
-        uuidGenerationService = new UUIDGenerationService();
+        uuidGenerationService = new UuidGenerationService();
 
         deliveryId = UUID.randomUUID();
         restaurantId = UUID.randomUUID();
