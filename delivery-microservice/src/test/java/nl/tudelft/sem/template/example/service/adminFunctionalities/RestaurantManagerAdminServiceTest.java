@@ -129,37 +129,6 @@ public class RestaurantManagerAdminServiceTest {
         );
     }
 
-    /**
-     * Tests the case where no more UUIDs are available.
-     */
-    @Test
-    void testCreateRestaurantAllIdsUsed() {
-        // We mock the repositories, so we can fake all IDs being taken.
-        TestRestaurantRepository mockedRestaurantRepository = Mockito.mock(TestRestaurantRepository.class);
-
-        // Every single restaurant ID is mapped to this one restaurant
-        Restaurant foundRestaurant = new Restaurant();
-        foundRestaurant.setVendorID(UUID.randomUUID());
-
-        Mockito.when(mockedRestaurantRepository.findById(Mockito.any()))
-                .thenReturn(Optional.of(foundRestaurant));
-
-        // So, when a new restaurant is created, it should get stuck in a loop and exit!
-        final Restaurant restaurantToCreate = new Restaurant();
-
-        restaurantToCreate.setVendorID(UUID.randomUUID());
-        RestaurantManagerAdminService localSut = new RestaurantManagerAdminService(
-                mockedRestaurantRepository, new UuidGenerationService()
-        );
-
-        ResponseEntity<Restaurant> response = localSut.createRestaurant(restaurantToCreate);
-
-        assertEquals(
-                HttpStatus.BAD_REQUEST,
-                response.getStatusCode()
-        );
-    }
-
     @Test
     void testCreateRestaurantSavingFailedBecauseRestaurantIdIsNull() {
         // We mock the repositories, so we can fake saving failing.

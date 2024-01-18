@@ -17,20 +17,17 @@ import java.util.function.Supplier;
 /**
  * Service that authorizes requests from vendors, or couriers.
  */
+@Getter
 @Service
 public class VendorOrCourierService implements RoleService {
 
-    @Getter
-    private final transient DeliveryEstimateService deliveryEstimateService;
+    private final DeliveryEstimateService deliveryEstimateService;
 
-    @Getter
-    private final transient DeliveryEventService deliveryEventService;
+    private final DeliveryEventService deliveryEventService;
 
-    @Getter
-    private final transient PickUpEstimateVendorCourierService pickUpEstimateVendorCourierService;
+    private final PickUpEstimateVendorCourierService pickUpEstimateVendorCourierService;
 
-    @Getter
-    private final transient OrderToCourierService orderToCourierService;
+    private final OrderToCourierService orderToCourierService;
 
 
     /**

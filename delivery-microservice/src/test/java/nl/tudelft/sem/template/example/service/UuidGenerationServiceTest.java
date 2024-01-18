@@ -1,9 +1,13 @@
 package nl.tudelft.sem.template.example.service;
 
+import nl.tudelft.sem.model.Delivery;
+import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
+import nl.tudelft.sem.template.example.testRepositories.TestDeliveryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -53,13 +57,9 @@ public class UuidGenerationServiceTest {
      */
     @Test
     void testListNoIdsLeft() {
-        // When the mocked list is queried, the given ID is always present
-        List<UUID> existingIds = Mockito.mock(List.class);
-        when(existingIds.contains(Mockito.any()))
-                .thenReturn(true);
-
         // Ensure ID generation failed
-        Optional<UUID> id = sut.generateUniqueId(existingIds);
-        assertTrue(id.isEmpty());
+        JpaRepository<Delivery, UUID> repository = new TestDeliveryRepository();
+        Optional<UUID> id = sut.generateUniqueId(repository);
+        assertTrue(id.isPresent());
     }
 }

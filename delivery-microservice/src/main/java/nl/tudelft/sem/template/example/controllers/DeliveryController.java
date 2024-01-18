@@ -25,8 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class DeliveryController implements DeliveryApi {
 
-    @Setter
-    private transient CourierService courierService;
+    private final transient CourierService courierService;
     private final transient VendorService vendorService;
     private final transient GlobalService globalService;
     private final transient VendorOrCourierService vendorOrCourierService;
@@ -79,7 +78,7 @@ public class DeliveryController implements DeliveryApi {
     }
 
     /**
-     * Integrates controller with API to set the exception of delivery.
+     * Integrates controller with API to set the exception to delivery.
      * @param deliveryId ID of the delivery to query. (required)
      * @param role The role of the user (required)
      * @param body  (required)
@@ -242,7 +241,7 @@ public class DeliveryController implements DeliveryApi {
      * Integrates controller with API for set delivery delay endpoint.
      * @param deliveryID ID of delivery to update. (required)
      * @param role The role of the user (required)
-     * @param body  (required)
+     * @param body integer representing seconds (required)
      * @return the new delay
      */
     @Override
@@ -433,15 +432,15 @@ public class DeliveryController implements DeliveryApi {
 
     @lombok.Generated
     private static ResponseEntity<Double> sanityCheck(ResponseEntity<Double> r, UUID deliveryId) {
-        if (r != null && r.getBody() != null) {
-            if (r.getBody() < 0 || r.getBody() > 1) {
-                System.out.println("\033[91;40m getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
-                        + " \033[91;40m got response: \033[30;101m " + r.getBody() + " \033[0m");
-            }
-        } else {
-            System.out.println("\033[91;40m ** getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
-                    + " \033[91;40m was NULL ** \033[0m");
-        }
+        // if (r != null && r.getBody() != null) {
+        // if (r.getBody() < 0 || r.getBody() > 1) {
+        // System.out.println("\033[91;40m getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
+        // + " \033[91;40m got response: \033[30;101m " + r.getBody() + " \033[0m");
+        // }
+        // } else {
+        // System.out.println("\033[91;40m ** getRateByDeliveryId requested for UUID \033[30;101m " + deliveryId
+        // + " \033[91;40m was NULL ** \033[0m");
+        // }
         return r;
     }
 }

@@ -29,14 +29,20 @@ public class DeliveryEstimateService {
      * @return OffsetDateTime of the estimated time of delivery
      */
     public ResponseEntity<OffsetDateTime> getDeliveryEstimate(UUID deliveryID) {
-        Optional<Delivery> estimate = deliveryRepository.findById(deliveryID);
-        if (estimate.isEmpty()) {
+        Optional<Delivery> delivery = deliveryRepository.findById(deliveryID);
+        if (delivery.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        OffsetDateTime r = estimate.get().getDeliveryTimeEstimate();
+        OffsetDateTime r = delivery.get().getDeliveryTimeEstimate();
         if (r == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        int delay = 0;
+        if (delivery.get().getDelay() != null) {
+            delay = delivery.get().getDelay();
+            // System.out.println("\033[96;40m delay: " + delay + " \033[0m");
+        }
+        r = r.plusSeconds(delay);
         return new ResponseEntity<>(r, HttpStatus.OK);
     }
 

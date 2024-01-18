@@ -229,7 +229,7 @@ class VendorOrCourierServiceTest {
     void testGetDeliveryEstimate() {
         ResponseEntity<OffsetDateTime> res = deliveryEstimateService.getDeliveryEstimate(deliveryId);
         OffsetDateTime resBody = res.getBody();
-        assertEquals(sampleOffsetDateTime, resBody);
+        assertEquals(sampleOffsetDateTime.plusSeconds(1), resBody);
     }
 
     @Test

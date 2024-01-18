@@ -17,7 +17,6 @@ import java.util.UUID;
 @Service
 public class PickUpEstimateService {
 
-    @Getter
     private final transient RestaurantRepository restaurantRepository;
     private final transient DeliveryRepository deliveryRepository;
     private final transient UuidGenerationService uuidGenerationService;

@@ -15,16 +15,14 @@ import org.springframework.stereotype.Service;
 /**
  * Service that authorizes requests from couriers.
  */
+@Getter
 @Service
 public class CourierService implements RoleService {
 
-    @Getter
     private final transient DeliveryGettersCourierService deliveryGettersCourierService;
 
-    @Getter
     private final transient DeliveryLocationCourierService deliveryLocationCourierService;
 
-    @Getter
     private final transient DeliveryStatusCourierService deliveryStatusCourierService;
 
     /**

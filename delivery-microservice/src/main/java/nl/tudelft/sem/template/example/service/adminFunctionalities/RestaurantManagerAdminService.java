@@ -83,13 +83,10 @@ public class RestaurantManagerAdminService {
      */
     private Optional<Restaurant> tryToCreateRestaurantInDatabase(final Restaurant restaurant) {
         // Generate a new ID for the restaurant
-        final Optional<UUID> newId = uuidGenerationService.generateUniqueId(restaurantRepository);
-        if (newId.isEmpty()) {
-            return Optional.empty();
-        }
-
         // Once we have the new ID, save the restaurant to the DB.
-        restaurant.setRestaurantID(newId.get());
+        if (restaurant.getRestaurantID() == null || restaurantRepository.existsById(restaurant.getRestaurantID())) {
+            restaurant.setRestaurantID(UUID.randomUUID());
+        }
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
 
         // We return the DB object in case any properties changed
