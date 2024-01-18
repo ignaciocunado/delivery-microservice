@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.service;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,20 +9,20 @@ import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
-import nl.tudelft.sem.template.example.service.filters.AssociationService;
+import nl.tudelft.sem.template.example.service.handlers.AssociationHandler;
+import nl.tudelft.sem.template.example.service.handlers.BaseHandler;
+import nl.tudelft.sem.template.example.service.handlers.Handler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.net.URI;
-import java.net.http.HttpRequest;
 import java.util.Optional;
 import java.util.UUID;
 
-class AssociationServiceTest {
+class AssociationHandlerTest {
 
     private transient HttpServletRequest request;
-    private transient AssociationService associationService;
+    private transient BaseHandler associationHandler;
     private RestaurantRepository restaurantRepository;
     private DeliveryRepository deliveryRepository;
 
@@ -33,7 +32,7 @@ class AssociationServiceTest {
         restaurantRepository = Mockito.mock(RestaurantRepository.class);
         deliveryRepository = Mockito.mock(DeliveryRepository.class);
 
-        associationService = new AssociationService(deliveryRepository, restaurantRepository);
+        associationHandler = new AssociationHandler(deliveryRepository, restaurantRepository);
     }
 
     @Test
@@ -41,7 +40,7 @@ class AssociationServiceTest {
         when(request.getHeader("X-User-Id")).thenReturn("550e8400-e29b-41d4-a716-446655440001");
         when(request.getParameter("role")).thenReturn("admin");
 
-        assertTrue(associationService.authorize(request));
+        assertTrue(associationHandler.handle(request));
     }
 
     @Test
@@ -50,7 +49,7 @@ class AssociationServiceTest {
         when(request.getParameter("role")).thenReturn("vendor");
         when(request.getMethod()).thenReturn("GET");
 
-        assertTrue(associationService.authorize(request));
+        assertTrue(associationHandler.handle(request));
     }
 
     @Test
@@ -60,7 +59,7 @@ class AssociationServiceTest {
         when(request.getMethod()).thenReturn("PATCH");
         when(request.getRequestURI()).thenReturn("example/endpoint/without/sensitive/data");
 
-        assertTrue(associationService.authorize(request));
+        assertTrue(associationHandler.handle(request));
     }
 
     @Test
@@ -72,7 +71,7 @@ class AssociationServiceTest {
                 .thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/accept/?role=vendor");
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
-        assertTrue(associationService.authorize(request));
+        assertTrue(associationHandler.handle(request));
     }
 
     @Test
@@ -90,7 +89,7 @@ class AssociationServiceTest {
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.of(d));
         when(restaurantRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
-        assertTrue(associationService.authorize(request));
+        assertTrue(associationHandler.handle(request));
     }
 
     @Test
@@ -109,7 +108,7 @@ class AssociationServiceTest {
         when(r.getVendorID()).thenReturn(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
 
 
-        assertFalse(associationService.authorize(request));
+        assertFalse(associationHandler.handle(request));
     }
 
     @Test
@@ -128,7 +127,7 @@ class AssociationServiceTest {
         when(r.getVendorID()).thenReturn(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"));
 
 
-        assertTrue(associationService.authorize(request));
+        assertTrue(associationHandler.handle(request));
     }
 
     @Test
@@ -140,7 +139,7 @@ class AssociationServiceTest {
                 .thenReturn("127.0.0.1:8082/delivery/550e8400-e29b-41d4-a716-446655440000/status/delivered/?role=courier");
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
-        assertTrue(associationService.authorize(request));
+        assertTrue(associationHandler.handle(request));
     }
 
     @Test
@@ -156,7 +155,7 @@ class AssociationServiceTest {
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.of(d));
         when(d.getCourierID()).thenReturn(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
 
-        assertFalse(associationService.authorize(request));
+        assertFalse(associationHandler.handle(request));
     }
 
     @Test
@@ -171,12 +170,46 @@ class AssociationServiceTest {
         when(deliveryRepository.findById(Mockito.any())).thenReturn(Optional.of(d));
         when(d.getCourierID()).thenReturn(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
 
-        assertTrue(associationService.authorize(request));
+        assertTrue(associationHandler.handle(request));
     }
 
     @Test
     void testAuthoriseNull() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        assertFalse(associationService.authorize(request));
+        assertFalse(associationHandler.handle(request));
+    }
+
+    @Test
+    void testSetNext() {
+        Handler handler = Mockito.mock(Handler.class);
+        associationHandler.setNext(handler);
+
+        assertEquals(handler, associationHandler.next);
+    }
+
+    @Test
+    void checkNextTest() {
+        Handler testHandler = Mockito.mock(Handler.class);
+
+        when(testHandler.handle(request)).thenReturn(true);
+
+        associationHandler.setNext(testHandler);
+        assertTrue(associationHandler.checkNext(request));
+    }
+
+    @Test
+    void checkNextTestFalse() {
+        Handler testHandler = Mockito.mock(Handler.class);
+
+        when(testHandler.handle(request)).thenReturn(false);
+
+        associationHandler.setNext(testHandler);
+        assertFalse(associationHandler.checkNext(request));
+    }
+
+    @Test
+    void checkNextNullTest() {
+        associationHandler.setNext(null);
+        assertTrue(associationHandler.checkNext(request));
     }
 }

@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.example.integration;
 
-import nl.tudelft.sem.template.example.service.filters.AuthorizationService;
+import nl.tudelft.sem.template.example.service.handlers.RoleHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ public class AuthorizationIntegrationTest {
     private UUID userId;
 
     @Autowired
-    private AuthorizationService authorizationService;
+    private RoleHandler roleHandler;
 
     private MockHttpServletRequest request;
 
@@ -70,7 +70,7 @@ public class AuthorizationIntegrationTest {
                         .withStatus(200)));
 
         request.addParameter("role", "courier");
-        boolean result = authorizationService.authorize(request);
+        boolean result = roleHandler.handle(request);
 
         assertTrue(result);
         verify(postRequestedFor(urlEqualTo("/couriers/" + userId.toString() + "/proof")));
@@ -83,7 +83,7 @@ public class AuthorizationIntegrationTest {
                         .withStatus(200)));
 
         request.addParameter("role", "admin");
-        boolean result = authorizationService.authorize(request);
+        boolean result = roleHandler.handle(request);
 
         assertTrue(result);
         verify(getRequestedFor(urlEqualTo("/admins/" + userId.toString())));
@@ -96,7 +96,7 @@ public class AuthorizationIntegrationTest {
                         .withStatus(200)));
 
         request.addParameter("role", "customer");
-        boolean result = authorizationService.authorize(request);
+        boolean result = roleHandler.handle(request);
 
         assertTrue(result);
         verify(getRequestedFor(urlEqualTo("/customers/" + userId.toString())));
@@ -109,7 +109,7 @@ public class AuthorizationIntegrationTest {
                         .withStatus(200)));
 
         request.addParameter("role", "vendor");
-        boolean result = authorizationService.authorize(request);
+        boolean result = roleHandler.handle(request);
 
         assertTrue(result);
         verify(postRequestedFor(urlEqualTo("/vendors/" + userId.toString() + "/proof")));
@@ -122,7 +122,7 @@ public class AuthorizationIntegrationTest {
                         .withStatus(401)));
 
         request.addParameter("role", "courier");
-        boolean result = authorizationService.authorize(request);
+        boolean result = roleHandler.handle(request);
 
         assertFalse(result);
         verify(postRequestedFor(urlEqualTo("/couriers/" + userId.toString() + "/proof")));
@@ -135,7 +135,7 @@ public class AuthorizationIntegrationTest {
                         .withStatus(401)));
 
         request.addParameter("role", "admin");
-        boolean result = authorizationService.authorize(request);
+        boolean result = roleHandler.handle(request);
 
         assertFalse(result);
         verify(getRequestedFor(urlEqualTo("/admins/" + userId.toString())));
@@ -148,7 +148,7 @@ public class AuthorizationIntegrationTest {
                         .withStatus(401)));
 
         request.addParameter("role", "customer");
-        boolean result = authorizationService.authorize(request);
+        boolean result = roleHandler.handle(request);
 
         assertFalse(result);
         verify(getRequestedFor(urlEqualTo("/customers/" + userId.toString())));
@@ -161,7 +161,7 @@ public class AuthorizationIntegrationTest {
                         .withStatus(401)));
 
         request.addParameter("role", "vendor");
-        boolean result = authorizationService.authorize(request);
+        boolean result = roleHandler.handle(request);
 
         assertFalse(result);
         verify(postRequestedFor(urlEqualTo("/vendors/" + userId.toString() + "/proof")));
@@ -170,14 +170,14 @@ public class AuthorizationIntegrationTest {
     @Test
     void testInvalidRoleRequest() {
         request.addParameter("role", "invalid");
-        boolean result = authorizationService.authorize(request);
+        boolean result = roleHandler.handle(request);
 
         assertFalse(result);
     }
 
     @Test
     void testNoRoleRequest() {
-        boolean result = authorizationService.authorize(request);
+        boolean result = roleHandler.handle(request);
 
         assertFalse(result);
     }

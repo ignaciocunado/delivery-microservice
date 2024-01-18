@@ -1,14 +1,10 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.models.Response;
-import io.swagger.models.auth.In;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.authorization.AssociationFilter;
 import nl.tudelft.sem.template.example.authorization.AuthorizationFilter;
 import nl.tudelft.sem.template.example.config.AppConfig;
-import nl.tudelft.sem.template.example.config.AssociationFilterConfiguration;
 import nl.tudelft.sem.template.example.config.AuthorizationFilterConfiguration;
 import nl.tudelft.sem.template.example.config.SecurityConfig;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
@@ -20,8 +16,8 @@ import nl.tudelft.sem.template.example.service.courierFunctionalities.DeliveryLo
 import nl.tudelft.sem.template.example.service.courierFunctionalities.DeliveryStatusCourierService;
 import nl.tudelft.sem.template.example.service.externalCommunication.ExternalService;
 import nl.tudelft.sem.template.example.service.externalCommunication.ExternalServiceMock;
-import nl.tudelft.sem.template.example.service.filters.AssociationService;
-import nl.tudelft.sem.template.example.service.filters.AuthorizationService;
+import nl.tudelft.sem.template.example.service.handlers.AssociationHandler;
+import nl.tudelft.sem.template.example.service.handlers.RoleHandler;
 import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.AttributeGetterGlobalService;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.DeliveryIdGetterGlobalService;
@@ -39,11 +35,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.OffsetDateTime;
@@ -56,10 +50,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ControllerFullTest {
-    private transient AssociationFilter associationFilter;
     private transient AuthorizationFilter authorizationFilter;
     private transient AppConfig appConfig;
-    private transient AssociationFilterConfiguration associationFilterConfiguration;
     private transient SecurityConfig securityConfig;
     private transient DeliveryController dc;
     private transient RestaurantController rc;
@@ -71,8 +63,8 @@ public class ControllerFullTest {
     private transient DeliveryLocationCourierService deliveryLocationCourierService;
     private transient DeliveryStatusCourierService deliveryStatusCourierService;
     private transient ExternalService externalService;
-    private transient AssociationService associationService;
-    private transient AuthorizationService authorizationService;
+    private transient AssociationHandler associationHandler;
+    private transient RoleHandler roleHandler;
     private transient UuidGenerationService uuidGenerationService;
     private transient AttributeGetterGlobalService attributeGetterGlobalService;
     private transient DeliveryIdGetterGlobalService deliveryIdGetterGlobalService;
@@ -114,8 +106,8 @@ public class ControllerFullTest {
         restaurantManagerAdminService = new RestaurantManagerAdminService(restaurantRepository, uuidGenerationService);
         deliveryGettersCourierService = new DeliveryGettersCourierService(deliveryRepository);
         deliveryStatusCourierService = new DeliveryStatusCourierService(deliveryRepository);
-        associationService = new AssociationService(deliveryRepository, restaurantRepository);
-        authorizationService = new AuthorizationService(externalService);
+        associationHandler = new AssociationHandler(deliveryRepository, restaurantRepository);
+        roleHandler = new RoleHandler(externalService);
         customerService = new CustomerService(deliveryRepository);
         deliveryEstimateService = new DeliveryEstimateService(deliveryRepository);
         deliveryEventService = new DeliveryEventService(deliveryRepository);
@@ -146,12 +138,9 @@ public class ControllerFullTest {
         vendorOrCourierService = new VendorOrCourierService(deliveryEstimateService, deliveryEventService,
                 pickUpEstimateVendorCourierService, orderToCourierService);
 
-        associationFilter = new AssociationFilter(associationService);
-        authorizationFilter = new AuthorizationFilter(authorizationService);
+        authorizationFilter = new AuthorizationFilter(roleHandler, associationHandler);
         appConfig = new AppConfig();
-        associationFilterConfiguration = new AssociationFilterConfiguration(associationService);
-        securityConfig = new SecurityConfig(new AuthorizationFilterConfiguration(authorizationService),
-                new AssociationFilterConfiguration(associationService));
+        securityConfig = new SecurityConfig(new AuthorizationFilterConfiguration(roleHandler, associationHandler));
         adminService = new AdminService(restaurantManagerAdminService, deliveryManagerAdminService);
 
         dc = new DeliveryController(courierService, vendorService, globalService, vendorOrCourierService,

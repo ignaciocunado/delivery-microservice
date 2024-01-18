@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service.filters;
+package nl.tudelft.sem.template.example.service.handlers;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
@@ -12,13 +12,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class AssociationService implements ChainHandler {
-
+public class AssociationHandler extends BaseHandler {
+    @Autowired
     private final transient DeliveryRepository deliveryRepository;
     private final transient RestaurantRepository restaurantRepository;
 
-    @Autowired
-    public AssociationService(DeliveryRepository deliveryRepository, RestaurantRepository restaurantRepository) {
+
+    public AssociationHandler(DeliveryRepository deliveryRepository, RestaurantRepository restaurantRepository) {
         this.deliveryRepository = deliveryRepository;
         this.restaurantRepository = restaurantRepository;
     }
@@ -29,7 +29,7 @@ public class AssociationService implements ChainHandler {
      * @param request the request to authorize
      * @return true if the request is authorized, false otherwise
      */
-    public boolean authorize(HttpServletRequest request) {
+    public boolean handle(HttpServletRequest request) {
         String userId = request.getHeader("X-User-Id");
 
         try {
