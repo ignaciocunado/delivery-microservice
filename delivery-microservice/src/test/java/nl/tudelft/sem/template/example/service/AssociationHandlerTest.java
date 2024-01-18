@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.service;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +10,8 @@ import nl.tudelft.sem.model.Restaurant;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
 import nl.tudelft.sem.template.example.database.RestaurantRepository;
 import nl.tudelft.sem.template.example.service.handlers.AssociationHandler;
+import nl.tudelft.sem.template.example.service.handlers.BaseHandler;
+import nl.tudelft.sem.template.example.service.handlers.Handler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,7 +22,7 @@ import java.util.UUID;
 class AssociationHandlerTest {
 
     private transient HttpServletRequest request;
-    private transient AssociationHandler associationHandler;
+    private transient BaseHandler associationHandler;
     private RestaurantRepository restaurantRepository;
     private DeliveryRepository deliveryRepository;
 
@@ -176,5 +177,39 @@ class AssociationHandlerTest {
     void testAuthoriseNull() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         assertFalse(associationHandler.handle(request));
+    }
+
+    @Test
+    void testSetNext() {
+        Handler handler = Mockito.mock(Handler.class);
+        associationHandler.setNext(handler);
+
+        assertEquals(handler, associationHandler.next);
+    }
+
+    @Test
+    void checkNextTest() {
+        Handler testHandler = Mockito.mock(Handler.class);
+
+        when(testHandler.handle(request)).thenReturn(true);
+
+        associationHandler.setNext(testHandler);
+        assertTrue(associationHandler.checkNext(request));
+    }
+
+    @Test
+    void checkNextTestFalse() {
+        Handler testHandler = Mockito.mock(Handler.class);
+
+        when(testHandler.handle(request)).thenReturn(false);
+
+        associationHandler.setNext(testHandler);
+        assertFalse(associationHandler.checkNext(request));
+    }
+
+    @Test
+    void checkNextNullTest() {
+        associationHandler.setNext(null);
+        assertTrue(associationHandler.checkNext(request));
     }
 }

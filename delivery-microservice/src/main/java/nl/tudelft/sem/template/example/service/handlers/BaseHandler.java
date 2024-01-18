@@ -3,7 +3,7 @@ package nl.tudelft.sem.template.example.service.handlers;
 import javax.servlet.http.HttpServletRequest;
 
 public abstract class BaseHandler implements Handler {
-    private transient Handler next;
+    public transient Handler next;
 
     /**
      * Sets the next handler in the chain of responsibility.
@@ -25,7 +25,7 @@ public abstract class BaseHandler implements Handler {
      * @param request the request to handle
      * @return true if the request is authorized, false otherwise
      */
-    boolean checkNext(HttpServletRequest request) {
+    public boolean checkNext(HttpServletRequest request) {
         if (next == null) {
             return true;
         }
