@@ -28,7 +28,7 @@ public class RoleHandler extends BaseHandler {
      * @return if the user is authorized
      */
     public boolean handle(HttpServletRequest request) {
-        //System.out.println("\033[96;40m new http request authorize(): \033[30;106m " + request + " \033[0m");
+        // System.out.println("\033[96;40m new http request authorize(): \033[30;106m " + request + " \033[0m");
         if (request == null) {
             return false;
         }
@@ -36,22 +36,22 @@ public class RoleHandler extends BaseHandler {
         String userId = request.getHeader("X-User-Id");
         String role = request.getParameter("role");
         if (role == null) {
-//            System.out.println("\033[91;40m role was null \033[0m");
+            // System.out.println("\033[91;40m role was null \033[0m");
             return false;
         }
 
         if (userId == null) {
-//            System.out.println("\033[91;40m API Key userId was null \033[0m");
+            // System.out.println("\033[91;40m API Key userId was null \033[0m");
             return false;
         }
 
         if (!role.equals("courier") && !role.equals("vendor") && !role.equals("customer") && !role.equals("admin")) {
-//            System.out.println("\033[91;40m role was not courier, vendor, customer or admin \033[0m");
+            // System.out.println("\033[91;40m role was not courier, vendor, customer or admin \033[0m");
             return false;
         }
 
         boolean verification = externalService.verify(userId, role);
-//        System.out.println("\033[92;40m verification: \033[30;102m " + verification + " \033[0m");
+        // System.out.println("\033[92;40m verification: \033[30;102m " + verification + " \033[0m");
 
         return verification;
     }
