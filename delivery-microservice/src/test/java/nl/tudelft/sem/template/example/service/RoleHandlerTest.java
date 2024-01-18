@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import javax.servlet.http.HttpServletRequest;
 
 import nl.tudelft.sem.template.example.service.externalCommunication.ExternalService;
-import nl.tudelft.sem.template.example.service.filters.RoleHandler;
+import nl.tudelft.sem.template.example.service.handlers.RoleHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

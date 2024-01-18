@@ -3,10 +3,8 @@ package nl.tudelft.sem.template.example.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;
-import nl.tudelft.sem.template.example.authorization.AssociationFilter;
 import nl.tudelft.sem.template.example.authorization.AuthorizationFilter;
 import nl.tudelft.sem.template.example.config.AppConfig;
-import nl.tudelft.sem.template.example.config.AssociationFilterConfiguration;
 import nl.tudelft.sem.template.example.config.AuthorizationFilterConfiguration;
 import nl.tudelft.sem.template.example.config.SecurityConfig;
 import nl.tudelft.sem.template.example.database.DeliveryRepository;
@@ -18,8 +16,8 @@ import nl.tudelft.sem.template.example.service.courierFunctionalities.DeliveryLo
 import nl.tudelft.sem.template.example.service.courierFunctionalities.DeliveryStatusCourierService;
 import nl.tudelft.sem.template.example.service.externalCommunication.ExternalService;
 import nl.tudelft.sem.template.example.service.externalCommunication.ExternalServiceMock;
-import nl.tudelft.sem.template.example.service.filters.AssociationHandler;
-import nl.tudelft.sem.template.example.service.filters.RoleHandler;
+import nl.tudelft.sem.template.example.service.handlers.AssociationHandler;
+import nl.tudelft.sem.template.example.service.handlers.RoleHandler;
 import nl.tudelft.sem.template.example.service.generation.UuidGenerationService;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.AttributeGetterGlobalService;
 import nl.tudelft.sem.template.example.service.globalFunctionalities.DeliveryIdGetterGlobalService;
@@ -52,10 +50,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ControllerFullTest {
-    private transient AssociationFilter associationFilter;
     private transient AuthorizationFilter authorizationFilter;
     private transient AppConfig appConfig;
-    private transient AssociationFilterConfiguration associationFilterConfiguration;
     private transient SecurityConfig securityConfig;
     private transient DeliveryController dc;
     private transient RestaurantController rc;
@@ -142,12 +138,9 @@ public class ControllerFullTest {
         vendorOrCourierService = new VendorOrCourierService(deliveryEstimateService, deliveryEventService,
                 pickUpEstimateVendorCourierService, orderToCourierService);
 
-        associationFilter = new AssociationFilter(associationHandler);
-        authorizationFilter = new AuthorizationFilter(roleHandler);
+        authorizationFilter = new AuthorizationFilter(roleHandler, associationHandler);
         appConfig = new AppConfig();
-        associationFilterConfiguration = new AssociationFilterConfiguration(associationHandler);
-        securityConfig = new SecurityConfig(new AuthorizationFilterConfiguration(roleHandler),
-                new AssociationFilterConfiguration(associationHandler));
+        securityConfig = new SecurityConfig(new AuthorizationFilterConfiguration(roleHandler, associationHandler));
         adminService = new AdminService(restaurantManagerAdminService, deliveryManagerAdminService);
 
         dc = new DeliveryController(courierService, vendorService, globalService, vendorOrCourierService,

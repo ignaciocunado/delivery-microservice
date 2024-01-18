@@ -7,7 +7,9 @@ import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import nl.tudelft.sem.template.example.service.filters.RoleHandler;
+
+import nl.tudelft.sem.template.example.service.handlers.AssociationHandler;
+import nl.tudelft.sem.template.example.service.handlers.RoleHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,13 +19,14 @@ class AuthorizationFilterTest {
 
     private transient AuthorizationFilter authorizationFilter;
     private transient RoleHandler roleHandler;
+    private transient AssociationHandler associationHandler;
     private transient HttpServletRequest request;
     private transient FilterChain filterChain;
 
     @BeforeEach
     void setUp() {
         roleHandler = Mockito.mock(RoleHandler.class);
-        authorizationFilter = new AuthorizationFilter(roleHandler);
+        authorizationFilter = new AuthorizationFilter(roleHandler, associationHandler);
         request = Mockito.mock(HttpServletRequest.class);
         filterChain = Mockito.mock(FilterChain.class);
     }

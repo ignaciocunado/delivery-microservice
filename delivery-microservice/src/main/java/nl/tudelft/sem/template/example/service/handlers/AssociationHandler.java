@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.service.filters;
+package nl.tudelft.sem.template.example.service.handlers;
 
 import nl.tudelft.sem.model.Delivery;
 import nl.tudelft.sem.model.Restaurant;

@@ -8,10 +8,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nl.tudelft.sem.template.example.service.filters.AssociationHandler;
-import nl.tudelft.sem.template.example.service.filters.BaseHandler;
-import nl.tudelft.sem.template.example.service.filters.Handler;
-import nl.tudelft.sem.template.example.service.filters.RoleHandler;
+import nl.tudelft.sem.template.example.service.handlers.AssociationHandler;
+import nl.tudelft.sem.template.example.service.handlers.Handler;
+import nl.tudelft.sem.template.example.service.handlers.RoleHandler;
 import org.springframework.http.MediaType;
 import org.springframework.web.filter.GenericFilterBean;
 
